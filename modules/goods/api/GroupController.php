@@ -43,7 +43,7 @@ class GroupController extends BasicController
      */
     public function actionIndex()
     {
-        $get = Yii::$app->request->get();
+        $get         = Yii::$app->request->get();
         $merchant_id = 1;
         $AppID       = Yii::$app->params['AppID'];
         $where       = [
@@ -60,17 +60,18 @@ class GroupController extends BasicController
         return $data;
     }
 
-    public function actionView(){
-        $id = Yii::$app->request->get('id',0);
+    public function actionView()
+    {
+        $id = Yii::$app->request->get('id', 0);
         $id = intval($id);
 
-        $result = $this->modelClass::find()->where(['id'=>$id])->asArray()->one();
+        $result = $this->modelClass::find()->where(['id' => $id])->asArray()->one();
 
         if (empty($result)) {
             Error('内容不存在');
         }
 
-        $goods_check = M('goods','Goods')::find()->where(['and',['is_deleted'=>0],['like','group','-'.$result['id'].'-']])->exists();
+        $goods_check = M('goods', 'Goods')::find()->where(['and', ['is_deleted' => 0], ['like', 'group', '-' . $result['id'] . '-']])->exists();
 
         $result['goods_check'] = $goods_check;
 
@@ -94,7 +95,7 @@ class GroupController extends BasicController
         }
 
         //判断是否存在商品
-        $check_goods = M('goods','Goods')::find()->where(['and',['like', 'group', '-' . $id . '-'], ['is_deleted' => 0]])->exists();
+        $check_goods = M('goods', 'Goods')::find()->where(['and', ['like', 'group', '-' . $id . '-'], ['is_deleted' => 0]])->exists();
         if ($check_goods) {
             Error('存在商品，不可删除');
         }

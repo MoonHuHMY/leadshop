@@ -1,7 +1,6 @@
 <?php
 /**
  * @copyright ©2020 浙江禾成云计算有限公司
- * @link      : http://www.zjhejiang.com
  * Created by PhpStorm.
  * User: Andy - 阿德
  * Date: 2021/1/25
@@ -75,7 +74,7 @@ class WechatController extends LoginController
         $userInfo->avatar = $res['headimgurl'];
         $userInfo->gender = $res['sex'];
         $userInfo->openId = $res['openid'];
-        $userInfo->unionId = $res['unionid'];
+        $userInfo->unionId = $res['unionid'] ?? '';
         return $userInfo;
     }
 

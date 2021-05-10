@@ -23,7 +23,6 @@ class PayController extends BasicsModules implements Map
      */
     public function actionIndex()
     {
-
         $order_sn = Yii::$app->request->get('order_sn', false);
         $host     = Yii::$app->request->hostInfo;
         $model    = M('order', 'Order')::find()->where(['order_sn' => $order_sn])->one();
@@ -65,8 +64,8 @@ class PayController extends BasicsModules implements Map
             'orderNo' => time() . $model->order_sn, //拼接时间戳,防止后期调用订单编号重复
             'amount'  => (float) $model->pay_amount,
             'title'   => $goods_name,
-            'attach'   => to_json(['appid'=>$model->AppID,'apptype'=>\Yii::$app->params['AppType']]),
-            'notify'  => $host . '/app/leadmall/pay',
+            'attach'  => to_json(['appid' => $model->AppID, 'apptype' => \Yii::$app->params['AppType']]),
+            'notify'  => WE7_API ? WE7_API . "/app/leadmall/pay" : $host . '/index.php?q=/app/leadmall/pay',
         ]));
         return $res;
     }
@@ -76,9 +75,9 @@ class PayController extends BasicsModules implements Map
         $disableEntities = libxml_disable_entity_loader(true);
         $notifyInfo      = (array) simplexml_load_string(file_get_contents("php://input"), 'SimpleXMLElement', LIBXML_NOCDATA);
         libxml_disable_entity_loader($disableEntities);
-        $attach = to_array($notifyInfo['attach']);
-        $AppID                     = $attach['appid'];
-        $AppType                   = $attach['apptype'];
+        $attach  = to_array($notifyInfo['attach']);
+        $AppID   = $attach['appid'];
+        $AppType = $attach['apptype'];
         // $AppID                     = Yii::$app->request->get('appid', false);
         // $AppType                   = Yii::$app->request->get('apptype', false);
         Yii::$app->params['AppID'] = $AppID;
@@ -117,7 +116,7 @@ class PayController extends BasicsModules implements Map
                 $this->module->event->pay_uid      = $model->UID;
                 $this->module->trigger('pay_order');
                 $name = '小店';
-                $res = Setting::findOne(['AppID' => \Yii::$app->params['AppID'], 'keyword' => 'setting_collection']);
+                $res  = Setting::findOne(['AppID' => \Yii::$app->params['AppID'], 'keyword' => 'setting_collection']);
                 if ($res) {
                     $info = to_array($res['content']);
                     $name = $info['store_setting']['name'] ?? '小店';
@@ -125,22 +124,22 @@ class PayController extends BasicsModules implements Map
                 $user = User::findOne($model->UID);
                 Yii::$app->user->login($user);
                 $this->module->event->sms = [
-                    'type' => 'order_pay',
-                    'mobile' =>  Yii::$app->user->identity->mobile ?? '',
+                    'type'   => 'order_pay',
+                    'mobile' => Yii::$app->user->identity->mobile ?? '',
                     'params' => [
-                        'name' => $name
-                    ]
+                        'name' => $name,
+                    ],
                 ];
                 $this->module->trigger('send_sms');
                 $setting = Setting::findOne(['AppID' => Yii::$app->params['AppID'], 'merchant_id' => 1, 'keyword' => 'sms_setting', 'is_deleted' => 0]);
                 if ($setting && $setting['content']) {
-                    $mobiles = json_decode($setting['content'], true);
+                    $mobiles                  = json_decode($setting['content'], true);
                     $this->module->event->sms = [
-                        'type' => 'order_pay_business',
+                        'type'   => 'order_pay_business',
                         'mobile' => $mobiles['mobile_list'] ?? [],
                         'params' => [
-                            'code' => substr($order_sn, -4)
-                        ]
+                            'code' => substr($order_sn, -4),
+                        ],
                     ];
                     $this->module->trigger('send_sms');
                 }
@@ -149,10 +148,10 @@ class PayController extends BasicsModules implements Map
                     ->setUser(Yii::$app->user->id)
                     ->setPage('pages/order/detail?id=' . $model->id)
                     ->send(new OrderPayMessage([
-                        'amount' => $model->pay_amount,
-                        'payTime' => date('Y年m月d日 H:i', time()),
+                        'amount'       => $model->pay_amount,
+                        'payTime'      => date('Y年m月d日 H:i', time()),
                         'businessName' => $name,
-                        'orderNo' => $model->order_sn
+                        'orderNo'      => $model->order_sn,
                     ]));
 
                 return true;

@@ -3,7 +3,6 @@
 namespace app\controllers;
 
 use app\forms\ImageTools;
-use Yii;
 use yii\web\Controller;
 
 class SiteController extends Controller
@@ -19,11 +18,6 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $install_file = Yii::$app->BasePath . '/install.lock';
-        if (!file_exists($install_file)) {
-            $this->redirect(array('/install/index'));
-        } else {
-            $this->redirect(array('/admin/index'));
-        }
+        $this->redirect(array('/admin/index'));
     }
 }

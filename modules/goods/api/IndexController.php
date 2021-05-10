@@ -168,7 +168,6 @@ class IndexController extends BasicController
      */
     public function actionSearch()
     {
-
         //获取头部信息
         $headers = Yii::$app->getRequest()->getHeaders();
         //获取分页信息

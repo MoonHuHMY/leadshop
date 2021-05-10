@@ -19,10 +19,6 @@ class AdminController extends Controller
      */
     public function actionIndex()
     {
-        $install_file = Yii::$app->BasePath . '/install.lock';
-        if (!file_exists($install_file)) {
-            $this->redirect(array('/install/index'));
-        }
         $industry = "admin";
         $alias    = 'admin';
 

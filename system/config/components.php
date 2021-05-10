@@ -55,7 +55,7 @@ $components = [
             ],
         ],
         'errorHandler' => [
-            'errorAction' => 'site/error',
+            'class' => 'framework\common\ErrorHandler',
         ],
         'payment'      => [
             'class' => \app\components\Payment::class,

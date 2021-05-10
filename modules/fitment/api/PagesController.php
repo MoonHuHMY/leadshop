@@ -47,9 +47,10 @@ class PagesController extends BasicController
         }
     }
 
-    public function firstPage(){
+    public function firstPage()
+    {
         $AppID = Yii::$app->params['AppID'];
-        $data = $this->modelClass::find()->where(['is_deleted' => 0, 'status' => 1, 'AppID' => $AppID])->asArray()->one();
+        $data  = $this->modelClass::find()->where(['is_deleted' => 0, 'status' => 1, 'AppID' => $AppID])->asArray()->one();
         if (empty($data)) {
             Error('首页不存在');
         }
@@ -60,8 +61,7 @@ class PagesController extends BasicController
      * 获取设置列表
      * @return [type] [description]
      */
-    public function list()
-    {
+    function list() {
         //获取头部信息
         $headers = Yii::$app->getRequest()->getHeaders();
         //获取分页信息
@@ -140,7 +140,7 @@ class PagesController extends BasicController
      */
     public function update()
     {
-        $id = Yii::$app->request->get('id', 0);
+        $id    = Yii::$app->request->get('id', 0);
         $id    = intval($id);
         $AppID = Yii::$app->params['AppID'];
 
@@ -154,7 +154,7 @@ class PagesController extends BasicController
         if (N('content')) {
             $post['content'] = $this->buildContent($post['content']);
         }
-        $check = $this->modelClass::find()->where(['and',['<>', 'id', $id],['AppID' => $AppID, 'is_deleted' => 0, 'title' => $post['title']]])->one();
+        $check = $this->modelClass::find()->where(['and', ['<>', 'id', $id], ['AppID' => $AppID, 'is_deleted' => 0, 'title' => $post['title']]])->one();
         if ($check) {
             Error('标题已存在');
         }
@@ -200,11 +200,11 @@ class PagesController extends BasicController
 
     public function check_title()
     {
-        $id = Yii::$app->request->get('id', 0);
+        $id    = Yii::$app->request->get('id', 0);
         $id    = intval($id);
         $post  = Yii::$app->request->post();
         $AppID = Yii::$app->params['AppID'];
-        $check = $this->modelClass::find()->where(['and',['<>', 'id', $id],['AppID' => $AppID, 'is_deleted' => 0, 'title' => $post['title']]])->one();
+        $check = $this->modelClass::find()->where(['and', ['<>', 'id', $id], ['AppID' => $AppID, 'is_deleted' => 0, 'title' => $post['title']]])->one();
         if ($check) {
             return true;
         } else {
@@ -236,7 +236,7 @@ class PagesController extends BasicController
                 }
                 $post['content'] = $this->buildContent($post['content']);
                 $post['AppID']   = $AppID;
-                $post = url2str($post);
+                $post            = url2str($post);
                 Yii::$app->request->setBodyParams($post);
                 break;
         }
