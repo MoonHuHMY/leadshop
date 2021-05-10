@@ -7,8 +7,8 @@
  */
 namespace leadmall\app;
 
-use leadmall\Map;
 use fitment\app\PagesController as PagesModules;
+use leadmall\Map;
 
 class PagesController extends PagesModules implements Map
 {

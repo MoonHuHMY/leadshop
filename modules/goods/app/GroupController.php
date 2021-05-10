@@ -40,7 +40,6 @@ class GroupController extends BasicController
      */
     public function actionIndex()
     {
-
         $merchant_id = Yii::$app->request->get('merchant_id', -1);
         $type        = Yii::$app->request->get('type', -1);
         $where       = ['is_deleted' => 0, 'merchant_id' => $merchant_id];

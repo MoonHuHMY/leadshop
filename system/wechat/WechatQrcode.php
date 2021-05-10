@@ -31,6 +31,9 @@ class WechatQrcode extends Common
         if ($result) {
             $json = json_decode($result, true);
             if (isset($json['errcode']) && $json['errcode']>0) {
+                if ($json['errcode'] == '41030') {
+                    Error('线上小程序暂未发布，无法获取页面信息');
+                }
                 $errMsg  = isset($json['errmsg']) ? $json['errmsg'] : '无法解析接口返回内容！';
                 Error($errMsg);
             }

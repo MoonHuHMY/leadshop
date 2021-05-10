@@ -12,15 +12,13 @@ use Yii;
 /**
  * 后台用户管理器
  */
-class AccountController extends BasicController
-{
+class AccountController extends BasicController {
 
     /**
      * 后台登录
      * @return [type] [description]
      */
-    public function actionLogin()
-    {
+    public function actionLogin() {
         $post = Yii::$app->request->post();
         $data = $this->modelClass::find()->where(['mobile' => $post['mobile'], 'password' => MD5($post['password'])])->one();
         if ($data) {
@@ -41,8 +39,7 @@ class AccountController extends BasicController
      * 后台登录
      * @return [type] [description]
      */
-    public function actionLogout()
-    {
+    public function actionLogout() {
         $post = Yii::$app->request->post();
         $data = $this->modelClass::find()->where(['mobile' => $post['mobile'], 'password' => $post['password']])->one();
         if ($data) {
@@ -58,8 +55,7 @@ class AccountController extends BasicController
      * 用户注册
      * @return [type] [description]
      */
-    public function actionRegister()
-    {
+    public function actionRegister() {
         //调用模型
         $model    = new $this->modelClass();
         $postData = Yii::$app->request->post();
@@ -82,8 +78,7 @@ class AccountController extends BasicController
      * 后台登录
      * @return [type] [description]
      */
-    public function actionReset()
-    {
+    public function actionReset() {
         $post = Yii::$app->request->post();
         $data = $this->modelClass::find()->where(['mobile' => $post['mobile'], 'password' => $post['password']])->one();
         if ($data) {
@@ -100,8 +95,7 @@ class AccountController extends BasicController
      * @param  string $value [description]
      * @return [type]        [description]
      */
-    public function actionMenus()
-    {
+    public function actionMenus() {
         //获取角色模型
         $rolesModel = 'app\modules\roles\models\Roles';
         //获取角色模型
@@ -148,8 +142,7 @@ class AccountController extends BasicController
      * @param  string $value [description]
      * @return [type]        [description]
      */
-    public function actionApply()
-    {
+    public function actionApply() {
         $post = Yii::$app->request->post();
         //获取角色模型
         $rolesModel = 'app\modules\roles\models\Roles';
@@ -204,8 +197,7 @@ class AccountController extends BasicController
      * @param  string $id [description]
      * @return [type]      [description]
      */
-    public function getToken($id = '')
-    {
+    public function getToken($id = '') {
         /** @var Jwt $jwt */
         $jwt    = Yii::$app->jwt;
         $signer = $jwt->getSigner('HS256');
@@ -223,9 +215,8 @@ class AccountController extends BasicController
         return (string) $token;
     }
 
-    public function changePwd()
-    {
-        $pass = Yii::$app->request->post('old_password');
+    public function changePwd() {
+        $pass     = Yii::$app->request->post('old_password');
         $newPass1 = Yii::$app->request->post('new_password1');
         $newPass2 = Yii::$app->request->post('new_password2');
         if (!$pass || !$newPass1 || !$newPass2) {

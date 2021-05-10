@@ -76,7 +76,7 @@ class Cart extends CommonModels
 
     public function getGoodsinfo()
     {
-        return $this->hasOne('goods\models\Goods', ['id' => 'goods_id'])->where(['is_deleted' => 0])->with('param')->select('id,is_sale,min_number,limit_buy_value,limit_buy_status');
+        return $this->hasOne('goods\models\Goods', ['id' => 'goods_id'])->where(['is_deleted' => 0, 'is_recycle' => 0])->with('param')->select('id,is_sale,min_number,limit_buy_value,limit_buy_status');
     }
 
 }

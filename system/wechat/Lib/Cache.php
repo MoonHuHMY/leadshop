@@ -94,7 +94,7 @@ class Cache
      */
     protected static function check()
     {
-        empty(self::$cachepath) && self::$cachepath = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'Cache' . DIRECTORY_SEPARATOR;
+        empty(self::$cachepath) && self::$cachepath = \Yii::$app->runtimePath . '/wechat-cache';
         self::$cachepath                            = rtrim(self::$cachepath, '/\\') . DIRECTORY_SEPARATOR;
         if (!is_dir(self::$cachepath) && !mkdir(self::$cachepath, 0755, true)) {
             return false;

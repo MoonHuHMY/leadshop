@@ -33,7 +33,6 @@ class IndexController extends BasicController
     {
         //获取操作
         $behavior = Yii::$app->request->get('behavior', '');
-
         switch ($behavior) {
             case 'recommend':
                 return $this->recommend();
@@ -274,7 +273,7 @@ class IndexController extends BasicController
         }
 
         $result['video'] = to_array($result['video']);
-        if (is_array($result['video'])) {
+        if ($result['is_video'] === 1 && is_array($result['video'])) {
             if (isset($result['video']['type']) && $result['video']['type'] === 2) {
                 $result['video']['url'] = Video::getUrl($result['video']['url']);
             }

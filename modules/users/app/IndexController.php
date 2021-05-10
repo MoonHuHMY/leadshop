@@ -115,6 +115,9 @@ class IndexController extends BasicController
             case 'bindMobile': //绑定手机
                 return $this->bindMobile();
                 break;
+            case 'removeMobile': //绑定手机
+                return $this->removeMobile();
+                break;
             default:
                 Error('未定义操作');
                 break;
