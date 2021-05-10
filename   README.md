@@ -8,7 +8,8 @@
  
 **[点击查看V1.0.1更新内容](https://forum.leadshop.vip/thread/57)** 
 
- 
+ QQ群：849894135
+<br/>
  微信交流群
 ![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/06/LEVUJ05OQTI8nMZBu4PBz673UUedpuOm6NLVl4UQ.png)
 
