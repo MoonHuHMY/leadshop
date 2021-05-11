@@ -63,6 +63,8 @@ Leadshop 开源系统，基于Yii2开发，支持composer，优化核心，减�
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/2.png)
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/3.png)
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/4.png)
+![展示图](/readme/images/动图1.mp4)
+![展示图](/readme/images/动图2.mp4)
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/6.png)
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/7.png)
 
