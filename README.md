@@ -13,6 +13,10 @@
  微信交流群
 ![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/06/LEVUJ05OQTI8nMZBu4PBz673UUedpuOm6NLVl4UQ.png)
 
+## 运行环境
+
+Linux+Nginx+PHP7.4+MySQL5.7.3以上
+
 ## 项目介绍
 Leadshop是一款提供持续更新迭代服务的免费商城系统，旨在打造极致的用户体验！
 
@@ -94,11 +98,6 @@ Leadshop 开源系统，基于Yii2开发，支持composer，优化核心，减�
 账号:18888888888
 
 密码:123456
-
-## 运行环境
-
-Linux+Nginx+PHP7.4+MySQL(5.6|5.7)
-
 
 ## 开源无加密
 基于Apache License 2.0开源协议，前后端代码开源无加密，支持二次开发，支持商用。
