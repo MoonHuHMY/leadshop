@@ -1,5 +1,5 @@
 ## 下期更新计划
- **[点击查看本周更新计划](https://forum.leadshop.vip/thread/170)** 
+ **[点击查看更新计划](https://forum.leadshop.vip/thread/170)** 
 
 ## 更新历史
 **[点击查看V1.1.5更新内容](https://forum.leadshop.vip/thread/170)** 
@@ -11,7 +11,7 @@
  QQ群：849894135
 <br/>
  微信交流群
-![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/06/LEVUJ05OQTI8nMZBu4PBz673UUedpuOm6NLVl4UQ.png)
+![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/12/cP9OVkAgGm1eXFj4UuXLqXU41sW18tl7qVkfzVbt.png)
 
 ## 项目介绍
 Leadshop是一款提供持续更新迭代服务的免费商城系统，旨在打造极致的用户体验！
