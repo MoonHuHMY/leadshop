@@ -1,5 +1,5 @@
 ## 下期更新计划
- **[点击查看更新计划](https://forum.leadshop.vip/thread/170)** 
+ **[点击查看更新计划](https://forum.leadshop.vip/thread/192)** 
 
 ## 更新历史
 **[点击查看V1.1.5更新内容](https://forum.leadshop.vip/thread/170)** 
