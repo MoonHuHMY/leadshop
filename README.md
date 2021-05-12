@@ -131,13 +131,7 @@ Linux+Nginx+PHP7.4+MySQL(5.6|5.7)
 
 2.项目目录设置755权限
 
-3.设置伪静态规则(nginx 推荐使用)
-
-```
-location / {
-    try_files $uri $uri/ /index.php$is_args$args;
-}
-```
+3.设置代码执行目录为/web
 
 注:如果使用Apache环境 需要在.htaccess 中添加
 ```
@@ -145,18 +139,16 @@ location / {
 ```
 否则会导致OAuth登录模式获取不到Authorization
 
-4.设置代码执行目录为/server/web
+4.检查php禁用函数列表,symlink函数不能被禁用，否则后台页面无法访问。
 
 5.在浏览器中输入你的域名或IP
 
-( 例如：www.yourdomain.com/install )，安装程序会自动执行安装。期间系统会提醒你输入数据库信息以完成安装。
+( 例如：www.yourdomain.com)，安装程序会自动执行安装。期间系统会提醒你输入数据库信息以完成安装。
 
-6.检查php禁用函数列表,symlink函数不能被禁用，否则后台页面无法访问。
-
-7.后台访问地址：
+6.后台访问地址：
 域名/index.php?r=admin
 
-8.公众号首页访问地址：
+7.公众号首页访问地址：
 域名/index.php?r=wechat
 
 ### 重新安装
@@ -194,58 +186,6 @@ location / {
         ├─temp
         └─upload                        //上传文件
 ```
-
-## 打包 
->建议使用cnpm，cnpm安装： npm install cnpm -g --registry=https://registry.npm.taobao.org
-### 后台页面打包发布
-后台前端源文件目录/admin
-
-打包步骤
-
-1、安装依赖包
-npm install
-
-2、运行调试
-npm run serve
-
-3、打包发布
-npm run build
-
-4、打包后把/admin/dist/build内所有文件复制到站点/server/web/leadshop目录下
-
-### 公众号打包发布
-后台前端源文件目录/applet
-
-打包步骤
-
-1、安装依赖包
-npm install
-
-2、运行调试
-npm run serve
-
-3、打包发布
-npm run build:h5
-
-4、复制
-打包后把/applet/dist/build/h5内所有文件复制到站点/server/web/h5目录下
-
-### 小程序打包发布
-后台前端源文件目录/applet
-
-打包步骤
-
-1、安装依赖包
-npm install
-
-2、运行调试
-npm run serve
-
-3、打包发布
-npm run build:mp-weixin
-
-4、复制
-打包后把/applet/dist/build/mp-weixin 打包成zip，重命名为app.zip，并放入/server/applet目录下覆盖之前的app.zip
 
 ## 使用须知
 
