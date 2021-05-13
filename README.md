@@ -39,6 +39,10 @@ Leadshop 开源系统，基于Yii2开发，支持composer，优化核心，减�
 * 高效的笛卡尔乘积运算，8000条规格秒加载
 * 拟态Windows文件夹的素材管理结构，操作更熟悉随心
 
+## 运行环境
+
+Linux+Nginx+PHP7.4+MySQL5.7.3以上
+
 ## 页面展示
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210510/1.png)
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210510/2.png)
@@ -96,11 +100,6 @@ Leadshop 开源系统，基于Yii2开发，支持composer，优化核心，减�
 账号:18888888888
 
 密码:123456
-
-## 运行环境
-
-Linux+Nginx+PHP7.4+MySQL(5.6|5.7)
-
 
 ## 开源无加密
 基于Apache License 2.0开源协议，前后端代码开源无加密，支持二次开发，支持商用。
