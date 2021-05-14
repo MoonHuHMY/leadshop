@@ -17,6 +17,9 @@
 扫码关注企码星球，体验Leadshop公众号+小程序
 <br/>
 ![输入图片说明](https://images.gitee.com/uploads/images/2021/0513/182053_2a90b532_7426632.jpeg "企码星球.jpg")
+<br/>
+Leadshop操作文档https://help.leadshop.vip
+[点击查看](https://help.leadshop.vip/)
 
 ## 项目介绍
 Leadshop是一款提供持续更新迭代服务的免费商城系统，旨在打造极致的用户体验！
