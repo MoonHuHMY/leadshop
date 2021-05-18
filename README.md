@@ -12,7 +12,7 @@
 <br/>
  微信交流群
 <br/>
-![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/12/cP9OVkAgGm1eXFj4UuXLqXU41sW18tl7qVkfzVbt.png)
+![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/18/EAv0zuHQKvFTXkxTjCzCsZ0IL0oTR3mYHJEzqSi6.png)
 <br/>
 扫码关注企码星球，体验Leadshop公众号+小程序
 <br/>
