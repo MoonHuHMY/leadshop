@@ -2,7 +2,7 @@
  **[点击查看更新计划](https://forum.leadshop.vip/thread/192)** 
 
 ## 更新历史
-**[点击查看V1.2.0更新内容](https://forum.leadshop.vip/thread/254)** 
+**[点击查看V1.2.0更新内容](https://forum.leadshop.vip/thread/254)【520Leadshop送给大家的礼物】** 
 
 **[点击查看V1.1.5更新内容](https://forum.leadshop.vip/thread/170)** 
 
