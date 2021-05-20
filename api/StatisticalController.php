@@ -28,8 +28,7 @@ class StatisticalController extends BasicsModules implements Map
 
     public function actionIndex()
     {
-        M('coupon', 'Coupon')::findOne(['id' => 1]);
-        M('coupon', 'UserCoupon')::findOne(['id' => 1]);
+
         $behavior = Yii::$app->request->get('behavior', '');
 
         switch ($behavior) {
@@ -40,6 +39,8 @@ class StatisticalController extends BasicsModules implements Map
                 return $this->storeCount();
                 break;
             case 'nearTwoDay': //最近两天统计
+                M('coupon', 'Coupon')::findOne(['id' => 1]);
+                M('coupon', 'UserCoupon')::findOne(['id' => 1]);
                 return $this->nearTwoDay();
                 break;
             case 'exportGoods': //商品销售统计导出
