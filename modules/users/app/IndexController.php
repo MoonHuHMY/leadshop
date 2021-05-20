@@ -7,8 +7,6 @@
 
 namespace users\app;
 
-use app\datamodel\ThirdWxapp;
-use app\forms\ExtMpForm;
 use framework\common\BasicController;
 use Yii;
 
@@ -27,7 +25,8 @@ class IndexController extends BasicController
         return $actions;
     }
 
-    public function actionIndex(){
+    public function actionIndex()
+    {
         //获取操作
         $behavior = Yii::$app->request->get('behavior', '');
 
@@ -41,7 +40,8 @@ class IndexController extends BasicController
         }
     }
 
-    public function visit(){
+    public function visit()
+    {
         $AppID = Yii::$app->params['AppID'];
         $UID   = Yii::$app->user->identity->id ?? null;
         if ($UID) {
@@ -160,7 +160,7 @@ class IndexController extends BasicController
             Error('手机号获取失败');
         }
 
-        $check = M('users','User')::find()->where(['and',['mobile'=>$mobile],['<>','id',$UID]])->with(['oauth'=>function($query){
+        $check = M('users', 'User')::find()->where(['and', ['mobile' => $mobile], ['<>', 'id', $UID]])->with(['oauth' => function ($query) {
             $query->select('UID,type');
         }])->asArray()->all();
         if (!empty($check)) {
@@ -230,7 +230,7 @@ class IndexController extends BasicController
 
     public static function statistical($event)
     {
-        $data = $event->user_statistical;
+        $data  = $event->user_statistical;
         $check = M('users', 'UserStatistical')::find()->where(['UID' => $data['UID']])->one();
         if ($check) {
             if (isset($data['buy_number'])) {

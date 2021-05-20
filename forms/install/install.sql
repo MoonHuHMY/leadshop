@@ -55,6 +55,37 @@ CREATE TABLE `heshop_initialize_prefix_cart`  (
   INDEX `用户id`(`UID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
+CREATE TABLE `heshop_initialize_prefix_coupon`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '优惠券名称',
+  `type` tinyint(1) NOT NULL DEFAULT 1 COMMENT '优惠券类型：1=满减，2=折扣',
+  `discount` decimal(10, 2) NOT NULL DEFAULT 10.00 COMMENT '折扣 type=2时',
+  `total_num` bigint(10) NOT NULL COMMENT '发放总量',
+  `expire_type` tinyint(1) NOT NULL COMMENT '用券类型 1=领取后N天过期，2=指定有效期',
+  `expire_day` bigint(10) NOT NULL DEFAULT 1 COMMENT '有效天数，expire_type=1时',
+  `begin_time` bigint(10) NOT NULL DEFAULT 0 COMMENT '用券开始时间',
+  `end_time` bigint(10) NOT NULL DEFAULT 0 COMMENT '用券结束时间',
+  `min_price` decimal(10, 2) NOT NULL DEFAULT 0.00 COMMENT '门槛金额',
+  `sub_price` decimal(10, 2) NOT NULL COMMENT '优惠金额',
+  `appoint_type` tinyint(1) NOT NULL COMMENT '适用商品 1:全场通用 2:指定商品可用 3:指定分类可用 4:指定商品不可用 5:指定分类不可用',
+  `give_limit` tinyint(1) NULL DEFAULT NULL COMMENT '每人限领 0无限制',
+  `enable_share` tinyint(1) NOT NULL DEFAULT 0 COMMENT '分享设置 1开启 0关闭',
+  `expire_remind` int(11) NULL DEFAULT NULL COMMENT '到期提醒',
+  `enable_refund` tinyint(1) NOT NULL DEFAULT 0 COMMENT '退款设置 1开 0关',
+  `content` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '使用说明',
+  `AppID` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '应用ID',
+  `merchant_id` bigint(10) NOT NULL COMMENT '商户ID',
+  `created_time` int(10) NULL DEFAULT 0 COMMENT '创建时间',
+  `updated_time` int(10) NULL DEFAULT 0 COMMENT '更新时间',
+  `deleted_time` int(10) NULL DEFAULT 0 COMMENT '删除时间',
+  `is_recycle` tinyint(1) NULL DEFAULT 0 COMMENT '是否在回收站',
+  `is_deleted` tinyint(100) NULL DEFAULT 0 COMMENT '是否删除',
+  `appoint_data` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '指定数据',
+  `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '上下架状态  0下架 1上架',
+  `over_num` bigint(10) NOT NULL COMMENT '剩余量',
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+
 CREATE TABLE `heshop_initialize_prefix_fitment`  (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `keyword` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '关键字',
@@ -216,6 +247,20 @@ CREATE TABLE `heshop_initialize_prefix_goods_body`  (
   INDEX `商品id`(`goods_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
+CREATE TABLE `heshop_initialize_prefix_goods_coupon`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `goods_id` bigint(20) NOT NULL COMMENT '商品ID',
+  `coupon_id` bigint(20) NOT NULL COMMENT '发放优惠券ID',
+  `number` int(10) NOT NULL COMMENT '发放优惠券数量',
+  `created_time` int(10) NULL DEFAULT 0 COMMENT '创建时间',
+  `updated_time` int(10) NULL DEFAULT 0 COMMENT '更新时间',
+  `deleted_time` int(10) NULL DEFAULT 0 COMMENT '删除时间',
+  `is_deleted` tinyint(100) NULL DEFAULT 0 COMMENT '是否删除',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `商品id`(`goods_id`) USING BTREE,
+  INDEX `优惠券id`(`coupon_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
+
 CREATE TABLE `heshop_initialize_prefix_goods_data`  (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `goods_id` bigint(20) NOT NULL DEFAULT 100 COMMENT '商品ID',
@@ -330,74 +375,6 @@ CREATE TABLE `heshop_initialize_prefix_logistics_package_free`  (
   INDEX `应用id`(`AppID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
-CREATE TABLE `heshop_initialize_prefix_menus`  (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '菜单ID',
-  `parent_id` bigint(20) NULL DEFAULT NULL COMMENT '父级ID',
-  `modul_id` bigint(20) NULL DEFAULT NULL COMMENT '绑定模块',
-  `apply` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '绑定应用',
-  `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '菜单名称',
-  `title` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '菜单标题',
-  `icon` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '菜单图标',
-  `type` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT 'modul' COMMENT '菜单类型',
-  `path` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT '0' COMMENT '菜单页面',
-  `page` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NULL DEFAULT NULL COMMENT '绑定页面',
-  `is_hidden` tinyint(1) NULL DEFAULT 0 COMMENT '是否隐藏',
-  `created_time` bigint(10) NULL DEFAULT NULL COMMENT '创建时间',
-  `updated_time` bigint(10) NULL DEFAULT NULL COMMENT '更新时间',
-  `deleted_time` bigint(10) NULL DEFAULT NULL COMMENT '删除时间',
-  `is_deleted` tinyint(1) NULL DEFAULT 0 COMMENT '是否删除',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 46 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
-
--- ----------------------------
--- Records of he_menus
--- ----------------------------
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (1, 0, NULL, 'admin', 'admin', '后台管理', 'admin', 'path', '0', '', 0, 1605862391, 1605862391, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (2, 1, NULL, 'admin', 'index', '首页', 'index', 'page', '0-1', '', 0, 1605862436, 1605862436, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (3, 1, NULL, 'admin', 'apply', '店铺', 'he-icon-note', 'path', '0-1', '', 0, 1605862459, 1605862459, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (4, 1, NULL, 'admin', 'develop', '开发', 'he-icon-note', 'path', '0-1', '', 0, 1605862481, 1605862481, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (5, 1, NULL, NULL, 'setup', '设置', 'he-icon-note', 'path', '0-1', '', 0, 1605862503, 1605862503, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (6, 3, NULL, NULL, 'index', '我的店铺', 'he-icon-note', 'page', '0-1-3', '', 0, 1605862575, 1605862575, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (7, 3, NULL, NULL, 'create', '创建店铺', 'he-icon-note', 'page', '0-1-3', '', 0, 1605862617, 1605862617, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (8, 4, NULL, NULL, 'index', '菜单', '', 'page', '0-1-4', '', 0, 1605862652, 1605862652, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (9, 4, NULL, NULL, 'roles', '角色', '', 'page', '0-1-4', '', 0, 1605862676, 1605862676, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (10, 4, NULL, NULL, 'modul', '模型', '', 'page', '0-1-4', '', 0, 1605862700, 1605862700, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (11, 4, NULL, NULL, 'rules', '规则', '', 'page', '0-1-4', '', 0, 1605862934, 1605862934, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (12, 4, NULL, NULL, 'account', '账户', '', 'page', '0-1-4', '', 0, 1605862972, 1605862972, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (13, 4, NULL, NULL, 'method', '方法', '', 'page', '0-1-4', '', 0, 1605864218, 1605864218, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (14, 5, NULL, NULL, 'index', '基础设置', '', 'page', '0-1-5', '', 0, 1606181042, 1606181042, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (15, 0, NULL, NULL, 'micromall', '微商城', '', 'path', '0', '', 0, 1606184817, 1606184817, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (16, 15, NULL, NULL, 'index', '首页', '', 'page', '0-15', '', 0, 1606184862, 1606184862, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (17, 15, NULL, NULL, 'goods', '商品', '', 'path', '0-15', '', 0, 1606184882, 1606184882, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (18, 17, NULL, NULL, 'index', '商品管理', 'le-icon-goods-tube', 'page', '0-15-17', '', 0, 1606184921, 1606184921, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (19, 17, NULL, NULL, 'publish', '商品发布', 'le-icon-share', 'page', '0-15-17', '', 0, 1606184942, 1606184942, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (20, 17, NULL, NULL, 'group', '商品分类', 'le-icon-container', 'page', '0-15-17', '', 0, 1606184976, 1606184976, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (21, 17, NULL, NULL, 'gallery', '素材管理', 'le-icon-folder', 'page', '0-15-17', '', 0, 1606184997, 1606184997, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (22, 17, NULL, NULL, 'service', '商品服务', 'le-icon-service', 'page', '0-15-17', '', 0, 1606185030, 1606185030, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (23, 15, NULL, NULL, 'order', '订单', '', 'path', '0-15', '', 0, 1606185061, 1606185061, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (24, 23, NULL, NULL, 'index', '订单管理', 'le-icon-orders\r\n', 'page', '0-15-23', '', 0, 1606185076, 1606185076, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (25, 23, NULL, NULL, 'after', '售后订单', 'le-icon-after-sales', 'page', '0-15-23', '', 0, 1606185111, 1606185111, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (26, 23, NULL, NULL, 'remark', '评价管理', 'le-icon-star', 'page', '0-15-23', '', 0, 1606185218, 1606185218, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (27, 23, NULL, NULL, 'delivery', '配送管理', 'le-icon-distribution', 'page', '0-15-23', '', 0, 1606185239, 1606185239, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (28, 15, NULL, NULL, 'users', '用户', '', 'path', '0-15', '', 0, 1606185262, 1606185262, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (29, 28, NULL, NULL, 'index', '用户管理', 'le-icon-user-manage', 'page', '0-15-28', '', 0, 1606185326, 1606185326, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (30, 15, NULL, NULL, 'store', '店铺', '', 'path', '0-15', '', 0, 1606185374, 1606185374, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (31, 30, NULL, NULL, 'index', '店铺首页', 'le-icon-home', 'page', '0-15-30', '', 0, 1606185387, 1606185387, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (32, 30, NULL, NULL, 'tabber', '底部导航', 'le-icon-bottom', 'page', '0-15-30', '', 0, 1606185440, 1606185440, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (33, 30, NULL, NULL, 'personal', '个人中心', '', 'page', '0-15-30', '', 0, 1606185466, 1606185466, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (34, 30, NULL, NULL, 'touch', '悬浮窗', '', 'page', '0-15-30', '', 0, 1606185492, 1606185492, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (35, 30, NULL, NULL, 'pages', '微页面', 'le-icon-pages', 'page', '0-15-30', '', 0, 1606185507, 1606185507, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (36, 15, NULL, NULL, 'setup', '设置', '', 'path', '0-15', '', 0, 1606185556, 1606185556, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (37, 36, NULL, NULL, 'index', '基础设置', 'le-icon-setup', 'page', '0-15-36', '', 0, 1606185571, 1606185571, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (38, 36, NULL, NULL, 'address', '退货地址', 'le-icon-positioning', 'page', '0-15-36', '', 0, 1606185587, 1606185587, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (39, 36, NULL, NULL, 'message', '消息提醒', 'le-icon-message\r\n', 'page', '0-15-36', '', 0, 1606185604, 1606185604, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (40, 5, NULL, NULL, 'diagnose', '云服务诊断', '', 'page', '0-1-5', '', 0, 1606271038, 1606271038, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (41, 23, NULL, NULL, 'freightTemplate', '运费模板', 'he-icon-note', 'page', '0-15-23', '', 0, 1606184976, 1606184976, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (42, 23, NULL, NULL, 'shippingRules', '包邮规则', 'he-icon-note', 'page', '0-15-23', '', 0, 1606184976, 1606184976, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (43, 30, NULL, NULL, 'themeColor', '主题色', 'le-icon-zhutise', 'page', '0-15-30', NULL, 0, 1606184976, 1606184976, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (44, 15, NULL, NULL, 'channel', '渠道', NULL, 'path', '0-15', NULL, 0, 1606184976, 1606184976, NULL, 0);
-INSERT INTO `heshop_initialize_prefix_menus` VALUES (45, 44, NULL, NULL, 'index', '渠道管理', 'le-icon-qudao-guanli', 'page', '0-15-44', NULL, 0, 1606184976, 1606184976, NULL, 0);
-
 
 CREATE TABLE `heshop_initialize_prefix_order`  (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -409,6 +386,7 @@ CREATE TABLE `heshop_initialize_prefix_order`  (
   `goods_reduced` decimal(10, 2) NOT NULL DEFAULT 0.00 COMMENT '商品减少金额',
   `freight_amount` decimal(10, 2) NOT NULL DEFAULT 0.00 COMMENT '运费金额',
   `freight_reduced` decimal(10, 2) NOT NULL DEFAULT 0.00 COMMENT '运费减少金额',
+  `coupon_reduced` decimal(10, 2) NOT NULL DEFAULT 0.00 COMMENT '优惠券优惠金额',
   `promotion_amount` decimal(10, 2) NOT NULL DEFAULT 0.00 COMMENT '促销优惠金额（促销价、满减、阶梯价）',
   `status` smallint(3) NOT NULL DEFAULT 100 COMMENT '100待付款  101用户取消 102超时取消 103商户取消  201已付款(待发货)  202已发货(待收货)  203已收货 204已完成',
   `cancel_time` bigint(10) NULL DEFAULT 0 COMMENT '关闭时间',
@@ -426,10 +404,10 @@ CREATE TABLE `heshop_initialize_prefix_order`  (
   `created_time` bigint(10) NOT NULL COMMENT '创建时间',
   `updated_time` bigint(10) NULL DEFAULT NULL COMMENT '修改时间',
   `deleted_time` bigint(10) NULL DEFAULT NULL COMMENT '删除时间',
-  `is_recycle` tinyint(1) NOT NULL DEFAULT 0 COMMENT '回收站',
   `is_deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   `is_evaluate` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0未评价 1已评价',
   `evaluate_time` bigint(10) NULL DEFAULT NULL COMMENT '评价时间',
+  `is_recycle` tinyint(1) NULL DEFAULT 0 COMMENT '是否在回收站',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `订单编号`(`order_sn`) USING BTREE,
   INDEX `用户id`(`UID`) USING BTREE,
@@ -616,6 +594,7 @@ CREATE TABLE `heshop_initialize_prefix_order_goods`  (
   `is_deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除',
   `is_evaluate` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0未评价 1已评价',
   `show_goods_param` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL COMMENT '商品规格键',
+  `coupon_reduced` decimal(10, 2) NOT NULL DEFAULT 0.00 COMMENT '优惠券优惠金额',
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `订单编号`(`order_sn`) USING BTREE,
   INDEX `物流编号`(`freight_sn`) USING BTREE,
@@ -814,6 +793,33 @@ CREATE TABLE `heshop_initialize_prefix_user_address`  (
   INDEX `用户id`(`UID`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_general_ci ROW_FORMAT = DYNAMIC;
 
+CREATE TABLE `heshop_initialize_prefix_user_coupon`  (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `coupon_id` bigint(20) NOT NULL COMMENT '优惠券ID',
+  `order_sn` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '订单号',
+  `origin` tinyint(1) NOT NULL COMMENT '来源  1:自己领取 2:商家发放 3:下单赠送',
+  `use_data` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL COMMENT '已使用的优惠券数据',
+  `AppID` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '应用ID',
+  `merchant_id` bigint(10) NOT NULL COMMENT '商户ID',
+  `created_time` int(10) NULL DEFAULT 0 COMMENT '创建时间',
+  `updated_time` int(10) NULL DEFAULT 0 COMMENT '更新时间',
+  `deleted_time` int(10) NULL DEFAULT 0 COMMENT '删除时间',
+  `is_recycle` tinyint(1) NULL DEFAULT 0 COMMENT '是否在回收站',
+  `is_deleted` tinyint(100) NULL DEFAULT 0 COMMENT '是否删除',
+  `UID` bigint(20) NOT NULL COMMENT '用户ID',
+  `goods_id` bigint(20) NULL DEFAULT NULL COMMENT '订单商品id,用于退款后失效',
+  `status` tinyint(1) NULL DEFAULT 0 COMMENT '状态  0未使用  1已使用 2已失效',
+  `begin_time` bigint(10) NULL DEFAULT NULL COMMENT '有效期开始时间',
+  `end_time` bigint(10) NULL DEFAULT NULL COMMENT '有效期结束时间',
+  `origin_order_sn` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL DEFAULT NULL COMMENT '来源订单号',
+  `use_time` bigint(10) NULL DEFAULT NULL COMMENT '使用时间',
+  `is_remind` tinyint(1) NOT NULL DEFAULT 0 COMMENT '到期提醒 0否 1是',
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `优惠券ID`(`coupon_id`) USING BTREE,
+  INDEX `优惠券来源`(`goods_id`, `origin_order_sn`) USING BTREE,
+  INDEX `应用ID`(`AppID`) USING BTREE,
+  INDEX `用户ID`(`UID`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci ROW_FORMAT = Dynamic;
 
 CREATE TABLE `heshop_initialize_prefix_user_export`  (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',

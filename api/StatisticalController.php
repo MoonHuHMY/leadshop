@@ -28,6 +28,8 @@ class StatisticalController extends BasicsModules implements Map
 
     public function actionIndex()
     {
+        M('coupon', 'Coupon')::findOne(['id' => 1]);
+        M('coupon', 'UserCoupon')::findOne(['id' => 1]);
         $behavior = Yii::$app->request->get('behavior', '');
 
         switch ($behavior) {

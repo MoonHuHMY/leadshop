@@ -162,13 +162,13 @@ class IndexController  extends BasicController
             ],
             'coupon_expire' => [
                 'id' => '1202',
-                'keyword_id_list' => [5, 8, 1, 9],
+                'keyword_id_list' => [5, 3, 1, 9],
                 'title' => '优惠券到期提醒',
                 'categoryId' => '307', // 类目id
                 'type' => 2, // 订阅类型 2--一次性订阅 1--永久订阅
                 'data' => [
                     'thing5' => '',
-                    'time8' => '',
+                    'time3' => '',
                     'thing1' => '',
                     'thing9' => '',
                 ]

@@ -103,7 +103,7 @@ class IndexController extends BasicController
         $data = array_column($data, null, 'id');
         $list = [];
         foreach ($goods_id as $id) {
-            if ($data[$id]) {
+            if (isset($data[$id])) {
                 array_push($list, $data[$id]);
             }
         }
@@ -197,6 +197,38 @@ class IndexController extends BasicController
         $search = $keyword['search'] ?? '';
         if ($search) {
             $where = ['and', $where, ['like', 'name', $search]];
+        }
+
+        $coupon_id = $keyword['coupon_id'] ?? false;
+        if ($coupon_id) {
+            $c_info = M('coupon', 'Coupon')::findOne($coupon_id);
+            if ($c_info) {
+                $appoint_data = explode('-', trim($c_info->appoint_data, '-'));
+                switch ((int) $c_info->appoint_type) {
+                    case 2:
+                        $where = ['and', $where, ['id' => $appoint_data]];
+                        break;
+                    case 3:
+                        $g_like = ['or'];
+                        foreach ($appoint_data as $group_id) {
+                            array_push($g_like, ['like', 'group', '-' . $group_id . '-']);
+                        }
+                        $where = ['and', $where, $g_like];
+                        break;
+                    case 4:
+                        $where = ['and', $where, ['not in', 'id', $appoint_data]];
+                        break;
+                    case 5:
+                        $g_not_like = ['and'];
+                        foreach ($appoint_data as $group_id) {
+                            array_push($g_not_like, ['not like', 'group', '-' . $group_id . '-']);
+                        }
+                        $where = ['and', $where, $g_not_like];
+                        break;
+                }
+            } else {
+                Error('优惠券不存在');
+            }
         }
 
         //处理排序

@@ -4,6 +4,7 @@ namespace leadmall\api;
 
 use basics\api\BasicsController as BasicsModules;
 use leadmall\Map;
+use Yii;
 
 class CloudController extends BasicsModules implements Map
 {
@@ -24,10 +25,19 @@ class CloudController extends BasicsModules implements Map
         $headers = \Yii::$app->getRequest()->getHeaders();
         //获取分页信息
         $pageSize = $headers->get('X-Pagination-Per-Page') ?? 5;
-        $page = \Yii::$app->request->get('page', 1);
+        $page     = \Yii::$app->request->get('page', 1);
         return \Yii::$app->cloud->update->getVersionData([
-            'page' => $page,
-            'limit' => $pageSize
+            'page'  => $page,
+            'limit' => $pageSize,
         ]);
+    }
+
+    public function actionCreate($value = '')
+    {
+        if (file_exists(Yii::$app->basePath . "/install.lock")) {
+            return @file_get_contents(Yii::$app->basePath . "/install.lock");
+        } else {
+            Error("锁文件不存在");
+        }
     }
 }

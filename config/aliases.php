@@ -21,6 +21,7 @@ return [
     '@statistical/api'    => '@leadmall/modules/statistical/api',
     '@sms/api'            => '@leadmall/modules/sms/api',
     '@subscribe/api'      => '@leadmall/modules/subscribe/api',
+    '@coupon/api'         => '@leadmall/modules/coupon/api',
 
     '@demo/app'           => '@leadmall/modules/demo/app',
     '@basics/app'         => '@leadmall/modules/basics/app',
@@ -37,6 +38,7 @@ return [
     '@sms/app'            => '@leadmall/modules/sms/app',
     '@mp/app'             => '@leadmall/modules/mp/app',
     '@subscribe/app'      => '@leadmall/modules/subscribe/app',
+    '@coupon/app'         => '@leadmall/modules/coupon/app',
 
     '@demo/models'        => '@leadmall/modules/demo/models',
     '@basics/models'      => '@leadmall/modules/basics/models',
@@ -52,4 +54,5 @@ return [
     '@statistical/models' => '@leadmall/modules/statistical/models',
     '@sms/models'         => '@leadmall/modules/sms/models',
     '@subscribe/models'   => '@leadmall/modules/subscribe/models',
+    '@coupon/models'      => '@leadmall/modules/coupon/models',
 ];

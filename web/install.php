@@ -2,9 +2,9 @@
 set_time_limit(300);
 // error_reporting(E_ALL ^ E_WARNING);
 
-ini_set('display_errors', 1); //错误信息
+ini_set('display_errors', 0); //错误信息
 
-ini_set('display_startup_errors', 1); //php启动错误信息
+ini_set('display_startup_errors', 0); //php启动错误信息
 
 error_reporting(-1); //打印出所有的 错误信息
 
@@ -18,6 +18,12 @@ $STEP = get_step();
 
 $global_list = [];
 
+// 制定允许其他域名访问
+header("Access-Control-Allow-Origin:http://localhost:8080");
+// 响应类型
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header('Access-Control-Allow-Credentials: true');
+// 响应头设置
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
 header("Pragma: no-cache");
@@ -32,6 +38,20 @@ if (get_var('_leadshop')) {
     }
     if ($STEP == 3) {
         echo to_json(show_init_form());
+    }
+}
+
+/**
+ * 方法执行区域
+ */
+else if (get_var('_update')) {
+    if (get_var('_token')) {
+
+        //http://www.qmpaas.com/install.php?update=1
+        update_fun($SELF_VERSION);
+    } else {
+        echo json_encode(['code' => -1, 'msg' => '非法操作，未检测到Token参数']);
+        exit();
     }
 }
 /**
@@ -94,6 +114,80 @@ function P($name, $type = 1)
             break;
     }
 
+}
+
+function base64url_encode($plainText)
+{
+    $base64    = base64_encode($plainText);
+    $base64url = strtr($base64, '+/=', '-_,');
+    return $base64url;
+}
+
+function base64url_decode($plainText)
+{
+    $base64url = strtr($plainText, '-_,', '+/=');
+    $base64    = base64_decode($base64url);
+    return $base64;
+}
+
+/**
+ * 更新数据文件
+ * @param  [type] $host     [description]
+ * @param  [type] $username [description]
+ * @param  [type] $password [description]
+ * @param  [type] $prefix   [description]
+ * @param  [type] $database [description]
+ * @param  [type] $inuser   [description]
+ * @return [type]           [description]
+ */
+function update_database($version)
+{
+    try {
+        $db   = require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config/db.php';
+        $pdo  = new PDO($db['dsn'], $db['username'], $db['password']); //初始化一个PDO对象
+        $sql  = "SELECT * FROM {$db['tablePrefix']}store_setting WHERE keyword = :version";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute(['version' => 'mysql_version']);
+        $row        = $stmt->fetch(PDO::FETCH_ASSOC);
+        $db_version = '1.2.0';
+        if (isset($row['content'])) {
+            $db_version = empty($row['content']) ? '1.2.0' : $row['content'];
+        }
+        $version_list = json_decode(httpGet(base64url_decode('aHR0cHM6Ly9jbG91ZC5sZWFkc2hvcC52aXAvbWFsbC91cGRhdGUvbGlzdA,,')), true);
+        if ($version_list['code'] === 0) {
+            $version_list = $version_list['data'];
+            foreach ($version_list as $key => $value) {
+                if ($value['version'] == $db_version) {
+                    //获取下一个更新版本
+                    $data = @$version_list[$key + 1];
+                    if ($data) {
+                        $sql_data = @httpGet("https://qmxq.oss-cn-hangzhou.aliyuncs.com/V{$data['version']}/sql.txt");
+                        $sql_data = str_replace('heshop_initialize_prefix_', $db['tablePrefix'], $sql_data);
+                        $res      = $pdo->exec($sql_data);
+                        //以下是修改版本信息内容
+                        $sql  = "UPDATE {$db['tablePrefix']}store_setting SET content = '{$data['version']}' WHERE keyword = 'mysql_version'";
+                        $stmt = $pdo->prepare($sql);
+                        $stmt->execute();
+                    }
+                }
+            }
+            return [
+                'code' => 0,
+                'msg'  => "ok",
+            ];
+        } else {
+            return [
+                'code' => -2,
+                'msg'  => '获取更新数据库文件失败',
+            ];
+        }
+    } catch (PDOException $e) {
+        P($e);
+        return [
+            'code' => -2,
+            'msg'  => $e->getMessage(),
+        ];
+    }
 }
 
 function install_database($host, $username, $password, $prefix, $database, $inuser = null)
@@ -179,7 +273,7 @@ function show_init_form()
 {
     global $SCRIPT_NAME, $STEP;
 
-    // $action == 1 表示是提交的表单
+    //$action == 1 表示是提交的表单
     $action = get_var('action');
 
     $forumTitle                = get_var('forumTitle');
@@ -254,9 +348,11 @@ function show_init_form()
     if ($action && !$forumTitle) {
         $LANG['forumTitle'] = "站点名称不能为空";
     }
-
     if ($mysqlConnectCheck && !$mysqlConnectInvalid) {
-        $LANG['mysqlHost'] = $mysqlDatabaseDbInvalidMsg;
+        $LANG['mysqlVersion'] = $mysqlVersionInvalidMsg ? $mysqlVersionInvalidMsg : "数据库版本过低";
+    }
+    if ($mysqlConnectCheck && !$mysqlDatabaseInvalid) {
+        $LANG['mysqlHost'] = $mysqlDatabaseDbInvalidMsg ? $mysqlDatabaseDbInvalidMsg : "数据库配置错误或版本过低";
     }
     if ($action && !$mysqlDatabase) {
         $LANG['mysqlDatabase'] = "数据库名称不能为空";
@@ -338,11 +434,32 @@ function lock_file_guard()
 }
 
 /**
+ * 判断锁文件
+ * @return [type] [description]
+ */
+function lock_file_check($token)
+{
+    if (file_exists(dirname(__DIR__) . "/install.lock")) {
+        $lock_token = @file_get_contents(dirname(__DIR__) . "/install.lock");
+        if ($lock_token == $token) {
+            return true;
+        } else {
+            echo json_encode(['code' => -1, 'msg' => '检测您的更新Token被串改了，无法执行更新']);
+            exit(0);
+        }
+    } else {
+        echo json_encode(['code' => -1, 'msg' => '锁文件不存在']);
+        exit(0);
+    }
+}
+
+/**
  * 创建锁定文件
  */
 function make_lock_file()
 {
-    file_put_contents(dirname(__DIR__) . "/install.lock", "locked");
+    $key = MD5(time());
+    file_put_contents(dirname(__DIR__) . "/install.lock", "locked" . $key);
 }
 
 /**
@@ -414,17 +531,21 @@ function check_ssl_certificate()
  */
 function writable_check($dir)
 {
-    $tmpfile = $dir . "/" . uniqid('test', true);
-    if (!is_writable($dir)) {
+    try {
+        $tmpfile = $dir . "/" . uniqid('test', true);
+        if (!is_writable($dir)) {
+            return false;
+        }
+        if (file_put_contents($tmpfile, "hello") === false) {
+            return false;
+        }
+        if (!file_exists($tmpfile)) {
+            return false;
+        }
+        return unlink($tmpfile);
+    } catch (Exception $e) {
         return false;
     }
-    if (file_put_contents($tmpfile, "hello") === false) {
-        return false;
-    }
-    if (!file_exists($tmpfile)) {
-        return false;
-    }
-    return unlink($tmpfile);
 }
 
 /**
@@ -543,19 +664,6 @@ function function_check()
         $LANG['function_all']       = "PHP函数检查";
     }
 
-    $LANG['function_openssl_pkey_new']           = 'PHP函数openssl生成密钥测试 <a href="https://forum.leadshop.vip/thread/69" target="_blank">处理方案</a>';
-    $LANG['function_openssl_pkey_export']        = 'PHP函数openssl导出密钥测试 <a href="https://forum.leadshop.vip/thread/69" target="_blank">处理方案</a>';
-    $pkey                                        = false;
-    function_exists('openssl_pkey_new') && $pkey = openssl_pkey_new(['private_key_bits' => 2048]);
-    if ($pkey === false) {
-        $func_check['function_openssl_pkey_new']    = false;
-        $func_check['function_openssl_pkey_export'] = false;
-    } else {
-        if (!openssl_pkey_export($pkey, $pkeyout)) {
-            $func_check['function_openssl_pkey_export'] = false;
-        }
-    }
-
     return $func_check;
 }
 
@@ -595,11 +703,11 @@ function check_mysql_version($host, $username, $password)
     if ($q = $pdo->query('SELECT VERSION()')) {
         $version = $q->fetchColumn();
         if (strpos($version, 'MariaDB') !== false) {
-            if (version_compare($version, '10.3.0', '>=')) {
+            if (version_compare($version, '10.2.0', '>=')) {
                 return true;
             }
         } else {
-            if (version_compare($version, '8.0.0', '>=')) {
+            if (version_compare($version, '5.6.0', '>=')) {
                 return true;
             }
         }
@@ -616,7 +724,7 @@ function check_mysql_version($host, $username, $password)
             return "MySQL配置不正确，请确认innodb_large_prefix配置为on";
         }
     } else {
-        return "MySQL版本太低，请使用MySQL 5.7.9版本以上或MariaDB 10.2以上";
+        return "MySQL版本太低，请使用MySQL 5.6.50版本以上或MariaDB 10.2以上";
     }
     return true;
 }
@@ -858,13 +966,14 @@ function check_self_update()
                 make_lock_file();
                 return 1;
             } else {
-                return '更新失败，请坚持站点目录是否有写入权限';
+                return json_encode(['code' => -1, 'msg' => '更新失败，请坚持站点目录是否有写入权限']);
             }
         } else {
-            return '无法自动完成install.php升级，请登录论坛下新的install.php文件的 <a href="https://forum.leadshop.vip">前往论坛</a> 后上传更新。';
+            return json_encode(['code' => -1, 'msg' => '无法自动完成install.php升级，请登录论坛下新的install.php文件的 <a href="https://forum.leadshop.vip">前往论坛</a> 后上传更新。']);
+
         }
     } else {
-        return "ok 当前版本已经是最新版本{$remote_version}无需更新";
+        return json_encode(['code' => 2, 'msg' => "当前版本已经是最新版本{$remote_version}无需更新"]);
     }
 }
 
@@ -906,8 +1015,8 @@ function get_folder_md5($dir1, $dirPath, &$data)
                     $md5_dir = str_replace($dirPath, "", $new);
                     $_key    = md5($md5_dir);
                     //读书数据值
-                    $md5_key = md5_file($new);
-                    if ($data[$_key]) {
+                    $md5_key = @md5_file($new);
+                    if (@$data[$_key]) {
                         if ($data[$_key]['key'] == $md5_key) {
                             unset($data[$_key]);
                         } elseif ($data[$_key]['path'] == '/web/install.php') {
@@ -936,7 +1045,7 @@ function download_update_files($version = '1.0.3')
             //判断OSS中文件是否存在
             if (strpos($data, "NoSuchKey") === false) {
                 $path = $dir1 . $param['path'];
-                file_put_contents($path, $data);
+                to_mkdir($path, $data, true, true);
             }
         }
         return 1;
@@ -946,19 +1055,89 @@ function download_update_files($version = '1.0.3')
 }
 
 /**
+ * 创建目录
+ * @param    string    $path     目录名称，如果是文件并且不存在的情况下会自动创建
+ * @param    string    $data     写入数据
+ * @param    bool    $is_full  完整路径，默认False
+ * @param    bool    $is_cover 强制覆盖，默认False
+ * @return   bool    True|False
+ */
+function to_mkdir($path = null, $data = null, $is_full = false, $is_cover = false)
+{
+    #非完整路径进行组合
+    if (!$is_full) {
+        $path = dirname(__DIR__) . '/' . ltrim(ltrim($path, './'), '/');
+    }
+    $file = $path;
+    #检测是否为文件
+    $file_suffix = pathinfo($path, PATHINFO_EXTENSION);
+    if ($file_suffix) {
+        $path = pathinfo($path, PATHINFO_DIRNAME);
+    } else {
+        $path = rtrim($path, '/');
+    }
+
+    #执行目录创建
+    if (!is_dir($path)) {
+        if (!mkdir($path, 0777, true)) {
+            return false;
+        }
+        chmod($path, 0777);
+    }
+    #文件则进行文件创建
+    if ($file_suffix) {
+        if (!is_file($file)) {
+            if (!file_put_contents($file, $data)) {
+                return false;
+            }
+        } else {
+            #强制覆盖
+            if ($is_cover) {
+                if (!file_put_contents($file, $data)) {
+                    return false;
+                }
+            } else {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+/**
+ * 以get方式提交请求
+ * @param $url
+ * @return bool|mixed
+ */
+function httpGet($url)
+{
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+    curl_setopt($curl, CURLOPT_SSLVERSION, 1);
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_TIMEOUT, 30);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+    list($content, $status) = array(curl_exec($curl), curl_getinfo($curl), curl_close($curl));
+    return (intval($status["http_code"]) === 200) ? $content : false;
+}
+
+/**
  * 执行鞥更新
  * https://qmxq.oss-cn-hangzhou.aliyuncs.com/V1.0.3/upgrade.txt
  * @return [type] [description]
  */
-function update_fun()
+function update_fun($version)
 {
-    lock_file_guard();
+    $_token = get_var('_token');
+    $end    = lock_file_check($_token);
     //开始执行更新
     $end = check_self_update();
     if ($end == 1) {
-        echo "ok 更新成功";
+        update_database($version);
+        echo json_encode(['code' => 0, 'msg' => '更新完成']);
     } elseif ($end === 0) {
-        echo "更新失败，请重试";
+        echo json_encode(['code' => -1, 'msg' => '更新失败请重试']);
     } else {
         echo $end;
     }
@@ -968,7 +1147,7 @@ function instal_run()
 {
     $version = get_version();
     $body    = <<<ERT
-<!DOCTYPE html><html><head> <meta charset="UTF-8"> <!-- import CSS --> <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"> <link rel="stylesheet" href="https://qmxq.oss-cn-hangzhou.aliyuncs.com/install/index.css"></head><body> <div id="app"> <div class="header"> <div class="header-logo"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/logo.png" id="logo"> </div> </div> <div v-if="step == 1" class="step1"> <el-card class="box-card" shadow="never"> <div class="box-card__title"> <h3>安装协议</h3> </div> <div class="box-card__body"> <p>本授权协议适用且仅适用于Leadshop微商城系列开源软件产品(以下简称Leadshop)任何版本，浙江禾成云计算有限公司拥有本授权协议的最终解释权。 </p> <p>一、协议许可的权利</p> <p>1. 你可以在协议规定的约束和限制范围内修改Leadshop系列开源软件产品或界面风格以适应你的网站要求。</p> <p>2. 你拥有使用本软件构建的系统全部内容所有权，并独立承担与这些内容的相关法律义务。</p> <p>二、协议规定的约束和限制</p> <p>1. 开源版本不可去除界面版权logo，不可去除代码版权。否则会被视为盗版行为并承担相应法律责任。</p> <p>2. 如果你未能遵守本协议的条款，你的授权将被终止，所被许可的权利将被收回，并承担相应法律责任。</p> <p>3. 所有用户均可根据自己的需要对Leadshop进行修改。但无论何种情况，即：无论用途如何、是否经过修改或美化、修改程度如何，只要您使用Leadshop的任何整体或部分程序算法，都必须保留页脚处的Leadshop名称和www.leadshop.vip的链接地址，且修改后的程序版权依然归Leadshop开发团队所有。</p> <p>4. 安装时会触发Leadshop官网云服务器接口，获取版本信息数据，并向云服务器提交本机IP信息。</p> <p>三、有限担保和免责声明</p> <p>1. 本软件及所附带的文件是作为不提供任何明确的或隐含的赔偿或担保的形式提供的。</p> <p>2. 用户出于自愿而使用本软件，你必须了解使用本软件的风险，在尚未购买产品技术服务之前，我们不承诺对免费用户提供任何形式的技术支持、使用担保，也不承担任何因使用本软件而产生问题的相关责任。</p> <p>3. 电子文本形式的授权协议如同双方书面签署的协议一样，具有完全的和等同的法律效力。你一旦开始确认本协议并安装本软件，即被视为完全理解并接受本协议的各项条款，在享有上述条款授予的权力的同时，受到相关的约束和限制。协议许可范围以外的行为，将直接违反本授权协议并构成侵权，我们有权随时终止授权，责令停止损害，并保留追究相关责任的权力。</p> <p>4. 如果本软件带有其它软件的整合API示范例子包，这些文件版权不属于本软件官方，并且这些文件是没经过授权发布的，请参考相关软件的使用许可合法的使用。 5. 利用本软件构建的网站的任何信息内容以及导致的任何版权纠纷和法律争议及后果，我们不承担任何责任。</p> <p>6. 程序的使用（或无法再使用）中所有一般化、特殊化、偶然性或必然性的损坏（包括但不限于数据的丢失，自己或第三方所维护数据的不正确修改，和其他程序协作过程中程序的崩溃等），我们不承担任何责任。 </p> </div> <div class="box-card__footer"> <el-button type="primary" @click="OperationNext">同意并继续</el-button> </div> </el-card> </div> <div v-if="step == 2" class="step2"> <el-card class="box-card"> <div class="box-card__banner"> <h3> 欢迎使用Leadshop安装向导 </h3> <p> 本程序将帮助你安装Leadshop的最新版本</p> </div> <div class="box-card__content"> <div class="check_info"> <p>本程序运营过程中的提示都很重要，请一定认真阅读 </p> <p>请先配置好服务器的域名和SSL等，使用用户要访问的域名来访问本地安装程序 </p> <p>本程序不能自动完成HTTP服务区的配置，数据库的安装配置 </p> <p>Leadshop要求数据库是MySQL5.7.3以上,PHP7.2以上</p> </div> <div class="check_img" v-if="!checkData"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/detection-icon.gif"> <p>检测中，请稍后...</p> </div> <div class="check_list" v-if="checkData"> <div class="__title"> 基础环境检测 </div> <div class="__tips" v-if="!checkData.check['extension_all'] || !checkData.check['function_all']"> <p> 安装无法继续，请纠正以下错误。 </p> <p>错误信息： 环境检查失败，</p> <p>请按要求确认PHP版本，启用PHP扩展与函数。</p> </div> <ul class="__lists" v-if="checkData"> <!-- 监测PHP版本号 --> <li v-if="checkData.check['php_version'] === true"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-succeed.png"> <p v-html="checkData.lang['php_version']"></p> </li> <li v-if="checkData.check['php_version'] === false"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-error.png"> <p>{{checkData.lang['php_version']}}</p> </li> <!-- 监测HTTPS --> <li v-if="checkData.check['https'] === true"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-succeed.png"> <p>{{checkData.lang['https']}}</p> </li> <li v-if="checkData.check['https'] === 'warn'"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-warning.png"> <p>{{checkData.lang['https']}}</p> </li> <li v-if="checkData.check['https'] === false"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-error.png"> <p>{{checkData.lang['https']}}</p> </li> <!-- 监测函数库 --> <li v-for="item,index in checkFun" :key="index" v-if="checkData.check[item] === false"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-error.png"> <p v-html="checkData.lang[item]"></p> </li> <!-- 监测扩展库 --> <li v-for="item,index in checkExt" :key="index" v-if="checkData.check[item] === false"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-error.png"> <p v-html="checkData.lang[item]"></p> </li> </ul> </div> <div class="check_list" v-if="checkData"> <div class="__title"> 安装目录监测 </div> <div class="__tips succeed" v-if="checkData.check['base_name'] && checkData.check['base_writable'] && checkData.check['dir_name']"> <p>安装目录检查成功。</p> <p>当前目录： {{checkData.lang['base_path']}}</p> <p>Leadshop将被安装到{{checkData.lang['dir_path']}}</p> </div> <ul class="__lists"> <!-- 监测站点目录 --> <li v-for="item,index in checkDir" :key="index"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-succeed.png" v-if="checkData.check[item] === true"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-error.png" v-if="checkData.check[item] === false"> <p>{{checkData.lang[item]}}</p> </li> </ul> </div> </div> <div class="box-card__footer" v-if="checkData"> <el-button @click="EnvironmentalMonitoring">重新监测</el-button> <el-button @click="PreviousStep">上一步</el-button> <el-button type="primary" @click="OperationNext">下一步</el-button> </div> </el-card> </div> <div v-if="step >= 3" class="step3"> <el-card class="box-card"> <div class="box-card__step"> <div class="le-steps"> <ul> <li :class="step === 3 ? '' : 'le-steps-before'" class="active" style="z-index: 3;cursor:pointer;"> <div class="center"> 1.参数配置 </div> </li> <li :class="step > 3 ? 'active' : ''"> <div class="center"> 2.安装 </div> </li> </ul> </div> </div> <div class="box-card__form" v-if="step == 3"> <el-form :model="form" label-width="140px" :rules="rules" ref="ruleForm"> <div class="check_list"> <div class="__title"> MySQL数据库配置 </div> <div class="__lists __form_item"> <el-form-item label="站点名称" prop="forumTitle"> <el-input v-model="form.forumTitle" placeholder="请输入站点名称"></el-input> </el-form-item> <el-form-item label="MySQL 服务器地址" prop="mysqlHost"> <el-input v-model="form.mysqlHost" placeholder="请输入MySQL服务器地址(可用:指定端口号)"></el-input> </el-form-item> <el-form-item label="数据库名称" prop="mysqlDatabase"> <el-input v-model="form.mysqlDatabase" placeholder="请输入数据库名称"></el-input> </el-form-item> <el-form-item label="MySQL 用户名" prop="mysqlUsername"> <el-input v-model="form.mysqlUsername" placeholder="请输入MySQL用户名"></el-input> </el-form-item> <el-form-item label="MySQL 密码" prop="mysqlPassword"> <el-input v-model="form.mysqlPassword" placeholder="请输入MySQL密码"></el-input> </el-form-item> <el-form-item label="表前缀(可选)"> <el-input v-model="form.tablePrefix" placeholder="请输入表前缀"></el-input> </el-form-item> </div> </div> <div class="check_list"> <div class="__title"> MySQL数据库配置 </div> <div class="__lists __form_item"> <el-form-item label="设置管理员手机号" prop="adminUsername"> <el-input v-model="form.adminUsername" placeholder="请输入管理员手机号"></el-input> </el-form-item> <el-form-item label="设置管理员密码" prop="adminPassword"> <el-input type="password" v-model="form.adminPassword" placeholder="请输入管理员密码"></el-input> </el-form-item> <el-form-item label="管理员密码确认" prop="adminPasswordConfirmation"> <el-input type="password" v-model="form.adminPasswordConfirmation" placeholder="请再次输入密码"></el-input> </el-form-item> </div> </div> <div class="box-card__footer"> <el-button type="primary" @click="onSubmit">继续</el-button> </div> </el-form> </div> <div class="box-card__upload" v-if="step == 4" style="padding-top: 102px"> <img alt="" class="le-upload__img" src=" https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/upload.gif" /> <div class="le-upload__text"> 正在安装中，请稍后... </div> </div> <div class="box-card__upload" v-if="step == 5" style="padding-top: 75px;margin-bottom: 0;"> <img alt="" class="le-upload__img" src=" https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/uplaod-success.png" style="margin-bottom: 0;" /> <div class="le-success__text"> 安装成功！进入管理后台 </div> <div class="le-version"> 版本号{$version} </div> <a href="/"> <el-button type="primary" class="__complete">进入管理后台</el-button> </a> </div> </el-card> </div> <div class="le-panel__footer"> <div class="le-link"> <span>官网</span>丨 <span> <a href="http://forum.leadshop.vip/" target="_blank">论坛</a> </span>丨 <span>文档</span> </div> <div class="le-copy"> Powered By Leadshop © 2021 </div> </div> </div></body><!-- import Vue before Element --><script src="https://unpkg.com/vue/dist/vue.js"></script><!-- import JavaScript --><script src="https://unpkg.com/axios/dist/axios.min.js"></script><script src="https://unpkg.com/element-ui/lib/index.js"></script><script src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/install/index.js"></script></html>
+<!DOCTYPE html><html><head> <meta charset="UTF-8"> <!-- import CSS --> <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"> <link rel="stylesheet" href="https://qmxq.oss-cn-hangzhou.aliyuncs.com/install/index.css"></head><body> <div id="app"> <div class="header"> <div class="header-logo"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/logo.png" id="logo"> </div> </div> <div v-if="step == 1" class="step1"> <el-card class="box-card" shadow="never"> <div class="box-card__title"> <h3>安装协议</h3> </div> <div class="box-card__body"> <p>本授权协议适用且仅适用于Leadshop微商城系列开源软件产品(以下简称Leadshop)任何版本，浙江禾成云计算有限公司拥有本授权协议的最终解释权。 </p> <p>一、协议许可的权利</p> <p>1. 你可以在协议规定的约束和限制范围内修改Leadshop系列开源软件产品或界面风格以适应你的网站要求。</p> <p>2. 你拥有使用本软件构建的系统全部内容所有权，并独立承担与这些内容的相关法律义务。</p> <p>二、协议规定的约束和限制</p> <p>1. 开源版本不可去除界面版权logo，不可去除代码版权。否则会被视为盗版行为并承担相应法律责任。</p> <p>2. 如果你未能遵守本协议的条款，你的授权将被终止，所被许可的权利将被收回，并承担相应法律责任。</p> <p>3. 所有用户均可根据自己的需要对Leadshop进行修改。但无论何种情况，即：无论用途如何、是否经过修改或美化、修改程度如何，只要您使用Leadshop的任何整体或部分程序算法，都必须保留页脚处的Leadshop名称和www.leadshop.vip的链接地址，且修改后的程序版权依然归Leadshop开发团队所有。</p> <p>4. 安装时会触发Leadshop官网云服务器接口，获取版本信息数据，并向云服务器提交本机IP信息。</p> <p>三、有限担保和免责声明</p> <p>1. 本软件及所附带的文件是作为不提供任何明确的或隐含的赔偿或担保的形式提供的。</p> <p>2. 用户出于自愿而使用本软件，你必须了解使用本软件的风险，在尚未购买产品技术服务之前，我们不承诺对免费用户提供任何形式的技术支持、使用担保，也不承担任何因使用本软件而产生问题的相关责任。</p> <p>3. 电子文本形式的授权协议如同双方书面签署的协议一样，具有完全的和等同的法律效力。你一旦开始确认本协议并安装本软件，即被视为完全理解并接受本协议的各项条款，在享有上述条款授予的权力的同时，受到相关的约束和限制。协议许可范围以外的行为，将直接违反本授权协议并构成侵权，我们有权随时终止授权，责令停止损害，并保留追究相关责任的权力。</p> <p>4. 如果本软件带有其它软件的整合API示范例子包，这些文件版权不属于本软件官方，并且这些文件是没经过授权发布的，请参考相关软件的使用许可合法的使用。 5. 利用本软件构建的网站的任何信息内容以及导致的任何版权纠纷和法律争议及后果，我们不承担任何责任。</p> <p>6. 程序的使用（或无法再使用）中所有一般化、特殊化、偶然性或必然性的损坏（包括但不限于数据的丢失，自己或第三方所维护数据的不正确修改，和其他程序协作过程中程序的崩溃等），我们不承担任何责任。 </p> </div> <div class="box-card__footer"> <el-button type="primary" @click="OperationNext">同意并继续</el-button> </div> </el-card> </div> <div v-if="step == 2" class="step2"> <el-card class="box-card"> <div class="box-card__banner"> <h3> 欢迎使用Leadshop安装向导 </h3> <p> 本程序将帮助你安装Leadshop的最新版本</p> </div> <div class="box-card__content"> <div class="check_info"> <p>本程序运营过程中的提示都很重要，请一定认真阅读 </p> <p>请先配置好服务器的域名和SSL等，使用用户要访问的域名来访问本地安装程序 </p> <p>本程序不能自动完成HTTP服务区的配置，数据库的安装配置 </p> <p>Leadshop要求数据库是MySQL5.7.3以上,PHP7.2以上</p> </div> <div class="check_img" v-if="!checkData"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/detection-icon.gif"> <p>检测中，请稍后...</p> </div> <div class="check_list" v-if="checkData"> <div class="__title"> 基础环境检测 </div> <div class="__tips" v-if="!checkData.check['extension_all'] || !checkData.check['function_all']"> <p> 安装无法继续，请纠正以下错误。 </p> <p>错误信息： 环境检查失败，</p> <p>请按要求确认PHP版本，启用PHP扩展与函数。</p> </div> <ul class="__lists" v-if="checkData"> <!-- 监测PHP版本号 --> <li v-if="checkData.check['php_version'] === true"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-succeed.png"> <p v-html="checkData.lang['php_version']"></p> </li> <li v-if="checkData.check['php_version'] === false"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-error.png"> <p>{{checkData.lang['php_version']}}</p> </li> <!-- 监测HTTPS --> <li v-if="checkData.check['https'] === true"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-succeed.png"> <p>{{checkData.lang['https']}}</p> </li> <li v-if="checkData.check['https'] === 'warn'"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-warning.png"> <p>{{checkData.lang['https']}}</p> </li> <li v-if="checkData.check['https'] === false"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-error.png"> <p>{{checkData.lang['https']}}</p> </li> <!-- 监测函数库 --> <li v-for="item,index in checkFun" :key="index" v-if="checkData.check[item] === false"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-error.png"> <p v-html="checkData.lang[item]"></p> </li> <!-- 监测扩展库 --> <li v-for="item,index in checkExt" :key="index" v-if="checkData.check[item] === false"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-error.png"> <p v-html="checkData.lang[item]"></p> </li> </ul> </div> <div class="check_list" v-if="checkData"> <div class="__title"> 安装目录监测 </div> <div class="__tips succeed" v-if="checkData.check['base_name'] && checkData.check['base_writable'] && checkData.check['dir_name']"> <p>安装目录检查成功。</p> <p>当前目录： {{checkData.lang['base_path']}}</p> <p>Leadshop将被安装到{{checkData.lang['dir_path']}}</p> </div> <ul class="__lists"> <!-- 监测站点目录 --> <li v-for="item,index in checkDir" :key="index"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-succeed.png" v-if="checkData.check[item] === true"> <img src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/install-error.png" v-if="checkData.check[item] === false"> <p>{{checkData.lang[item]}}</p> </li> </ul> </div> </div> <div class="box-card__footer" v-if="checkData"> <el-button @click="EnvironmentalMonitoring">重新监测</el-button> <el-button @click="PreviousStep">上一步</el-button> <el-button type="primary" @click="OperationNext">下一步</el-button> </div> </el-card> </div> <div v-if="step >= 3" class="step3"> <el-card class="box-card"> <div class="box-card__step"> <div class="le-steps"> <ul> <li :class="step === 3 ? '' : 'le-steps-before'" class="active" style="z-index: 3;cursor:pointer;"> <div class="center"> 1.参数配置 </div> </li> <li :class="step > 3 ? 'active' : ''"> <div class="center"> 2.安装 </div> </li> </ul> </div> </div> <div class="box-card__form" v-if="step == 3"> <el-form :model="form" label-width="140px" :rules="rules" ref="ruleForm"> <div class="check_list"> <div class="__title"> MySQL数据库配置 </div> <div class="__lists __form_item"> <el-form-item label="站点名称" prop="forumTitle"> <el-input v-model="form.forumTitle" placeholder="请输入站点名称"></el-input> </el-form-item> <el-form-item label="MySQL 服务器地址" prop="mysqlHost"> <el-input v-model="form.mysqlHost" placeholder="请输入MySQL服务器地址(可用:指定端口号)"></el-input> </el-form-item> <el-form-item label="数据库名称" prop="mysqlDatabase"> <el-input v-model="form.mysqlDatabase" placeholder="请输入数据库名称"></el-input> </el-form-item> <el-form-item label="MySQL 用户名" prop="mysqlUsername"> <el-input v-model="form.mysqlUsername" placeholder="请输入MySQL用户名"></el-input> </el-form-item> <el-form-item label="MySQL 密码" prop="mysqlPassword"> <el-input v-model="form.mysqlPassword" placeholder="请输入MySQL密码"></el-input> </el-form-item> <el-form-item label="表前缀(可选)"> <el-input v-model="form.tablePrefix" placeholder="请输入表前缀"></el-input> </el-form-item> </div> </div> <div class="check_list"> <div class="__title"> 管理员账号 </div> <div class="__lists __form_item"> <el-form-item label="设置管理员手机号" prop="adminUsername"> <el-input v-model="form.adminUsername" placeholder="请输入管理员手机号"></el-input> </el-form-item> <el-form-item label="设置管理员密码" prop="adminPassword"> <el-input type="password" v-model="form.adminPassword" placeholder="请输入管理员密码"></el-input> </el-form-item> <el-form-item label="管理员密码确认" prop="adminPasswordConfirmation"> <el-input type="password" v-model="form.adminPasswordConfirmation" placeholder="请再次输入密码"></el-input> </el-form-item> </div> </div> <div class="box-card__footer"> <el-button type="primary" @click="onSubmit">继续</el-button> </div> </el-form> </div> <div class="box-card__upload" v-if="step == 4" style="padding-top: 102px"> <img alt="" class="le-upload__img" src=" https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/upload.gif" /> <div class="le-upload__text"> 正在安装中，请稍后... </div> </div> <div class="box-card__upload" v-if="step == 5" style="padding-top: 75px;margin-bottom: 0;"> <img alt="" class="le-upload__img" src=" https://qmxq.oss-cn-hangzhou.aliyuncs.com/pageicon/uplaod-success.png" style="margin-bottom: 0;" /> <div class="le-success__text"> 安装成功！进入管理后台 </div> <div class="le-version"> 版本号{$version} </div> <a href="/"> <el-button type="primary" class="__complete">进入管理后台</el-button> </a> </div> </el-card> </div> <div class="le-panel__footer"> <div class="le-link"> <span>官网</span>丨 <span> <a href="http://forum.leadshop.vip/" target="_blank">论坛</a> </span>丨 <span>文档</span> </div> <div class="le-copy"> Powered By Leadshop © 2021 </div> </div> </div></body><!-- import Vue before Element --><script src="https://unpkg.com/vue/dist/vue.js"></script><!-- import JavaScript --><script src="https://unpkg.com/axios/dist/axios.min.js"></script><script src="https://unpkg.com/element-ui/lib/index.js"></script><script src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/install/index.js"></script></html>
 ERT;
     echo $body;
 }

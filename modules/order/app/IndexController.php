@@ -179,6 +179,9 @@ class IndexController extends BasicController
             Error('订单不存在');
         }
 
+        $result['goods_amount']  = $result['goods_amount'] + $result['goods_reduced'] + $result['coupon_reduced'];
+        $result['store_reduced'] = $result['goods_reduced'] + $result['freight_reduced'];
+
         return str2url($result);
     }
 
@@ -278,7 +281,20 @@ class IndexController extends BasicController
                     $prefix     = Yii::$app->db->tablePrefix;
                     $table_name = $prefix . 'order_goods';
                     $goods_res  = Yii::$app->db->createCommand()->batchInsert($table_name, $col, $row)->execute();
+
                     if ($buyer_res && $goods_res) {
+                        $user_coupon_id = Yii::$app->request->post('user_coupon_id', false);
+                        if ($user_coupon_id) {
+                            $user_coupon_model           = M('coupon', 'UserCoupon')::findOne($user_coupon_id);
+                            $user_coupon_model->order_sn = $order_sn;
+                            $user_coupon_model->status   = 1;
+                            $user_coupon_model->use_time = time();
+                            $user_coupon_model->use_data = to_json($user_coupon_model->coupon->toArray());
+                            if (!$user_coupon_model->save()) {
+                                $transaction->rollBack(); //事务回滚
+                                Error('下单失败');
+                            }
+                        }
                         array_push($order_list, ['order_sn' => $order_sn, 'order_id' => $model->attributes['id']]);
                     } else {
                         $transaction->rollBack(); //事务回滚
@@ -417,9 +433,11 @@ class IndexController extends BasicController
         $model->cancel_time = time();
 
         if ($model->save()) {
+
             //执行取消订单事件
             $order_goods                             = M('order', 'OrderGoods')::find()->where(['order_sn' => $model->order_sn])->select('goods_id,goods_param,goods_number')->asArray()->all();
             $this->module->event->cancel_order_goods = $order_goods;
+            $this->module->event->cancel_order_sn    = $model->order_sn;
             $this->module->trigger('cancel_order');
 
             return true;
@@ -479,9 +497,9 @@ class IndexController extends BasicController
         switch ($type) {
             //商城订单
             case 'shop_order':
-                $result = $this->checkGoods();
+                $result = $this->buildGoods();
                 foreach ($result as $merchant_id => $value) {
-                    $return_data[$merchant_id] = $this->getAmount($value, $consignee_info, $merchant_id);
+                    $return_data[$merchant_id] = $this->buildAmount($value, $consignee_info, $merchant_id);
                 }
 
                 break;
@@ -494,7 +512,7 @@ class IndexController extends BasicController
      * 商品库存检测及处理
      * @return [type] [description]
      */
-    public function checkGoods()
+    public function buildGoods()
     {
         $calculate  = Yii::$app->request->get('calculate', false); //判断是否是预请求
         $UID        = Yii::$app->user->identity->id;
@@ -606,7 +624,7 @@ class IndexController extends BasicController
                             ->joinWith([
                                 'order as order',
                             ])
-                            ->where(['and', ['>', 'order.status', 200],['>=','order.created_time',$limit_time], ['order.UID' => $UID, 'goods.goods_id' => $value['id']]])
+                            ->where(['and', ['>', 'order.status', 200], ['>=', 'order.created_time', $limit_time], ['order.UID' => $UID, 'goods.goods_id' => $value['id']]])
                             ->SUM('goods.goods_number');
                         //算上当前购买量后的购买总数
                         if (($goods_number + $goods_data_number_count[$v['goods_id']]) > $value['limit_buy_value']) {
@@ -670,7 +688,7 @@ class IndexController extends BasicController
      * 金额计算
      * @return [type] [description]
      */
-    public function getAmount($goods, $consignee_info, $merchant_id)
+    public function buildAmount($goods, $consignee_info, $merchant_id)
     {
         $calculate      = Yii::$app->request->get('calculate', false); //判断是否是预请求
         $number_amount  = 0; //商品总数
@@ -696,7 +714,7 @@ class IndexController extends BasicController
                 //计算初始运费
                 if ($value['ft_type'] === 1) {
                     //固定邮费
-                    $freight = $value['ft_price'] * $value['goods_number'];
+                    $freight = $value['ft_price'];
                 } else {
                     //运费模板
                     foreach ($value['freight']['freight_rules'] as $freight_rules) {
@@ -771,8 +789,9 @@ class IndexController extends BasicController
             unset($value['package']);
             unset($value['ft_type']);
             unset($value['ft_price']);
-            $value['total_amount'] = $goods_price;
-            $value['pay_amount']   = $goods_price;
+            $value['total_amount']   = $goods_price;
+            $value['pay_amount']     = $goods_price;
+            $value['coupon_reduced'] = 0;
             $freight_amount += $freight;
 
         }
@@ -783,11 +802,116 @@ class IndexController extends BasicController
             'goods_amount'   => $goods_amount,
             'pay_amount'     => $total_amount,
             'freight_amount' => $freight_amount,
+            'coupon_reduced' => 0,
             'merchant_id'    => $merchant_id,
             'goods_data'     => $goods,
         ];
 
+        $return_data = $this->buildReducePrice($return_data);
+
         return $return_data;
+
+    }
+
+    /**
+     * 价格减免
+     */
+    public function buildReducePrice($data)
+    {
+        $calculate      = Yii::$app->request->get('calculate', false); //判断是否是预请求
+        $goods_id = array_unique(array_column($data['goods_data'], 'goods_id'));
+        //获取所购买商品的列表
+        $goods_list = M('goods', 'Goods')::find()->where(['id' => $goods_id])->select('id,group')->asArray()->all();
+        foreach ($goods_list as &$goods) {
+            $goods['group'] = array_unique(explode('-', trim($goods['group'], '-')));
+        }
+
+        //执行优惠券计算
+        $user_coupon_id = Yii::$app->request->post('user_coupon_id', false);
+        if ($user_coupon_id) {
+            $u_c_info = M('coupon', 'UserCoupon')::find()->where(['id' => $user_coupon_id])->with(['coupon' => function ($q) {
+                $q->select('type,discount,min_price,sub_price,appoint_type,appoint_data');
+            }])->asArray()->one();
+
+            if (empty($u_c_info)) {
+                Error('优惠券找不到');
+            }
+
+            if ($u_c_info['status'] === 1) {
+                Error('优惠券已使用');
+            } elseif ($u_c_info['status'] === 2) {
+                Error('优惠券已失效');
+            }
+
+            $time = time();
+            if ($time < $u_c_info['begin_time']) {
+                Error('优惠券还不能使用');
+            } elseif ($time > $u_c_info['end_time']) {
+                Error('优惠券已过期');
+            }
+
+            if ((float) $u_c_info['coupon']['min_price'] > 0 && $data['goods_amount'] < (float) $u_c_info['coupon']['min_price']) {
+                Error('优惠券不可用');
+            }
+
+            $appoint_data = explode('-', trim($u_c_info['coupon']['appoint_data'], '-'));
+            switch ($u_c_info['coupon']['appoint_type']) {
+                case 2:
+                    $diff = array_diff($goods_id, $appoint_data);
+                    //存在差集则说明有商品不属于指定包含商品
+                    if (!empty($diff)) {
+                        Error('优惠券不可用');
+                    }
+                    break;
+                case 4:
+                    $intersect = array_intersect($goods_id, $appoint_data);
+                    //有交集则说明有商品属于不包含商品
+                    if (!empty($intersect)) {
+                        Error('优惠券不可用');
+                    }
+                    break;
+                case 3:
+                    foreach ($goods_list as $goods) {
+                        $intersect = array_intersect($goods['group'], $appoint_data);
+                        //没有交集则说明此商品分类不属于包含分类
+                        if (empty($intersect)) {
+                            Error('优惠券不可用');
+                        }
+                    }
+                    break;
+                case 5:
+                    foreach ($goods_list as $goods) {
+                        $intersect = array_intersect($goods['group'], $appoint_data);
+                        //有交集则说明此商品分类存在属于不包含分类
+                        if (!empty($intersect)) {
+                            Error('优惠券不可用');
+                        }
+                    }
+                    break;
+
+                default:
+
+                    break;
+            }
+
+            $data['coupon_reduced'] = $data['goods_amount'] < $u_c_info['coupon']['sub_price'] ? $data['goods_amount'] : $u_c_info['coupon']['sub_price'];
+            $goods_amount           = $data['goods_amount'] - $data['coupon_reduced'];
+            $discount               = $data['goods_amount'] > 0 ? $goods_amount / $data['goods_amount'] : 0;
+            $data['pay_amount']     = $data['pay_amount'] - $data['coupon_reduced'];
+
+            //预请求,显示原来价格
+            if ($calculate != 'calculate') {
+                $data['goods_amount']   = $goods_amount;
+            }
+            
+            foreach ($data['goods_data'] as &$value) {
+                $goods_pay_amount        = round($value['pay_amount'] * $discount, 2);
+                $value['coupon_reduced'] = $value['pay_amount'] - $goods_pay_amount;
+                $value['pay_amount']     = $goods_pay_amount;
+            }
+        }
+
+        return $data;
 
     }
 

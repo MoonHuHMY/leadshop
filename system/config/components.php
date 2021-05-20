@@ -74,6 +74,9 @@ $components = [
         ],
         'subscribe'    => [
             'class' => \app\components\subscribe\Subscribe::class,
+        ],
+        'crontab'      => [
+            'class' => \app\components\crontab\Crontab::class,
         ]
     ],
 ];
