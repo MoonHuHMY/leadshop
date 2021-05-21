@@ -1,31 +1,7 @@
-## 下期更新计划
- **[点击查看更新计划【即将更新商品采集，规格模版】](https://forum.leadshop.vip/thread/261)** 
-
-## 更新历史
-**[点击查看V1.2.0更新内容](https://forum.leadshop.vip/thread/254)【520Leadshop送给大家的礼物】** 
-
-**[点击查看V1.1.5更新内容](https://forum.leadshop.vip/thread/170)** 
-
-**[点击查看V1.1.4更新内容](https://forum.leadshop.vip/thread/99)** 
- 
-**[点击查看V1.0.1更新内容](https://forum.leadshop.vip/thread/57)** 
-
- QQ群：849894135
-<br/>
- 微信交流群
-<br/>
-![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/20/Gum6XSdU3HjI3XusXgqHYmb35oNqDTJpB2Cdf1BZ.png)
-<br/>
-扫码关注企码星球，体验Leadshop公众号+小程序
-<br/>
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0513/182053_2a90b532_7426632.jpeg "企码星球.jpg")
-<br/>
-Leadshop操作文档https://help.leadshop.vip
-
 ## 项目介绍
 Leadshop是一款提供持续更新迭代服务的免费商城系统，旨在打造极致的用户体验！
 
-Leadshop由浙江禾成云计算有限公司研发，主要面向中小型企业，助力搭建电商平台，并提供专业的技术支持。免费提供长期更新服务，应用涉及可视化装修、促销转化、裂变分销、用户精细化管理、数据分析等多个维度，追求极致体验，全面赋能商家，为商家创造价值。
+Leadshop由浙江禾成云计算有限公司研发，主要面向中小型企业，助力搭建电商平台，并提供专业的技术支持。免费提供长期更新服务，应用涉及**可视化DIY拖拽装修** 、促销转化、裂变分销、用户精细化管理、数据分析等多个维度，追求极致体验，全面赋能商家，为商家创造价值。
 
 **Leadshop无偿供大家使用，您的star是我们前进的动力** 
 
@@ -51,55 +27,29 @@ Leadshop 开源系统，基于Yii2开发，支持composer，优化核心，减�
 ## 运行环境
 
 Linux+Nginx+PHP7.4+MySQL5.7.3以上
+## 下期更新计划
+ **[点击查看更新计划【即将更新商品采集，规格模版】](https://forum.leadshop.vip/thread/261)** 
 
-## 页面展示
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210520/1.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210520/2.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210520/3.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210520/4.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210520/5.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210520/6.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210520/7.png)
-<br/>
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210510/1.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210510/2.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210510/3.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210510/4.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210510/5.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210510/6.png)
-<br/>
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210426/1.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210426/2.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210426/3.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210426/4.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210426/5.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210426/6.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210426/7.png)
-<br/>
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/1.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/2.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/3.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/4.png)
-![展示图](/readme/images/动图1.mp4)
-![展示图](/readme/images/动图2.mp4)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/6.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/7.png)
-<br/>
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/2.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/3.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/4.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/5.png)
-![展示图](/readme/images/合成.mp4)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/6.png)
-![展示图](/readme/images/合成2.mp4)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/7.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/8.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/9.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/10.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/11.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/12.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/13.png)
+## 更新历史
+**[点击查看V1.2.0更新内容](https://forum.leadshop.vip/thread/254)【520Leadshop送给大家的礼物】** 
 
+**[点击查看V1.1.5更新内容](https://forum.leadshop.vip/thread/170)** 
+
+**[点击查看V1.1.4更新内容](https://forum.leadshop.vip/thread/99)** 
+ 
+**[点击查看V1.0.1更新内容](https://forum.leadshop.vip/thread/57)** 
+
+ QQ群：849894135
+<br/>
+ 微信交流群
+<br/>
+![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/20/Gum6XSdU3HjI3XusXgqHYmb35oNqDTJpB2Cdf1BZ.png)
+<br/>
+扫码关注企码星球，体验Leadshop公众号+小程序
+<br/>
+![输入图片说明](https://images.gitee.com/uploads/images/2021/0513/182053_2a90b532_7426632.jpeg "企码星球.jpg")
+<br/>
+Leadshop操作文档https://help.leadshop.vip
 # Leadshop微商城
 
 ## 论坛交流
@@ -196,6 +146,54 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
         ├─temp
         └─upload                        //上传文件
 ```
+
+## 页面展示
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210520/1.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210520/2.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210520/3.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210520/4.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210520/5.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210520/6.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210520/7.png)
+<br/>
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210510/1.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210510/2.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210510/3.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210510/4.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210510/5.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210510/6.png)
+<br/>
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210426/1.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210426/2.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210426/3.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210426/4.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210426/5.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210426/6.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210426/7.png)
+<br/>
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/1.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/2.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/3.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/4.png)
+![展示图](/readme/images/动图1.mp4)
+![展示图](/readme/images/动图2.mp4)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/6.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210419/7.png)
+<br/>
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/2.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/3.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/4.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/5.png)
+![展示图](/readme/images/合成.mp4)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/6.png)
+![展示图](/readme/images/合成2.mp4)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/7.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/8.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/9.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/10.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/11.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/12.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/13.png)
 
 ## 使用须知
 
