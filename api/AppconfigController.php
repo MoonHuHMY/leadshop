@@ -78,7 +78,9 @@ class AppconfigController extends BasicsModules implements Map
                 Error('配置不存在');
             }
             $data = to_json($data);
-            $this->check($key[1]);
+            if ($key[0] == 'apply') {
+                $this->check($key[1]);
+            }
             return to_mkdir($url, $data, true, true);
         } else {
             Error('文件不存在');
