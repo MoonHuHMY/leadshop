@@ -486,10 +486,11 @@ class AfterController extends BasicController
             Error('退款金额异常');
         }
 
-        $order_info   = M('order', 'Order')::find()->where(['order_sn' => $model->order_sn])->select('pay_amount,pay_number')->asArray()->one();
+        $order_info   = M('order', 'Order')::find()->where(['order_sn' => $model->order_sn])->select('pay_amount,pay_number,source')->asArray()->one();
         $return_order = [
             'order_sn'   => $order_info['pay_number'],
             'pay_amount' => $order_info['pay_amount'],
+            'source'     => $order_info['source'],
         ];
         $return_sn = get_sn('rsn');
         return Yii::$app->payment->refund($return_order, $return_sn, $actual_refund, function () use ($model, $actual_refund, $return_sn) {
@@ -520,7 +521,7 @@ class AfterController extends BasicController
                 }
                 $this->orderFinishCheck($model->order_sn);
 
-                $this->module->event->refunded = ['order_sn' => $model->order_sn, 'order_goods_id' => $model->order_goods_id,'return_number'=>$model->return_number];
+                $this->module->event->refunded = ['order_sn' => $model->order_sn, 'order_goods_id' => $model->order_goods_id, 'return_number' => $model->return_number];
                 $this->module->trigger('refunded');
                 return $model;
             } else {
@@ -549,10 +550,11 @@ class AfterController extends BasicController
             Error('退款金额异常');
         }
 
-        $order_info   = M('order', 'Order')::find()->where(['order_sn' => $model->order_sn])->select('pay_amount,pay_number')->asArray()->one();
+        $order_info   = M('order', 'Order')::find()->where(['order_sn' => $model->order_sn])->select('pay_amount,pay_number,source')->asArray()->one();
         $return_order = [
             'order_sn'   => $order_info['pay_number'],
             'pay_amount' => $order_info['pay_amount'],
+            'source'     => $order_info['source'],
         ];
         $return_sn = get_sn('rsn');
         return Yii::$app->payment->refund($return_order, $return_sn, $actual_refund, function () use ($model, $actual_refund, $return_sn) {
@@ -583,7 +585,7 @@ class AfterController extends BasicController
                 }
                 $this->orderFinishCheck($model->order_sn);
 
-                $this->module->event->refunded = ['order_sn' => $model->order_sn, 'order_goods_id' => $model->order_goods_id,'return_number'=>$model->return_number];
+                $this->module->event->refunded = ['order_sn' => $model->order_sn, 'order_goods_id' => $model->order_goods_id, 'return_number' => $model->return_number];
                 $this->module->trigger('refunded');
                 return $model;
             } else {

@@ -6,7 +6,7 @@
         "uniacid": "3",
         "acid": "3",
         "multiid": "0",
-        "version": "1.1.5",
+        "version": "1.2.3",
         "AppURL": origin + "/index.php",
         "siteroot": origin + "/index.php",
         "design_method": "3",
@@ -20,8 +20,8 @@
     }
 
     <?php if (!empty($tabBar)) {
-        echo "window.siteinfo.tabBar = " . json_encode($tabBar);
-    } ?>
-    
+            echo "window.siteinfo.tabBar = " . json_encode($tabBar);
+        } ?>
+
     var coverSupport = 'CSS' in window && typeof CSS.supports === 'function' && (CSS.supports('top: env(a)') || CSS.supports('top: constant(a)'))
-    document.write('<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' + (coverSupport ? ', viewport-fit=cover' : '') + '" />')</script><link rel="stylesheet" href="/assets/wechat/static/index.1e555237.css"></head><body><noscript><strong>Please enable JavaScript to continue.</strong></noscript><div id="app"></div><script src="https://res2.wx.qq.com/open/js/jweixin-1.6.0.js"></script><script src="/assets/wechat/static/js/chunk-vendors.edb6022f.js"></script><script src="/assets/wechat/static/js/index.91d93b3e.js"></script></body></html>
+    document.write('<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0' + (coverSupport ? ', viewport-fit=cover' : '') + '" />')</script><link rel="stylesheet" href="/assets/wechat/static/index.1e555237.css"></head><body><noscript><strong>Please enable JavaScript to continue.</strong></noscript><div id="app"></div><script src="https://res2.wx.qq.com/open/js/jweixin-1.6.0.js"></script><script src="/assets/wechat/static/js/chunk-vendors.edb6022f.js"></script><script src="/assets/wechat/static/js/index.df6eadc8.js"></script></body></html>
