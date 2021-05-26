@@ -1,3 +1,7 @@
+* 官方QQ群：
+    * <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=CDXQbtOCLpQcSEbE6S3DRPCYapvKI_QA&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="Leadshop开源商城①群" title="Leadshop开源商城①群"></a>：849894135
+    * <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=vYNXwlsuRNAx_Ug3-j8dEbP1j1JKKnMF&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="Leadshop开源商城②群" title="Leadshop开源商城②群"></a>：422518408
+
 ## 项目介绍
 Leadshop是一款提供持续更新迭代服务的免费商城系统，旨在打造极致的用户体验！
 
