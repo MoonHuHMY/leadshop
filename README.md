@@ -43,15 +43,15 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 * 官方QQ群：
     * <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=CDXQbtOCLpQcSEbE6S3DRPCYapvKI_QA&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="Leadshop开源商城①群" title="Leadshop开源商城①群"></a>：849894135
     * <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=vYNXwlsuRNAx_Ug3-j8dEbP1j1JKKnMF&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="Leadshop开源商城②群" title="Leadshop开源商城②群"></a>：422518408
-<br/>
+
+
 * 微信交流群
-<br/>
-![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/26/ApScnZaL0vRvJQH0fh65M18esX475R8t124YsYlm.png)
-<br/>
+
+ <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/26/ApScnZaL0vRvJQH0fh65M18esX475R8t124YsYlm.png">
+
 * 扫码关注“企码星球”体验Leadshop公众号+小程序
-<br/>
-![扫码关注企码星球体验](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/14/SPpkWJfKviDWHsO7e0Yh6ZUohHX718rc7gzyUlff.jpg)
-<br/>
+
+ <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/14/SPpkWJfKviDWHsO7e0Yh6ZUohHX718rc7gzyUlff.jpg">
 
 # Leadshop微商城
 
