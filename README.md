@@ -1,7 +1,3 @@
-* 官方QQ群：
-    * <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=CDXQbtOCLpQcSEbE6S3DRPCYapvKI_QA&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="Leadshop开源商城①群" title="Leadshop开源商城①群"></a>：849894135
-    * <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=vYNXwlsuRNAx_Ug3-j8dEbP1j1JKKnMF&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="Leadshop开源商城②群" title="Leadshop开源商城②群"></a>：422518408
-
 ## 项目介绍
 Leadshop是一款提供持续更新迭代服务的免费商城系统，旨在打造极致的用户体验！
 
@@ -43,28 +39,33 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
  
 **[点击查看V1.0.1更新内容](https://forum.leadshop.vip/thread/57)** 
 
- QQ群：849894135
+## Leadshop日常交流
+* 官方QQ群：
+    * <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=CDXQbtOCLpQcSEbE6S3DRPCYapvKI_QA&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="Leadshop开源商城①群" title="Leadshop开源商城①群"></a>：849894135
+    * <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=vYNXwlsuRNAx_Ug3-j8dEbP1j1JKKnMF&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="Leadshop开源商城②群" title="Leadshop开源商城②群"></a>：422518408
 <br/>
- 微信交流群
+* 微信交流群
 <br/>
 ![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/26/ApScnZaL0vRvJQH0fh65M18esX475R8t124YsYlm.png)
 <br/>
-扫码关注企码星球，体验Leadshop公众号+小程序
+扫码关注“企码星球”体验Leadshop公众号+小程序
 <br/>
-![输入图片说明](https://images.gitee.com/uploads/images/2021/0513/182053_2a90b532_7426632.jpeg "企码星球.jpg")
+![扫码关注企码星球体验](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/14/SPpkWJfKviDWHsO7e0Yh6ZUohHX718rc7gzyUlff.jpg)
 <br/>
-Leadshop操作文档https://help.leadshop.vip
+
 # Leadshop微商城
 
 ## 论坛交流
 地址:https://forum.leadshop.vip/
 
 ## 体验后台
-地址:https://demo.leadshop.vip
+地址:https://demo.leadshop.vip/
 
 账号:18888888888
 
 密码:123456
+
+操作文档：https://help.leadshop.vip/
 
 ## 开源无加密
 基于Apache License 2.0开源协议，前后端代码开源无加密，支持二次开发，支持商用。
