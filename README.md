@@ -43,7 +43,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 <br/>
  微信交流群
 <br/>
-![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/20/Gum6XSdU3HjI3XusXgqHYmb35oNqDTJpB2Cdf1BZ.png)
+![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/26/ApScnZaL0vRvJQH0fh65M18esX475R8t124YsYlm.png)
 <br/>
 扫码关注企码星球，体验Leadshop公众号+小程序
 <br/>
