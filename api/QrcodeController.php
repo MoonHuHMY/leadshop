@@ -39,7 +39,9 @@ class QrcodeController extends BasicsModules implements Map
 
         $url = $page;
 
-        $mpConfig = isset(Yii::$app->params['apply']['weapp']) ? Yii::$app->params['apply']['weapp'] : null;
+        $mpConfig    = isset(Yii::$app->params['apply']['weapp']) ? Yii::$app->params['apply']['weapp'] : null;
+        $weapp_url   = '';
+        $weapp_image = '';
         if ($mpConfig && $mpConfig['AppID'] && $mpConfig['AppSecret']) {
             $wechat = &load_wechat('Qrcode', [
                 'appid'     => $mpConfig['AppID'], // 填写高级调用功能的app id, 请在微信开发模式后台查询
@@ -48,13 +50,15 @@ class QrcodeController extends BasicsModules implements Map
             if ($scene && $scene != 'index') {
                 $url .= '?' . $scene;
             }
-            $weapp_img   = $wechat->createQrcode($data);
-            $type        = getimagesizefromstring($weapp_img)['mime']; //获取二进制流图片格式
-            $weapp_url   = $url;
-            $weapp_image = 'data:' . $type . ';base64,' . chunk_split(base64_encode($weapp_img));
-        } else {
-            $weapp_url   = '';
-            $weapp_image = '';
+            try {
+                $weapp_img   = $wechat->createQrcode($data);
+                $type        = getimagesizefromstring($weapp_img)['mime']; //获取二进制流图片格式
+                $weapp_url   = $url;
+                $weapp_image = 'data:' . $type . ';base64,' . chunk_split(base64_encode($weapp_img));
+            } catch (\Exception $e) {
+                
+            }
+
         }
 
         $host = Yii::$app->request->hostInfo;

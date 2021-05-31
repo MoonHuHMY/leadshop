@@ -314,9 +314,6 @@ class IndexController extends BasicController
             ->with([
                 'statistical',
                 'oauth',
-                'coupon'   => function ($query) {
-                    $query->where(['is_deleted'=>0])->select('UID');
-                },
                 'labellog' => function ($query) {
                     $query->where(['is_deleted' => 0])->with(['label' => function ($query) {
                         $query->select('id,name');
@@ -367,6 +364,8 @@ class IndexController extends BasicController
                 $result['return_amount']['wechat'] = round(($result['return_amount']['wechat'] + $o_a_v['actual_refund']), 2);
             }
         }
+
+        $result['coupon'] = M('coupon','UserCoupon')::find()->where(['UID'=>$id,'is_deleted'=>0])->count('id');
 
         return $result;
     }

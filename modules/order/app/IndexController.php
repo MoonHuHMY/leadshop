@@ -694,12 +694,60 @@ class IndexController extends BasicController
         $number_amount  = 0; //商品总数
         $goods_amount   = 0; //商品总金额
         $freight_amount = 0; //总运费
-        foreach ($goods as $v) {
+
+        $first_price_key = 0; //选择的首件所在的商品键
+        $first_price     = 0; //选择的首件价格
+        foreach ($goods as $k => &$v) {
             $number_amount += $v['goods_number'];
             $goods_amount += $v['goods_price'] * $v['goods_number'];
+            $v['freight_rules'] = []; //拿到对应的运费计算规则
+            if (!empty($consignee_info) && is_array($v['freight']['freight_rules'])) {
+                foreach ($v['freight']['freight_rules'] as $freight_rules) {
+                    $province = array_column($freight_rules['area'], null, 'name');
+                    if (array_key_exists($consignee_info['province'], $province)) {
+                        $city = $province[$consignee_info['province']]['list'];
+                        $city = array_column($city, null, 'name');
+                        if (array_key_exists($consignee_info['city'], $city)) {
+                            $district = $city[$consignee_info['city']]['list'];
+                            $district = array_column($district, null, 'name');
+                            if (array_key_exists($consignee_info['district'], $district)) {
+                                if ($first_price < $freight_rules['first']['price']) {
+                                    //取用首件价格高的
+                                    $first_price     = $freight_rules['first']['price'];
+                                    $first_price_key = $k;
+                                } elseif ($first_price == $freight_rules['first']['price']) {
+                                    //首件价格相等,计算首件平均价
+                                    $first_freight_rules = $goods[$first_price_key]['freight_rules'];
+                                    if (($first_freight_rules['first']['price'] / $first_freight_rules['first']['number']) < ($freight_rules['first']['price'] / $freight_rules['first']['number'])) {
+                                        //取用首件平均价高的
+                                        $first_price     = $freight_rules['first']['price'];
+                                        $first_price_key = $k;
+
+                                    } elseif (($first_freight_rules['first']['price'] / $first_freight_rules['first']['number']) == ($freight_rules['first']['price'] / $freight_rules['first']['number'])) {
+                                        //首件平均价相等,判断续件价格
+                                        if ($first_freight_rules['continue']['price'] < $freight_rules['continue']['price']) {
+                                            //取用续件价格高的
+                                            $first_price     = $freight_rules['first']['price'];
+                                            $first_price_key = $k;
+                                        } elseif ($first_freight_rules['continue']['price'] == $freight_rules['continue']['price']) {
+                                            //续件价格相同,计算续件均价
+                                            if (($first_freight_rules['continue']['price'] / $first_freight_rules['continue']['number']) < ($freight_rules['continue']['price'] / $freight_rules['continue']['number'])) {
+                                                //取用续件平均价格高的
+                                                $first_price     = $freight_rules['first']['price'];
+                                                $first_price_key = $k;
+                                            }
+                                        }
+                                    }
+                                }
+                                $v['freight_rules'] = $freight_rules;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
-        foreach ($goods as &$value) {
+        foreach ($goods as $key => &$value) {
             $goods_number = $value['goods_number'];
             $goods_weight = $value['goods_number'] * $value['goods_weight'];
             $goods_price  = $value['goods_number'] * $value['goods_price'];
@@ -716,33 +764,30 @@ class IndexController extends BasicController
                     //固定邮费
                     $freight = $value['ft_price'];
                 } else {
-                    //运费模板
-                    foreach ($value['freight']['freight_rules'] as $freight_rules) {
-                        $province = array_column($freight_rules['area'], null, 'name');
-                        if (array_key_exists($consignee_info['province'], $province)) {
-                            $city = $province[$consignee_info['province']]['list'];
-                            $city = array_column($city, null, 'name');
-                            if (array_key_exists($consignee_info['city'], $city)) {
-                                $district = $city[$consignee_info['city']]['list'];
-                                $district = array_column($district, null, 'name');
-                                if (array_key_exists($consignee_info['district'], $district)) {
-                                    $freight += $freight_rules['first']['price']; //首件首重费用
-                                    if ($value['freight']['type'] == 1) {
-                                        //按件计算
-                                        $f_number = $goods_number;
-                                    } else {
-                                        //按重计算
-                                        $f_number = $goods_weight;
-                                    }
 
-                                    $continue = $f_number - $freight_rules['first']['number']; //判断是否超出首件数量或首重重量
-                                    if ($continue > 0 && $freight_rules['continue']['number'] > 0) {
-                                        $freight += ceil($continue / $freight_rules['continue']['number']) * $freight_rules['continue']['price'];
-                                    }
-                                }
-                            }
+                    $freight_rules = $value['freight_rules'];
+                    if (!empty($freight_rules)) {
+                        if ($value['freight']['type'] == 1) {
+                            //按件计算
+                            $f_number = $goods_number;
+                        } else {
+                            //按重计算
+                            $f_number = $goods_weight;
+                        }
+
+                        if ($first_price_key == $key) {
+
+                            $freight += $freight_rules['first']['price']; //首件首重费用
+
+                            $continue = $f_number - $freight_rules['first']['number']; //判断是否超出首件数量或首重重量
+                        } else {
+                            $continue = $f_number;
+                        }
+                        if ($continue > 0 && $freight_rules['continue']['number'] > 0) {
+                            $freight += ceil($continue / $freight_rules['continue']['number']) * $freight_rules['continue']['price'];
                         }
                     }
+
 
                 }
 
@@ -784,8 +829,8 @@ class IndexController extends BasicController
                     }
                 }
             }
-
             unset($value['freight']);
+            unset($value['freight_rules']);
             unset($value['package']);
             unset($value['ft_type']);
             unset($value['ft_price']);
@@ -818,8 +863,8 @@ class IndexController extends BasicController
      */
     public function buildReducePrice($data)
     {
-        $calculate      = Yii::$app->request->get('calculate', false); //判断是否是预请求
-        $goods_id = array_unique(array_column($data['goods_data'], 'goods_id'));
+        $calculate = Yii::$app->request->get('calculate', false); //判断是否是预请求
+        $goods_id  = array_unique(array_column($data['goods_data'], 'goods_id'));
         //获取所购买商品的列表
         $goods_list = M('goods', 'Goods')::find()->where(['id' => $goods_id])->select('id,group')->asArray()->all();
         foreach ($goods_list as &$goods) {
@@ -901,9 +946,9 @@ class IndexController extends BasicController
 
             //预请求,显示原来价格
             if ($calculate != 'calculate') {
-                $data['goods_amount']   = $goods_amount;
+                $data['goods_amount'] = $goods_amount;
             }
-            
+
             foreach ($data['goods_data'] as &$value) {
                 $goods_pay_amount        = round($value['pay_amount'] * $discount, 2);
                 $value['coupon_reduced'] = $value['pay_amount'] - $goods_pay_amount;

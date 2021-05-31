@@ -117,8 +117,10 @@ class DatabaseMigration extends Migration
                 break;
             //文本
             case 'text':
-            case 'longtext':
                 return 'text';
+                break;
+            case 'longtext':
+                return 'longtext';
                 break;
             //整数tinyint
             case 'tinyint':
@@ -186,5 +188,15 @@ class DatabaseMigration extends Migration
                 break;
 
         }
+    }
+
+    /**
+     * Creates a text column.
+     * @return ColumnSchemaBuilder the column instance which can be further customized.
+     * @since 2.0.6
+     */
+    public function longtext()
+    {
+        return $this->getDb()->getSchema()->createColumnSchemaBuilder("longtext");
     }
 }
