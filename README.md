@@ -35,8 +35,9 @@ https://forum.leadshop.vip/thread/35
  整理中
 
 ## 更新历史
-
 **[点击查看V1.2.4更新内容](https://forum.leadshop.vip/thread/343)** 
+
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210531/1.png)
 
 时间：2021-06-01
 
