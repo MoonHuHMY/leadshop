@@ -3,7 +3,7 @@
  * @Author: qinuoyun
  * @Date:   2021-05-27 09:55:15
  * @Last Modified by:   qinuoyun
- * @Last Modified time: 2021-05-31 16:31:35
+ * @Last Modified time: 2021-06-01 08:56:32
  */
 ini_set("display_errors", "On");
 error_reporting(E_ALL);
@@ -16,14 +16,16 @@ define('LE_PACKAGE_BASE', dirname(__DIR__));
 //设置当前运行模式
 define('LE_OPERATION_MODE', 'production');
 //自动化操作类
-class automation {
+class automation
+{
     /**
      * 执行更新脚本
      * include
      * data
      * meta
      */
-    public function run() {
+    public function run()
+    {
         //读取参数数据
         $include = isset($_GET['include']) ? $_GET['include'] : "";
         $data    = isset($_GET['data']) ? $_GET['data'] : "";
@@ -65,7 +67,8 @@ class automation {
      * @param $params
      * @return mixed
      */
-    public function __call($method, $params) {
+    public function __call($method, $params)
+    {
         return call_user_func_array([self::connect(), $method], $params);
     }
 
@@ -76,7 +79,8 @@ class automation {
      * @param  array  $params 参数
      * @return mixed
      */
-    public static function __callStatic($method, $params) {
+    public static function __callStatic($method, $params)
+    {
         return call_user_func_array([self::connect(), $method], $params);
     }
 
@@ -84,17 +88,20 @@ class automation {
      * 设置链接
      * @return [type] [description]
      */
-    public static function connect() {
+    public static function connect()
+    {
         return new leadshops();
     }
 
 }
 
-class leadshops {
+class leadshops
+{
     /**
      * 执行更新脚本
      */
-    public function Update($params, $data) {
+    public function Update($params, $data)
+    {
         $token = isset($_GET['token']) ? $_GET['token'] : "";
         if (@file_exists(dirname(__DIR__) . "/install.lock")) {
             if (@file_get_contents(dirname(__DIR__) . "/install.lock") === $token) {
@@ -253,7 +260,8 @@ class leadshops {
     /**
      * 执行安装脚本
      */
-    public function Install($params, $data) {
+    public function Install($params, $data)
+    {
         if ($params == 1) {
             $data = [
                 "code" => 0,
@@ -276,7 +284,8 @@ class leadshops {
      * @param $url
      * @return bool|mixed
      */
-    public function HttpGet($url) {
+    public function HttpGet($url)
+    {
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
@@ -296,7 +305,8 @@ class leadshops {
      * @param    bool    $is_cover 强制覆盖，默认False
      * @return   bool    True|False
      */
-    public function ToMkdir($path = null, $data = null, $is_full = false, $is_cover = false) {
+    public function ToMkdir($path = null, $data = null, $is_full = false, $is_cover = false)
+    {
         #非完整路径进行组合
         if (!$is_full) {
             $path = dirname(__DIR__) . '/' . ltrim(ltrim($path, './'), '/');
@@ -341,7 +351,8 @@ class leadshops {
      * 执行数据库更新
      * @param string $version [description]
      */
-    public function UpdateSql($version = '') {
+    public function UpdateSql($version = '')
+    {
         try {
             $db   = require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'config/db.php';
             $pdo  = new PDO($db['dsn'], $db['username'], $db['password']); //初始化一个PDO对象
@@ -388,7 +399,8 @@ class leadshops {
      * @param  boolean $ignore_ssl_error [description]
      * @return [type]                    [description]
      */
-    public function DownloadFile($url, $ignore_ssl_error = false) {
+    public function DownloadFile($url, $ignore_ssl_error = false)
+    {
         if (!function_exists('curl_init')) {
             throw new Exception("curl扩展未启用");
         }
@@ -420,7 +432,8 @@ class leadshops {
      * @param  [type] $url [description]
      * @return [type]      [description]
      */
-    public function DownloadJson($url) {
+    public function DownloadJson($url)
+    {
         $pkg_str = $this->DownloadFile($url);
         if ($pkg_str === false) {
             throw new Exception("下载错误: " . $url);
@@ -437,7 +450,8 @@ class leadshops {
      * @param  [type] $path [description]
      * @return [type]       [description]
      */
-    public function RemoveDir($path) {
+    public function RemoveDir($path)
+    {
         if (empty($path) || !$path) {
             return false;
         }
@@ -450,7 +464,8 @@ class leadshops {
      * 监测是否是HTTPS
      * @return boolean [description]
      */
-    public function IsHttps() {
+    public function IsHttps()
+    {
         if (isset($_SERVER["HTTPS"]) && strtolower($_SERVER["HTTPS"]) != "off") {
             return true;
         }
@@ -474,7 +489,8 @@ class leadshops {
      * @param  [type] $var [description]
      * @return [type]      [description]
      */
-    public static function getVar($var) {
+    public static function getVar($var)
+    {
         if (!isset($_GET[$var])) {
             if (!isset($_POST[$var])) {
                 $_POST = json_decode(file_get_contents("php://input"), true);
@@ -492,7 +508,8 @@ class leadshops {
     /**
      * [PreCheck description]
      */
-    public function DirCheck() {
+    public function DirCheck()
+    {
         //用户检查WEB目录
         $dir       = __DIR__;
         $base_name = basename($dir);
@@ -532,7 +549,8 @@ class leadshops {
      * 目录检查
      * @return [type] [description]
      */
-    public function PreCheck() {
+    public function PreCheck()
+    {
         $LANG           = array();
         $needed_dirlist = array(
             '/config', '/stores', '/web', '/web/assets',
@@ -559,7 +577,8 @@ class leadshops {
      * 扩展监测
      * @return [type] [description]
      */
-    public function ExtensionCheck() {
+    public function ExtensionCheck()
+    {
         $LANG              = array();
         $needed_extensions = array(
             'curl', 'gd', 'json', 'openssl', 'pdo', 'pdo_mysql', 'xml', 'zip',
@@ -584,7 +603,8 @@ class leadshops {
      * 函数监测
      * @return [type] [description]
      */
-    public function FunctionCheck() {
+    public function FunctionCheck()
+    {
         $LANG             = array();
         $needed_functions = array(
             'symlink', 'realpath',
@@ -609,7 +629,8 @@ class leadshops {
      * 执行数据库表单
      * @return [type] [description]
      */
-    public function CheckDatabase() {
+    public function CheckDatabase()
+    {
         //表示是提交的表单
         $action = true;
         //网站标题
@@ -623,7 +644,7 @@ class leadshops {
         //MySQL 密码
         $mysqlPassword = self::getVar('mysqlPassword');
         //表前缀(可选)
-        $tablePrefix = self::getVar('tablePrefix');
+        $tablePrefix = trim(self::getVar('tablePrefix'));
         //设置管理员手机号
         $adminUsername = self::getVar('adminUsername');
         //设置管理员密码
@@ -699,11 +720,11 @@ class leadshops {
             $LANG['mysqlConnectInvalid'] = "MySQL 服务器无法连接，请检查服务器的IP与端口(可用:指定端口号)";
         }
 
-        if ($mysqlConnectCheck && $mysqlVersionInvalid) {
+        if ($mysqlConnectCheck && $mysqlVersionInvalid && $mysqlVersionInvalidMsg) {
             $LANG['mysqlVersionInvalid'] = $mysqlVersionInvalidMsg;
         }
 
-        if ($mysqlConnectCheck && $mysqlDatabaseInvalid) {
+        if ($mysqlConnectCheck && $mysqlDatabaseInvalid && $mysqlDatabaseDbInvalidMsg) {
             $LANG['mysqlDatabaseInvalid'] = $mysqlDatabaseDbInvalidMsg;
         }
 
@@ -750,7 +771,7 @@ class leadshops {
         if ($ready_to_install) {
             $md5Password = md5($adminPassword);
             $table       = $tablePrefix . "account";
-            $inuser      = "insertinto{$table}(mobile, password, nickname)values('{$adminUsername}', '{$md5Password}', '管理员')";
+            $inuser      = "insert into {$table}(mobile,password,nickname) values('{$adminUsername}','{$md5Password}','管理员')";
             $data        = install_database($mysqlHost, $mysqlUsername, $mysqlPassword, $tablePrefix, $mysqlDatabase, $inuser);
             if ($data['code'] === 0) {
                 //创建配置文件
@@ -780,7 +801,8 @@ class leadshops {
     /**
      * 创建锁定文件
      */
-    public function MakeLockFile() {
+    public function MakeLockFile()
+    {
         $key = MD5(time());
         @file_put_contents(dirname(__DIR__) . "/install.lock", "locked" . $key);
         return true;
@@ -791,7 +813,8 @@ class leadshops {
      * @param  [type] $dir [description]
      * @return [type]      [description]
      */
-    public function WritableCheck($dir) {
+    public function WritableCheck($dir)
+    {
         try {
             $tmpfile = $dir . "/" . uniqid('test', true);
             if (!is_writable($dir)) {
@@ -812,7 +835,8 @@ class leadshops {
     /**
      * 自己升级自己
      */
-    public function SilentSelfUpdate() {
+    public function SilentSelfUpdate()
+    {
         $dir = __DIR__;
         if ($this->WritableCheck($dir)) {
             if (is_writable(__FILE__)) {
@@ -831,7 +855,8 @@ class leadshops {
     /**
      * 升级自身文件
      */
-    public function DoSelfUpdate() {
+    public function DoSelfUpdate()
+    {
         $SELF_VERSION   = get_version();
         $self_replaced  = false;
         $need_upgrade   = false;
@@ -855,7 +880,8 @@ class leadshops {
  * @param  [type] $name [description]
  * @return [type]       [description]
  */
-function get_oss_url($name) {
+function get_oss_url($name)
+{
     $url = "https://qmxq.oss-cn-hangzhou.aliyuncs.com";
     return $url . "/leadshop/" . LE_OPERATION_MODE . "/" . $name;
 }
@@ -866,22 +892,23 @@ function get_oss_url($name) {
  * @param    [type]     $name [description]
  * @param    integer    $type [description]
  */
-function P($name, $type = 1) {
+function P($name, $type = 1)
+{
 
     switch ($type) {
-    case 1:
-        echo "<pre style='position:relative;z-index:1000;padding:10px;border-radius:5px;background:#F5F5F5;border:1px solid #aaa;font-size:14px;line-height:18px;opacity:0.9;'>" . print_r($name, true) . "</pre>";
-        break;
-    case 2:
-        $name = unhtml($name);
-        echo "<pre style='position:relative;z-index:1000;padding:10px;border-radius:5px;background:#F5F5F5;border:1px solid #aaa;font-size:14px;line-height:18px;opacity:0.9;'>" . print_r($name, true) . "</pre>";
-        break;
-    case 3:
-        echo "<pre>" . print_r($name, true) . "</pre>";
-        break;
-    default:
-        # code...
-        break;
+        case 1:
+            echo "<pre style='position:relative;z-index:1000;padding:10px;border-radius:5px;background:#F5F5F5;border:1px solid #aaa;font-size:14px;line-height:18px;opacity:0.9;'>" . print_r($name, true) . "</pre>";
+            break;
+        case 2:
+            $name = unhtml($name);
+            echo "<pre style='position:relative;z-index:1000;padding:10px;border-radius:5px;background:#F5F5F5;border:1px solid #aaa;font-size:14px;line-height:18px;opacity:0.9;'>" . print_r($name, true) . "</pre>";
+            break;
+        case 3:
+            echo "<pre>" . print_r($name, true) . "</pre>";
+            break;
+        default:
+            # code...
+            break;
     }
 
 }
@@ -890,7 +917,8 @@ function P($name, $type = 1) {
  * 递归调用获取md5
  * @param string $dir1        路径1，是标准
  */
-function get_folder_md5($dir1, $dirPath, &$data) {
+function get_folder_md5($dir1, $dirPath, &$data)
+{
     if (is_dir($dir1)) {
         $arr = scandir($dir1);
         foreach ($arr as $entry) {
@@ -926,15 +954,14 @@ function get_folder_md5($dir1, $dirPath, &$data) {
  * @param  [type] $password [description]
  * @return [type]           [description]
  */
-function check_mysql_connection($host, $username, $password) {
+function check_mysql_connection($host, $username, $password)
+{
     $port = 3306;
     if (strpos($host, ":") !== false) {
         list($host, $port) = explode(":", $host);
     }
     try {
-        $conn = "mysql:host = $host;
-            port = $port;
-            charset = utf8mb4";
+        $conn = "mysql:host = $host;port = $port;charset = utf8mb4";
         return new PDO($conn, $username, $password);
     } catch (PDOException $e) {
         if ($e->getCode() === 2002) {
@@ -955,7 +982,26 @@ function check_mysql_connection($host, $username, $password) {
  * @param  [type] $database [description]
  * @return [type]           [description]
  */
-function check_mysql_database($host, $username, $password, $database) {
+function check_mysql_database($host, $username, $password, $database)
+{
+    $_host = $host;
+    $port  = 3306;
+    if (strpos($host, ":") !== false) {
+        list($host, $port) = explode(":", $host);
+    }
+
+    //用于检查端口号
+
+    $pdo = check_mysql_connection($_host, $username, $password);
+    $res = $pdo->prepare("show global variables like 'port'"); //准备查询语句
+    $res->execute();
+    $result = $res->fetchAll(PDO::FETCH_ASSOC);
+    if ($result && $result[0]['Value']) {
+        if ($port !== $result[0]['Value']) {
+            return "监测到端口为[" . $result[0]['Value'] . "],请正确填写端口号";
+        }
+    }
+
     $database = addslashes($database);
     $pdo      = check_mysql_connection($host, $username, $password);
     if ($pdo === false) {
@@ -980,7 +1026,8 @@ function check_mysql_database($host, $username, $password, $database) {
     }
 }
 
-function base64url_decode($plainText) {
+function base64url_decode($plainText)
+{
     $base64url = strtr($plainText, '-_,', '+/=');
     $base64    = base64_decode($base64url);
     return $base64;
@@ -993,7 +1040,8 @@ function base64url_decode($plainText) {
  * @param  [type] $password [description]
  * @return [type]           [description]
  */
-function check_mysql_version($host, $username, $password) {
+function check_mysql_version($host, $username, $password)
+{
     $pdo = check_mysql_connection($host, $username, $password);
     if ($pdo === false) {
         return "数据库无法连接";
@@ -1025,21 +1073,33 @@ function check_mysql_version($host, $username, $password) {
     return true;
 }
 
-function install_database($host, $username, $password, $prefix, $database, $inuser = null) {
+function install_database($host, $username, $password, $prefix, $database, $inuser = null)
+{
     try {
+        $host = "localhost";
+        $port = 3306;
+        if (stripos($host, ':') !== false) {
+            list($host, $port) = explode(':', $host, 2);
+        }
         $dbms = 'mysql';
-        $dsn  = "$dbms:host = $host;
-            dbname = $database";
+        $dsn  = "$dbms:host = $host;port = $port;dbname = $database";
+
         $pdo = new PDO($dsn, $username, $password); //初始化一个PDO对象
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
         //用于创建数据表
         $sql = sprintf('CREATE DATABASE IF NOT EXISTS `%s`  DEFAULT CHARACTER SET = `utf8mb4` DEFAULT COLLATE = `utf8mb4_unicode_ci`', $database);
         $res = $pdo->exec($sql);
+        //设置数据库表
+        $str = "use $database";
+        $pdo->exec($str);
 
+        //执行设置数据表
         $sqlfile = dirname(__DIR__) . DIRECTORY_SEPARATOR . 'forms/install/install.sql';
+        $sql     = file_get_contents($sqlfile);
+        $sql     = str_replace('heshop_initialize_prefix_', $prefix, $sql);
+        $res     = $pdo->exec($sql);
 
-        $sql = file_get_contents($sqlfile);
-        $sql = str_replace('heshop_initialize_prefix_', $prefix, $sql);
-        $res = $pdo->exec($sql);
         //写入用户信息
         if ($inuser) {
             $res = $pdo->exec($inuser);
@@ -1051,12 +1111,13 @@ function install_database($host, $username, $password, $prefix, $database, $inus
     } catch (PDOException $e) {
         return [
             'code' => -2,
-            'msg'  => $e->getMessage(),
+            'msg'  => [$e->getMessage()],
         ];
     }
 }
 
-function install_config($host, $username, $password, $prefix, $database) {
+function install_config($host, $username, $password, $prefix, $database)
+{
     $port = 3306;
 
     $defaultConfig = <<<ETF
@@ -1104,7 +1165,8 @@ ETF;
  * @param  string $value [description]
  * @return [type]        [description]
  */
-function get_version() {
+function get_version()
+{
     $json_string = file_get_contents('./version.json');
     // 用参数true把JSON字符串强制转成PHP数组
     $data = json_decode($json_string, true);
