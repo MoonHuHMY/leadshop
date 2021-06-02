@@ -32,7 +32,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 
 https://forum.leadshop.vip/thread/35
 ## 下期更新计划
- 整理中
+**[点击查看更新预告](https://forum.leadshop.vip/thread/347)** 
 
 ## 更新历史
 **[点击查看V1.2.4更新内容](https://forum.leadshop.vip/thread/343)** 
