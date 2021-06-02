@@ -8,6 +8,8 @@ use Yii;
 
 class CloudController extends BasicsModules implements Map
 {
+    public $modelClass = 'setting\models\Setting';
+
     /**
      * 重写父类
      * @return [type] [description]
@@ -34,6 +36,14 @@ class CloudController extends BasicsModules implements Map
 
     public function actionCreate($value = '')
     {
+        $res = $this->modelClass::find()->where(['keyword' => 'mysql_version'])->one();
+        if (!$res) {
+            $article              = new $this->modelClass();
+            $article->keyword     = 'mysql_version';
+            $article->merchant_id = 1;
+            $article->content     = app_version();
+            $article->save();
+        }
         if (file_exists(Yii::$app->basePath . "/install.lock")) {
             return @file_get_contents(Yii::$app->basePath . "/install.lock");
         } else {

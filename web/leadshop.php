@@ -1,9 +1,8 @@
 <?php
 /**
  * @Author: qinuoyun
- * @Date:   2021-05-27 09:55:15
  * @Last Modified by:   qinuoyun
- * @Last Modified time: 2021-06-01 08:56:32
+ * @Version 1.2.5
  */
 ini_set("display_errors", "On");
 error_reporting(E_ALL);
@@ -104,7 +103,7 @@ class leadshops
     {
         $token = isset($_GET['token']) ? $_GET['token'] : "";
         if (@file_exists(dirname(__DIR__) . "/install.lock")) {
-            if (@file_get_contents(dirname(__DIR__) . "/install.lock") === $token) {
+            if (@file_get_contents(dirname(__DIR__) . "/install.lock") == $token) {
                 if ($params == 1) {
                     //获取版本号
                     $version = get_version();
@@ -148,6 +147,32 @@ class leadshops
                         $_SESSION['updatePlan']  = count($update_data);
                         $_SESSION['updateTotal'] = count($update_data);
                     }
+                    // P(['updateFile', $_SESSION['updateFile']]);
+                    // P(['updateTotal', $_SESSION['updateTotal']]);
+                    // P(['updatePlan', $_SESSION['updatePlan']]);
+                    // P(['updateStep', $_SESSION['updateStep']]);
+                    //获取更新验证文件
+                    if (!$_SESSION['updateFile'] && $_SESSION['updateTotal'] === 0 && $_SESSION['updatePlan'] === 0 && $_SESSION['updateStep'] === 0) {
+                        $data = [
+                            "code"    => 0,
+                            "step"    => 1,
+                            "message" => "无可更新文件",
+                            "data"    => [
+                                'total' => $_SESSION['updateTotal'],
+                                'plan'  => $_SESSION['updatePlan'],
+                                'step'  => $_SESSION['updateStep'],
+                            ],
+                        ];
+                        //处理新的版本号
+                        $versionData = [
+                            "version" => $_SESSION['version'],
+                        ];
+                        //处理版本号更新问题
+                        $this->ToMkdir(__DIR__ . "/version.json", json_encode($versionData, JSON_UNESCAPED_UNICODE), true, true);
+                        $_SESSION = [];
+                        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+                        exit();
+                    }
                     //获取更新验证文件
                     if ($_SESSION['updateFile'] && $_SESSION['updateTotal'] && $_SESSION['updatePlan'] > 0 && $_SESSION['updateStep'] === 0) {
                         $data = [
@@ -155,28 +180,29 @@ class leadshops
                             "step"    => 1,
                             "message" => "等待更新执行",
                             "data"    => [
+                                'file'  => '',
                                 'total' => $_SESSION['updateTotal'],
                                 'plan'  => $_SESSION['updatePlan'],
                                 'step'  => $_SESSION['updateStep'],
                             ],
                         ];
                         $_SESSION['updateStep']++;
-                        $_SESSION['updatePlan']--;
                         echo json_encode($data, JSON_UNESCAPED_UNICODE);
                         exit();
                     }
                     //逐步执行
                     //[key] => ae7ba26e3f9e2c19f1ae227d5dc8e898
                     //[path] => /api/DemoController.php
-                    if ($_SESSION['updateFile'] && $_SESSION['updateTotal'] && $_SESSION['updatePlan'] > 0 && $_SESSION['updateStep'] > 0) {
+                    if ($_SESSION['updateFile'] && $_SESSION['updateTotal'] && $_SESSION['updatePlan'] >= 0 && $_SESSION['updateStep'] > 0) {
                         //此处开始执行文件
                         $first = array_shift($_SESSION['updateFile']);
                         $dir1  = dirname(__DIR__);
                         //拼接URL地址信息
                         $url  = "https://qmxq.oss-cn-hangzhou.aliyuncs.com/V{$version}" . $first['path'];
                         $data = $this->DownloadFile($url);
+                        // P(strpos($data, base64url_decode("Tm9TdWNoS2V5")));
                         //判断OSS中文件是否存在
-                        if (strpos($data, "NoSuchKey") === false) {
+                        if (strpos($data, base64url_decode("Tm9TdWNoS2V5")) === false) {
                             $path = $dir1 . $first['path'];
                             $this->ToMkdir($path, $data, true, true);
                         }
@@ -198,7 +224,7 @@ class leadshops
                         exit();
                     }
                     //执行SQL语句
-                    if ($_SESSION['updateFile'] && $_SESSION['updateTotal'] && $_SESSION['updatePlan'] === 0 && $_SESSION['updateStep'] > 0) {
+                    if (!$_SESSION['updateFile'] && $_SESSION['updateTotal'] && $_SESSION['updatePlan'] === 0 && $_SESSION['updateStep'] > 0) {
                         //反馈执行结果
                         $data = [
                             "code"    => 0,
@@ -220,7 +246,7 @@ class leadshops
                         exit();
                     }
                     //更新完成
-                    if ($_SESSION['updateFile'] && $_SESSION['updateTotal'] && $_SESSION['updatePlan'] === -1 && $_SESSION['updateStep'] > 0) {
+                    if (!$_SESSION['updateFile'] && $_SESSION['updateTotal'] && $_SESSION['updatePlan'] === -1 && $_SESSION['updateStep'] > 0) {
                         //反馈执行结果
                         $data = [
                             "code"    => 0,
