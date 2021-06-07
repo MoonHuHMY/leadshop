@@ -37,8 +37,6 @@ https://forum.leadshop.vip/thread/35
 ## 更新历史
 **[点击查看V1.2.4更新内容](https://forum.leadshop.vip/thread/343)** 
 
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210531/1.png)
-
 时间：2021-06-01
 
 新增：商品批量采集
@@ -113,55 +111,43 @@ https://forum.leadshop.vip/thread/35
 
 ......
 
-## Leadshop日常交流
-* 官方QQ群：
-    * <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=CDXQbtOCLpQcSEbE6S3DRPCYapvKI_QA&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="Leadshop开源商城①群" title="Leadshop开源商城①群"></a>：849894135
-    * <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=vYNXwlsuRNAx_Ug3-j8dEbP1j1JKKnMF&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="Leadshop开源商城②群" title="Leadshop开源商城②群"></a>：422518408
+## 论坛交流
+地址:https://forum.leadshop.vip/
 
+## 体验后台
+* 地址:https://demo.leadshop.vip/
 
-* 微信交流群
+* 账号:18888888888
 
- <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/06/01/x5uKGf8oiMIdn8mo0ctQVdztpgWVT8lqUHLldheo.png">
+* 密码:123456
 
 * 扫码关注“企码星球”体验Leadshop公众号+小程序
 
  <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/14/SPpkWJfKviDWHsO7e0Yh6ZUohHX718rc7gzyUlff.jpg">
 
-# Leadshop微商城
-
-## 论坛交流
-地址:https://forum.leadshop.vip/
-
-## 体验后台
-地址:https://demo.leadshop.vip/
-
-账号:18888888888
-
-密码:123456
-
-操作文档：https://help.leadshop.vip/
+* 操作文档：https://help.leadshop.vip/
 
 ## 开源无加密
-基于Apache License 2.0开源协议，前后端代码开源无加密，支持二次开发，支持商用。
+* 基于Apache License 2.0开源协议，前后端代码开源无加密，支持二次开发，支持商用。
 
 ## 核心技术
-前端技术栈 ES6、vue、vuex、vue-router、vue-cli、axios、element-ui、uni-app
+* 前端技术栈 ES6、vue、vuex、vue-router、vue-cli、axios、element-ui、uni-app
 
-后端技术栈 Yii2、Jwt、Mysql、Easy-SMS
+* 后端技术栈 Yii2、Jwt、Mysql、Easy-SMS
 
 ## 接口标准
-采用标准RESTful API ，高效的API阅读性，具有扩展性强、结构清晰的特点
+* 采用标准RESTful API ，高效的API阅读性，具有扩展性强、结构清晰的特点
 
 ## 数据交互
-采用JSON API 标准，用以定义客户端如何获取与修改资源，以及服务器如何响应对应请求。高效实现的同时，无需牺牲可读性、灵活性和可发现性
+* 采用JSON API 标准，用以定义客户端如何获取与修改资源，以及服务器如何响应对应请求。高效实现的同时，无需牺牲可读性、灵活性和可发现性
 
 ## 认证方式
-目前所有的接口使用 Oauth2 Password 方式，也就是 JWT Authorization Bearer header 进认证。支持扩语言扩展，多平台扩展。
+* 目前所有的接口使用 Oauth2 Password 方式，也就是 JWT Authorization Bearer header 进认证。支持扩语言扩展，多平台扩展。
 
 ## 数据表格导出
-采用高性能的 js-xlsx数据导出，易于扩展，兼容性强。
+* 采用高性能的 js-xlsx数据导出，易于扩展，兼容性强。
 
-接口文档：http://www.leadshop.vip/api.html
+* 接口文档：http://www.leadshop.vip/api.html
 
 ## 安装
 
@@ -225,6 +211,16 @@ https://forum.leadshop.vip/thread/35
         ├─temp
         └─upload                        //上传文件
 ```
+
+## Leadshop日常交流
+* 官方QQ群：
+    * <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=CDXQbtOCLpQcSEbE6S3DRPCYapvKI_QA&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="Leadshop开源商城①群" title="Leadshop开源商城①群"></a>：849894135
+    * <a target="_blank" href="https://qm.qq.com/cgi-bin/qm/qr?k=vYNXwlsuRNAx_Ug3-j8dEbP1j1JKKnMF&jump_from=webapi"><img border="0" src="//pub.idqqimg.com/wpa/images/group.png" alt="Leadshop开源商城②群" title="Leadshop开源商城②群"></a>：422518408
+
+
+* 加群管理员进Leadshop官方交流群
+
+ <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/06/03/CGAUS3jcr3K3BfQYwnzalpR6OvWkjDcrc9hC2wUy.png">
 
 ## Ladshop功能简介
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210522/1.png)
