@@ -29,7 +29,7 @@ Leadshop 开源系统，基于Yii2开发，支持composer，优化核心，减�
 Linux+Nginx+PHP7.4+MySQL5.7.3以上
 
 ## 常见问题/安装教程
-<a href="https://forum.leadshop.vip/thread/35" target="_blank"> **https://forum.leadshop.vip/thread/35** </a>
+<a href="https://forum.leadshop.vip/thread/35" target="_blank"> **查看常见问题/安装教程** </a>
 
 ## 下期更新计划
 * <a href="https://forum.leadshop.vip/thread/347" target="_blank"> **点击查看更新预告** </a>
@@ -40,10 +40,10 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 * <a href="http://help.leadshop.vip/2278957" target="_blank"> **点击查看往期更新历史** </a>
 
 ## 论坛交流
-* <a href="https://forum.leadshop.vip" target="_blank"> **https://forum.leadshop.vip** </a>
+* <a href="https://forum.leadshop.vip" target="_blank"> **点击进入Leadshop官方论坛** </a>
 
 ## 体验后台
-* <a href="https://demo.leadshop.vip" target="_blank"> **https://demo.leadshop.vip** </a>
+* <a href="https://demo.leadshop.vip" target="_blank"> **demo.leadshop.vip** </a>
 
 * 账号:18888888888
 
@@ -75,7 +75,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 ## 数据表格导出
 * 采用高性能的 js-xlsx数据导出，易于扩展，兼容性强。
 
-* 接口文档：<a href="http://www.leadshop.vip/api.html" target="_blank"> **http://www.leadshop.vip/api.html** </a>
+* 接口文档：<a href="http://www.leadshop.vip/api.html" target="_blank"> **www.leadshop.vip/api.html** </a>
 
 ## 安装
 
