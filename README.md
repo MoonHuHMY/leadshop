@@ -32,89 +32,15 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 
 https://forum.leadshop.vip/thread/35
 ## 下期更新计划
-**[点击查看更新预告](https://forum.leadshop.vip/thread/347)** 
+* [点击查看更新预告](https://forum.leadshop.vip/thread/347)
 
  <img border="0" src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210608/2.png">
 
 ## 更新历史
-**[点击查看V1.2.4更新内容](https://forum.leadshop.vip/thread/343)** 
-
-时间：2021-06-01
-
-新增：商品批量采集
-
-新增：规格模板
-
-新增：【重要更改】物流查询接口改至快宝
-
-优化：运费计算规则
-
-优化：商品分类下的商品列表样式自定义
-
-......
-
-**[点击查看V1.2.0更新内容](https://forum.leadshop.vip/thread/254)【520Leadshop送给大家的礼物】** 
-
-时间：2021-05-20
-
-更新内容：
-
-新增：优惠券营销玩法；
-
-新增：一键更新至最新版本；
-
-新增：视频装修组件可添加网络视频；
-
-......
-
-**[点击查看V1.1.5更新内容](https://forum.leadshop.vip/thread/170)** 
-
-时间：2021-05-10
-
-更新内容：
-
-新增：店铺装修--增加公告组件
-
-新增：店铺装修--标题组件、选项卡组件、商品组件，可单独设置背景色
-
-新增：手机店铺首页--提示用户收藏小程序
-
-新增：公众号商城个人中心可换手机号绑定
-
-......
-
-**[点击查看V1.1.4更新内容](https://forum.leadshop.vip/thread/99)** 
-
-时间：2021-04-26
-
-更新内容：
-
-新增：用户标签
-
-新增：短信提醒、小程序订阅消息、公众号订阅通知
-
-优化：后台修改登录密码
-
-......
- 
-**[点击查看V1.0.1更新内容](https://forum.leadshop.vip/thread/57)** 
-
-时间：2021-04-14
-
-更新内容：
-
-新增：DIY店铺装修
-
-新增：推广海报
-
-新增：查询物流实时详情
-
-新增：批量发货
-
-......
+* [点击查看往期更新历史](http://help.leadshop.vip/2278957) 
 
 ## 论坛交流
-地址:https://forum.leadshop.vip/
+* 地址:https://forum.leadshop.vip/
 
 ## 体验后台
 * 地址:https://demo.leadshop.vip/
