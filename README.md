@@ -29,21 +29,21 @@ Leadshop 开源系统，基于Yii2开发，支持composer，优化核心，减�
 Linux+Nginx+PHP7.4+MySQL5.7.3以上
 
 ## 常见问题/安装教程
+<a href="https://forum.leadshop.vip/thread/35" target="_blank"> **https://forum.leadshop.vip/thread/35** </a>
 
-https://forum.leadshop.vip/thread/35
 ## 下期更新计划
-* [点击查看更新预告](https://forum.leadshop.vip/thread/347)
+* <a href="https://forum.leadshop.vip/thread/347" target="_blank"> **点击查看更新预告** </a>
 
  <img border="0" src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210608/2.png">
 
 ## 更新历史
-* [点击查看往期更新历史](http://help.leadshop.vip/2278957) 
+* <a href="http://help.leadshop.vip/2278957" target="_blank"> **点击查看往期更新历史** </a>
 
 ## 论坛交流
-* 地址:https://forum.leadshop.vip/
+* <a href="https://forum.leadshop.vip" target="_blank"> **https://forum.leadshop.vip** </a>
 
 ## 体验后台
-* 地址:https://demo.leadshop.vip/
+* <a href="https://demo.leadshop.vip" target="_blank"> **https://demo.leadshop.vip** </a>
 
 * 账号:18888888888
 
@@ -53,7 +53,7 @@ https://forum.leadshop.vip/thread/35
 
  <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/14/SPpkWJfKviDWHsO7e0Yh6ZUohHX718rc7gzyUlff.jpg">
 
-* 操作文档：https://help.leadshop.vip/
+* 操作文档：<a href="https://help.leadshop.vip" target="_blank"> **https://help.leadshop.vip** </a>
 
 ## 开源无加密
 * 基于Apache License 2.0开源协议，前后端代码开源无加密，支持二次开发，支持商用。
@@ -75,7 +75,7 @@ https://forum.leadshop.vip/thread/35
 ## 数据表格导出
 * 采用高性能的 js-xlsx数据导出，易于扩展，兼容性强。
 
-* 接口文档：http://www.leadshop.vip/api.html
+* 接口文档：<a href="http://www.leadshop.vip/api.html" target="_blank"> **http://www.leadshop.vip/api.html** </a>
 
 ## 安装
 
