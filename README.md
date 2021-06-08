@@ -53,7 +53,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 
  <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/14/SPpkWJfKviDWHsO7e0Yh6ZUohHX718rc7gzyUlff.jpg">
 
-* 操作文档：<a href="https://help.leadshop.vip" target="_blank"> **https://help.leadshop.vip** </a>
+* 操作文档：<a href="https://help.leadshop.vip" target="_blank"> **help.leadshop.vip** </a>
 
 ## 开源无加密
 * 基于Apache License 2.0开源协议，前后端代码开源无加密，支持二次开发，支持商用。
