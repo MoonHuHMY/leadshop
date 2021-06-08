@@ -34,6 +34,8 @@ https://forum.leadshop.vip/thread/35
 ## 下期更新计划
 **[点击查看更新预告](https://forum.leadshop.vip/thread/347)** 
 
+ <img border="0" src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210608/2.png">
+
 ## 更新历史
 **[点击查看V1.2.4更新内容](https://forum.leadshop.vip/thread/343)** 
 
@@ -224,7 +226,7 @@ https://forum.leadshop.vip/thread/35
 
 ## Ladshop功能简介
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210522/1.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210531/2.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210608/2.png)
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210522/3.png)
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210522/4.png)
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210522/5.png)
