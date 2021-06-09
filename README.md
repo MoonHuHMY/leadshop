@@ -32,7 +32,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 <a href="https://forum.leadshop.vip/thread/35" target="_blank"> **查看常见问题/安装教程** </a>
 
 ## 下期更新计划
-* <a href="https://forum.leadshop.vip/thread/347" target="_blank"> **点击查看更新预告** </a>
+* <a href="https://forum.leadshop.vip/thread/401" target="_blank"> **点击查看更新预告** </a>
 
  <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/06/08/ywuZAhdyTIXc0KFGURsjR2SSgE3acDtKKgiYHkSa.png">
 
