@@ -34,7 +34,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 ## 下期更新计划
 * <a href="https://forum.leadshop.vip/thread/401" target="_blank"> **点击查看更新预告** </a>
 
- <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/06/08/ywuZAhdyTIXc0KFGURsjR2SSgE3acDtKKgiYHkSa.png">
+ <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/06/17/IUF8OYi5W0m21pKzPLM9VVi76ArHpqQLavUQhqXg.png">
 
 ## 更新历史
 * <a href="http://help.leadshop.vip/2278957" target="_blank"> **点击查看往期更新历史** </a>
