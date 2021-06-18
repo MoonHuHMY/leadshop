@@ -34,7 +34,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 ## 下期更新计划
 * <a href="https://forum.leadshop.vip/thread/457" target="_blank"> **【预告】直播即将闪亮登场** </a>
 
- <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/06/17/IUF8OYi5W0m21pKzPLM9VVi76ArHpqQLavUQhqXg.png">
+ <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/06/18/0YDXPo3JGkCtRrZemSUKfV3UyZBPeFj3mvICHZhK.png">
 
 ## 更新历史
 * <a href="http://help.leadshop.vip/2278957" target="_blank"> **点击查看往期更新历史** </a>
@@ -155,7 +155,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 
 ## Ladshop功能简介
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210522/1.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210616/2.png)
+![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/06/18/UtsqtDoL5ioVJfvOCCwFmyFszHKGeElGQnjppScH.png)
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210522/3.png)
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210522/4.png)
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210522/5.png)
