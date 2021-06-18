@@ -155,7 +155,6 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 
 ## Ladshop功能简介
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210522/1.png)
-![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/06/18/UtsqtDoL5ioVJfvOCCwFmyFszHKGeElGQnjppScH.png)
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210522/3.png)
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210522/4.png)
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210522/5.png)
