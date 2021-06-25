@@ -29,10 +29,10 @@ Leadshop 开源系统，基于Yii2开发，支持composer，优化核心，减�
 Linux+Nginx+PHP7.4+MySQL5.7.3以上
 
 ## 常见问题/安装教程
-<a href="https://forum.leadshop.vip/thread/35" target="_blank"> **查看常见问题/安装教程** </a>
+<a href="https://www.leadshop.vip/thread/35" target="_blank"> **查看常见问题/安装教程** </a>
 
 ## 下期更新计划
-* <a href="https://forum.leadshop.vip/thread/457" target="_blank"> **【预告】直播即将闪亮登场** </a>
+* <a href="https://www.leadshop.vip/thread/457" target="_blank"> **【预告】直播即将闪亮登场** </a>
 
  <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/06/18/0YDXPo3JGkCtRrZemSUKfV3UyZBPeFj3mvICHZhK.png">
 
@@ -40,7 +40,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 * <a href="http://help.leadshop.vip/2278957" target="_blank"> **点击查看往期更新历史** </a>
 
 ## 论坛交流
-* <a href="https://forum.leadshop.vip" target="_blank"> **点击进入Leadshop官方论坛** </a>
+* <a href="https://www.leadshop.vip/forum" target="_blank"> **点击进入Leadshop官方论坛** </a>
 
 ## 体验后台
 * <a href="https://demo.leadshop.vip" target="_blank"> **demo.leadshop.vip** </a>
@@ -151,7 +151,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
  <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/06/03/CGAUS3jcr3K3BfQYwnzalpR6OvWkjDcrc9hC2wUy.png">
 
 ## Ladshop用户案例
-<a href="https://forum.leadshop.vip/category/10?search_ids=10" target="_blank"> **点击查看更多Leadshop用户案例** </a>
+<a href="https://www.leadshop.vip/category/10?search_ids=10" target="_blank"> **点击查看更多Leadshop用户案例** </a>
 
 ## Ladshop功能简介
 ![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210522/1.png)
