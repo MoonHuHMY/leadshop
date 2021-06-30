@@ -98,7 +98,7 @@ class GoodsController extends BasicController
             $liveGoods->price_type = $this->post['price_type'];
             $liveGoods->price = $this->post['newPrice'];
             $liveGoods->price2 = $this->post['newPrice2'];
-            $liveGoods->link = $this->post['page_url'];
+            $liveGoods->link = 'pages/goods/detail?id=' . $this->post['page_url'];
             $liveGoods->goods_id = $res['goodsId'];
             $liveGoods->audit_id = $res['auditId'] . '';
             $liveGoods->gid = $this->post['my_goods_id'] ?? 0;
