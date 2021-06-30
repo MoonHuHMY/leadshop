@@ -32,9 +32,9 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 <a href="https://www.leadshop.vip/thread/35" target="_blank"> **查看常见问题/安装教程** </a>
 
 ## 下期更新计划
-* <a href="https://www.leadshop.vip/thread/457" target="_blank"> **【预告】直播即将闪亮登场** </a>
+* <a href="https://www.leadshop.vip/category/9?search_ids=9" target="_blank"> **【预告】积分任务中心插件即将上线** </a>
 
- <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/06/18/0YDXPo3JGkCtRrZemSUKfV3UyZBPeFj3mvICHZhK.png">
+ <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/06/30/2j5gat1nvAOsMUaWe3OQJg7A79eO0DJDl9q2Sexc.png">
 
 ## 更新历史
 * <a href="http://help.leadshop.vip/2278957" target="_blank"> **点击查看往期更新历史** </a>
