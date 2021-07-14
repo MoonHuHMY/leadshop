@@ -8,8 +8,8 @@
 
 namespace gallery\api;
 
-use framework\common\BasicController;
 use app\components\Upload;
+use framework\common\BasicController;
 use Yii;
 use yii\data\ActiveDataProvider;
 
@@ -287,10 +287,9 @@ class IndexController extends BasicController
 
             $file              = $upload->image_base64($content);
             $data['size']      = $file['size'];
-            $data['url']       = URL_STRING . $file['url'];
+            $data['url']       = $upload::$upload_way == 0 ? URL_STRING . $file['url'] : $file['url'];
             $thumbnail         = $upload->image_compress($file['url']);
-            $data['thumbnail'] = URL_STRING . $thumbnail;
-
+            $data['thumbnail'] = $upload::$upload_way == 0 ? URL_STRING . $thumbnail : $thumbnail;
 
         } elseif ($type == 2) {
 
@@ -304,11 +303,11 @@ class IndexController extends BasicController
 
             $file         = $upload->video($content);
             $data['size'] = $file['size'];
-            $data['url']  = URL_STRING . $file['url'];
+            $data['url']  = $upload::$upload_way == 0 ? URL_STRING . $file['url'] : $file['url'];
             $cover        = Yii::$app->request->post('cover', false);
             if (strlen($cover) > 100) {
                 $cover_url         = $upload->image_base64($cover);
-                $data['thumbnail'] = URL_STRING . $cover_url['url'];
+                $data['thumbnail'] = $upload::$upload_way == 0 ? URL_STRING . $cover_url['url'] : $cover_url['url'];
             } else {
                 $data['thumbnail'] = URL_STRING . '/static/images/gallery/video.png';
             }
@@ -342,7 +341,7 @@ class IndexController extends BasicController
                     $post['group_id'] = 1;
                 }
                 $get_url             = $this->upload();
-                $post['title']       = $get_url['title'];
+                $post['title']       = $post['title'] ?? $get_url['title'];
                 $post['size']        = $get_url['size'];
                 $post['url']         = $get_url['url'];
                 $post['thumbnail']   = $get_url['thumbnail'] ?? '';

@@ -30,7 +30,33 @@ class IndexController extends BasicController
 
     public function actionIndex()
     {
-        return '占位方法';
+        $id       = Yii::$app->request->get('id', false);
+        $order_sn = Yii::$app->request->get('order_sn', false);
+        $where    = ['is_recycle' => 0];
+        if ($id) {
+            $where = ['and', $where, ['id' => $id]];
+        }
+        if ($order_sn) {
+            $where = ['and', $where, ['order_sn' => $order_sn]];
+        }
+
+        $result = M()::find()
+            ->where($where)
+            ->with([
+                'buyer',
+                'goods',
+                'user',
+                'freight',
+            ])
+            ->asArray()
+            ->one();
+
+        if (empty($result)) {
+            Error('订单不存在');
+        }
+        $result                 = str2url($result);
+        $result['goods_amount'] = $result['goods_amount'] + $result['coupon_reduced'];
+        return $result;
     }
 
     public function actionTabcount()
@@ -126,7 +152,6 @@ class IndexController extends BasicController
                 case 'recycle': //回收站
                     $w = ['order.is_recycle' => 1, 'order.is_deleted' => 0];
                     break;
-
                 default: //默认获取全部
                     $w = ['order.is_recycle' => 0];
                     break;
@@ -199,6 +224,12 @@ class IndexController extends BasicController
         $source = $keyword['source'] ?? false;
         if ($source) {
             $where = ['and', $where, ['order.source' => $source]];
+        }
+
+        //订单类型
+        $type = $keyword['type'] ?? '';
+        if ($type) {
+            $where = ['and', $where, ['order.type' => $type]];
         }
 
         //支付方式
@@ -296,10 +327,18 @@ class IndexController extends BasicController
      */
     public function actionView()
     {
-        $id = Yii::$app->request->get('id', false);
+        $id       = Yii::$app->request->get('id', false);
+        $order_sn = Yii::$app->request->get('order_sn', false);
+        $where    = ['is_recycle' => 0];
+        if ($id) {
+            $where = ['and', $where, ['id' => $id]];
+        }
+        if ($order_sn) {
+            $where = ['and', $where, ['order_sn' => $order_sn]];
+        }
 
         $result = M()::find()
-            ->where(['id' => $id, 'is_recycle' => 0])
+            ->where($where)
             ->with([
                 'buyer',
                 'goods',
@@ -312,7 +351,8 @@ class IndexController extends BasicController
         if (empty($result)) {
             Error('订单不存在');
         }
-        $result = str2url($result);
+        $result                 = str2url($result);
+        $result['goods_amount'] = $result['goods_amount'] + $result['coupon_reduced'];
         return $result;
     }
 
@@ -470,6 +510,7 @@ class IndexController extends BasicController
             //执行取消订单事件
             $order_goods                             = M('order', 'OrderGoods')::find()->where(['order_sn' => $model->order_sn])->select('goods_id,goods_param,goods_number')->asArray()->all();
             $this->module->event->cancel_order_goods = $order_goods;
+            $this->module->event->cancel_order_sn    = $model->order_sn;
             $this->module->trigger('cancel_order');
             return ['status' => $model->status];
         } else {
@@ -518,27 +559,27 @@ class IndexController extends BasicController
                     $transaction->commit(); //事务执行
 
                     $this->module->event->sms = [
-                        'type' => 'order_send',
+                        'type'   => 'order_send',
                         'mobile' => [$model->user->mobile],
                         'params' => [
-                            'code' =>  substr($model->order_sn,-4)
-                        ]
+                            'code' => substr($model->order_sn, -4),
+                        ],
                     ];
                     $this->module->trigger('send_sms');
 
                     if ($freight_model->type == 1) {
                         $message = new OrderSendMessage([
                             'expressName' => $freight_model->logistics_company,
-                            'expressNo' => $freight_model->freight_sn,
-                            'address' => $model->buyer->address,
-                            'orderNo' => $model->order_sn
+                            'expressNo'   => $freight_model->freight_sn,
+                            'address'     => $model->buyer->address,
+                            'orderNo'     => $model->order_sn,
                         ]);
                     } else {
                         $message = new OrderSendMessage([
                             'expressName' => '无物流',
-                            'expressNo' => '--',
-                            'address' => $model->buyer->address,
-                            'orderNo' => $model->order_sn
+                            'expressNo'   => '--',
+                            'address'     => $model->buyer->address,
+                            'orderNo'     => $model->order_sn,
                         ]);
                     }
                     \Yii::$app->subscribe
@@ -648,7 +689,7 @@ class IndexController extends BasicController
         $transaction = Yii::$app->db->beginTransaction(); //启动数据库事务
         if (isset($post['goods_amount']) && $post['goods_amount'] >= 0) {
 
-            $goods_amount = $model->goods_reduced + $model->goods_amount;
+            $goods_amount = $model->goods_reduced + $model->goods_amount + $model->coupon_reduced;
 
             $order_goods_list = M('order', 'OrderGoods')::find()->where(['order_sn' => $model->order_sn])->select('id,total_amount')->asArray()->all();
 
@@ -656,7 +697,7 @@ class IndexController extends BasicController
                 $pay_amount = $goods_amount <= 0 ? 0 : round($v['total_amount'] * ($post['goods_amount'] / $goods_amount), 2);
                 M('order', 'OrderGoods')::updateAll(['pay_amount' => $pay_amount], ['id' => $v['id']]);
             }
-            $model->goods_reduced = $goods_amount - $post['goods_amount'];
+            $model->goods_reduced = $goods_amount - $post['goods_amount'] - $model->coupon_reduced;
             $model->goods_amount  = $post['goods_amount'];
         } else {
             Error('商品价格不符合要求');
@@ -732,6 +773,7 @@ class IndexController extends BasicController
                             M('goods', 'GoodsData')::updateAllCounters(['stocks' => $value['goods_number']], ['goods_id' => $value['goods_id'], 'param_value' => $value['goods_param']]);
                             M('goods', 'Goods')::updateAllCounters(['stocks' => $value['goods_number']], ['id' => $value['goods_id']]);
                         }
+                        M('coupon', 'UserCoupon')::updateAll(['use_data' => null, 'use_time' => null, 'status' => 0, 'order_sn' => null], ['order_sn' => $cancel_list]);
                     }
                 }
             }

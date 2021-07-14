@@ -17,6 +17,8 @@ use yii\data\ActiveDataProvider;
  */
 class IndexController extends BasicController
 {
+    public $goodsModel = 'goods\models\Goods';
+
     /**
      * 重写父类
      * @return [type] [description]
@@ -49,6 +51,9 @@ class IndexController extends BasicController
         }
     }
 
+    /**
+     * 商品详情页订单滚动
+     */
     public function goods_order()
     {
         $goods_id = Yii::$app->request->get('goods_id', false);
@@ -81,18 +86,61 @@ class IndexController extends BasicController
         return '占位方法';
     }
 
+    /**
+     * 装修组件商品列表
+     */
     public function fitment()
     {
         $goods_id = Yii::$app->request->get('goods_id', '');
+        $auto     = Yii::$app->request->get('auto', 0);
+        $is_task  = Yii::$app->request->get('is_task', false);
         $goods_id = explode(',', $goods_id);
         $AppID    = Yii::$app->params['AppID'];
-        $where    = ['id' => $goods_id, 'AppID' => $AppID, 'is_sale' => 1];
 
-        $data = M()::find()
-            ->where($where)
-            ->orderBy(['created_time' => SORT_DESC])
-            ->asArray()
-            ->all();
+        //判断是否安装
+        $task_status = $this->plugins("task", "status");
+        if ($is_task && !$task_status) {
+            Error("任务中心插件未安装");
+        }
+        //用于判断插件是否安装
+        if ($is_task && $task_status) {
+            if ($auto) {
+                $data = $this->goodsModel::find()
+                    ->from(['g' => $this->goodsModel::tableName()])
+                    ->joinWith('task')
+                    ->where([
+                        "t.goods_is_sale" => 1,
+                    ])
+                    ->limit($auto)
+                    ->asArray()
+                    ->all();
+                foreach ($data as $key => &$value) {
+                    $value['slideshow'] = to_array($value['slideshow']);
+                }
+                //将所有返回内容中的本地地址代替字符串替换为域名
+                $data = str2url($data);
+                return $data;
+            } else {
+                $where = ['AppID' => $AppID];
+                $where = ['and', $where, ['g.id' => $goods_id]];
+                $where = ['and', $where, ['t.goods_is_sale' => 1]];
+                $data  = M()::find()
+                    ->from(['g' => M()::tableName()])
+                    ->where($where)
+                    ->orderBy(['g.created_time' => SORT_DESC])
+                    ->joinWith('task')
+                    ->asArray()
+                    ->all();
+            }
+
+        } else {
+            $where = ['id' => $goods_id, 'AppID' => $AppID, 'is_sale' => 1];
+            $data  = M()::find()
+                ->where($where)
+                ->orderBy(['created_time' => SORT_DESC])
+                ->asArray()
+                ->all();
+        }
 
         foreach ($data as $key => &$value) {
             $value['slideshow'] = to_array($value['slideshow']);
@@ -103,41 +151,76 @@ class IndexController extends BasicController
         $data = array_column($data, null, 'id');
         $list = [];
         foreach ($goods_id as $id) {
-            if ($data[$id]) {
+            if (isset($data[$id])) {
                 array_push($list, $data[$id]);
             }
         }
         return $list;
     }
 
+    /**
+     * 推广商品
+     */
     public function recommend()
     {
         $AppID = Yii::$app->params['AppID'];
-        $where = ['is_recycle' => 0, 'is_sale' => 1, 'AppID' => $AppID];
+        $where = ['AppID' => $AppID];
+        //判断是否安装
+        $task_status = $this->plugins("task", "status");
+        //商品分组
+        $is_task = Yii::$app->request->get('is_task', []);
 
         $setting_data = M('setting', 'Setting')::find()->where(['keyword' => 'setting_collection', 'merchant_id' => 1, 'AppID' => $AppID])->select('content')->asArray()->one();
 
         $goods_id = false;
-        if ($setting_data) {
+        if ($setting_data && !$task_status) {
             $setting_data['content'] = to_array($setting_data['content']);
             if (isset($setting_data['content']['goods_setting'])) {
                 $goods_setting = $setting_data['content']['goods_setting'];
                 if ($goods_setting['recommend_status'] === 2) {
                     $goods    = $goods_setting['recommend_goods'];
                     $goods_id = array_column($goods, 'id');
-                    $where    = ['and', $where, ['id' => $goods_id]];
+                    $where    = ['and', $where, ['g.id' => $goods_id]];
 
                 }
             }
         }
 
-        $data = M()::find()
-            ->where($where)
-            ->orderBy(['sales' => SORT_DESC])
-            ->offset(0)
-            ->limit(20)
-            ->asArray()
-            ->all();
+        //用于判断插件是否安装
+        if ($is_task && $task_status) {
+            $where = ['and', $where, ['t.goods_is_sale' => 1]];
+            $where = ['and', $where, ['t.is_recycle' => 0]];
+
+            $data = M()::find()
+                ->joinWith('task')
+                ->from(['g' => M()::tableName()])
+                ->where($where)
+                ->orderBy(['sales' => SORT_DESC])
+                ->offset(0)
+                ->limit(6)
+                ->asArray()
+                ->all();
+            // $sql = M()::find()
+            //     ->joinWith('task')
+            //     ->from(['g' => M()::tableName()])
+            //     ->where($where)
+            //     ->orderBy(['sales' => SORT_DESC])
+            //     ->offset(0)
+            //     ->limit(20);
+
+            // P2($sql);
+            // exit();
+        } else {
+            $where = ['and', $where, ['is_recycle' => 0, 'is_sale' => 1]];
+            $data  = M()::find()
+                ->from(['g' => M()::tableName()])
+                ->where($where)
+                ->orderBy(['sales' => SORT_DESC])
+                ->offset(0)
+                ->limit(20)
+                ->asArray()
+                ->all();
+        }
 
         foreach ($data as $key => &$value) {
             $value['slideshow'] = to_array($value['slideshow']);
@@ -164,7 +247,6 @@ class IndexController extends BasicController
      */
     public function actionSearch()
     {
-
         //获取头部信息
         $headers = Yii::$app->getRequest()->getHeaders();
         //获取分页信息
@@ -172,10 +254,11 @@ class IndexController extends BasicController
         //商品分组
         $keyword = Yii::$app->request->post('keyword', []);
 
-        $where = ['is_recycle' => 0, 'is_sale' => 1];
+        //判断是否为积分商品
+        $is_task = Yii::$app->request->get('is_task', 0);
 
         $AppID = Yii::$app->params['AppID'];
-        $where = ['and', $where, ['AppID' => $AppID]];
+        $where = ['AppID' => $AppID];
 
         //商品分类筛选
         $group = $keyword['group'] ?? false;
@@ -199,6 +282,38 @@ class IndexController extends BasicController
             $where = ['and', $where, ['like', 'name', $search]];
         }
 
+        $coupon_id = $keyword['coupon_id'] ?? false;
+        if ($coupon_id) {
+            $c_info = M('coupon', 'Coupon')::findOne($coupon_id);
+            if ($c_info) {
+                $appoint_data = explode('-', trim($c_info->appoint_data, '-'));
+                switch ((int) $c_info->appoint_type) {
+                    case 2:
+                        $where = ['and', $where, ['id' => $appoint_data]];
+                        break;
+                    case 3:
+                        $g_like = ['or'];
+                        foreach ($appoint_data as $group_id) {
+                            array_push($g_like, ['like', 'group', '-' . $group_id . '-']);
+                        }
+                        $where = ['and', $where, $g_like];
+                        break;
+                    case 4:
+                        $where = ['and', $where, ['not in', 'id', $appoint_data]];
+                        break;
+                    case 5:
+                        $g_not_like = ['and'];
+                        foreach ($appoint_data as $group_id) {
+                            array_push($g_not_like, ['not like', 'group', '-' . $group_id . '-']);
+                        }
+                        $where = ['and', $where, $g_not_like];
+                        break;
+                }
+            } else {
+                Error('优惠券不存在');
+            }
+        }
+
         //处理排序
         $sort    = isset($keyword['sort']) && is_array($keyword['sort']) ? $keyword['sort'] : [];
         $orderBy = [];
@@ -209,16 +324,35 @@ class IndexController extends BasicController
                 $orderBy[$key] = $value === 'ASC' ? SORT_ASC : SORT_DESC;
             }
         }
-
-        $data = new ActiveDataProvider(
-            [
-                'query'      => M()::find()
-                    ->where($where)
-                    ->orderBy($orderBy)
-                    ->asArray(),
-                'pagination' => ['pageSize' => $pageSize, 'validatePage' => false],
-            ]
-        );
+        //判断是否安装
+        $task_status = $this->plugins("task", "status");
+        //用于判断插件是否安装
+        if ($is_task && $task_status) {
+            $where = ['and', $where, ['t.goods_is_sale' => 1]];
+            $where = ['and', $where, ['t.is_recycle' => 0]];
+            $data  = new ActiveDataProvider(
+                [
+                    'query'      => M()::find()
+                        ->joinWith('task')
+                        ->from(['g' => M()::tableName()])
+                        ->where($where)
+                        ->orderBy($orderBy)
+                        ->asArray(),
+                    'pagination' => ['pageSize' => $pageSize, 'validatePage' => false],
+                ]
+            );
+        } else {
+            $where = ['and', $where, ['is_recycle' => 0, 'is_sale' => 1]];
+            $data  = new ActiveDataProvider(
+                [
+                    'query'      => M()::find()
+                        ->where($where)
+                        ->orderBy($orderBy)
+                        ->asArray(),
+                    'pagination' => ['pageSize' => $pageSize, 'validatePage' => false],
+                ]
+            );
+        }
 
         $list = $data->getModels();
         foreach ($list as $key => &$value) {
@@ -237,20 +371,36 @@ class IndexController extends BasicController
     public function actionView()
     {
         $id      = Yii::$app->request->get('id', false);
+        $is_task = Yii::$app->request->get('is_task', false);
         $address = Yii::$app->request->get('address', []);
         $type    = Yii::$app->request->get('type', false);
         $UID     = Yii::$app->user->identity->id ?? null;
+
+        //判断是否安装
+        $task_status = $this->plugins("task", "status");
 
         if ($type == 'param') {
             $with = ['param'];
         } else {
             $with = ['param', 'body', 'package', 'freight'];
         }
-        $result = M()::find()->where(['id' => $id])->with($with)->asArray()->one();
-        if (empty($result) || $result['is_deleted'] === 1) {
-            return ['empty_status' => 1];
-        } elseif ($result['is_sale'] === 0) {
-            return ['empty_status' => 2];
+
+        if ($is_task && $task_status) {
+            $taskModel = 'plugins\task\models\TaskGoods';
+            $result    = $taskModel::find()->where(["goods_id" => $id])->asArray()->one();
+            if (empty($result) || $result['is_deleted'] === 1) {
+                return ['empty_status' => 1];
+            } elseif ($result['goods_is_sale'] === 0) {
+                return ['empty_status' => 2];
+            }
+            $result = M()::find()->where(['id' => $id])->with($with)->asArray()->one();
+        } else {
+            $result = M()::find()->where(['id' => $id])->with($with)->asArray()->one();
+            if (empty($result) || $result['is_deleted'] === 1) {
+                return ['empty_status' => 1];
+            } elseif ($result['is_sale'] === 0) {
+                return ['empty_status' => 2];
+            }
         }
 
         $result['param']['param_data']   = to_array($result['param']['param_data']);
@@ -335,7 +485,15 @@ class IndexController extends BasicController
         $result['services']        = M('goods', 'GoodsService')::find()->where(['id' => $services, 'status' => 1])->select('title,content')->orderBy(['sort' => SORT_DESC])->asArray()->all();
         $result['body']['content'] = htmlspecialchars_decode($result['body']['content']);
         //将所有返回内容中的本地地址代替字符串替换为域名
-        $result = str2url($result);
+        $result         = str2url($result);
+        $result['task'] = [];
+
+        //用于判断插件是否安装
+        if ($is_task && $task_status) {
+            $taskModel      = 'plugins\task\models\TaskGoods';
+            $task           = $taskModel::find()->where(["goods_id" => $result['id']])->asArray()->one();
+            $result['task'] = $task;
+        }
 
         M()::updateAllCounters(['visits' => 1], ['id' => $id]);
 
@@ -372,7 +530,7 @@ class IndexController extends BasicController
      */
     public static function addStocks($event)
     {
-        foreach ($event->order_goods as $value) {
+        foreach ($event->cancel_order_goods as $value) {
             M('goods', 'GoodsData')::updateAllCounters(['stocks' => $value['goods_number']], ['goods_id' => $value['goods_id'], 'param_value' => $value['goods_param']]);
             M()::updateAllCounters(['stocks' => $value['goods_number']], ['id' => $value['goods_id']]);
         }

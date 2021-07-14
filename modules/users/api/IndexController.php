@@ -21,8 +21,8 @@ class IndexController extends BasicController
      */
     public function actions()
     {
-        M('users', 'Label')::findOne(['id'=>1]);
-        M('users', 'LabelLog')::findOne(['id'=>1]);
+        M('users', 'Label')::findOne(['id' => 1]);
+        M('users', 'LabelLog')::findOne(['id' => 1]);
         $actions = parent::actions();
         unset($actions['index']);
         unset($actions['view']);
@@ -196,15 +196,30 @@ class IndexController extends BasicController
 
         $AppID = Yii::$app->params['AppID'];
         $where = ['user.AppID' => $AppID];
-        $with  = [
-            'statistical as statistical',
-            'oauth as oauth',
-            'labellog as labellog' => function ($q) {
-                $q->with(['label' => function ($query) {
-                    $query->select('id,name');
-                }]);
-            },
-        ];
+
+        //判断插件已经安装，则执行
+        if ($this->plugins("task", "status")) {
+            $with = [
+                'statistical as statistical',
+                'oauth as oauth',
+                'taskuser as taskuser',
+                'labellog as labellog' => function ($q) {
+                    $q->with(['label' => function ($query) {
+                        $query->select('id,name');
+                    }]);
+                },
+            ];
+        } else {
+            $with = [
+                'statistical as statistical',
+                'oauth as oauth',
+                'labellog as labellog' => function ($q) {
+                    $q->with(['label' => function ($query) {
+                        $query->select('id,name');
+                    }]);
+                },
+            ];
+        }
 
         //关键词搜索
         $search = $keyword['search'] ?? false;
@@ -309,9 +324,21 @@ class IndexController extends BasicController
     {
         $id = Yii::$app->request->get('id', false);
 
-        $result = M('users', 'User')::find()
-            ->where(['id' => $id])
-            ->with([
+        //判断插件已经安装，则执行 taskuser
+        if ($this->plugins("task", "status")) {
+            $with = [
+                'statistical',
+                'oauth',
+                'taskuser',
+                'labellog' => function ($query) {
+                    $query->where(['is_deleted' => 0])->with(['label' => function ($query) {
+                        $query->select('id,name');
+                    }]);
+                },
+
+            ];
+        } else {
+            $with = [
                 'statistical',
                 'oauth',
                 'labellog' => function ($query) {
@@ -319,7 +346,12 @@ class IndexController extends BasicController
                         $query->select('id,name');
                     }]);
                 },
-            ])
+            ];
+        }
+
+        $result = M('users', 'User')::find()
+            ->where(['id' => $id])
+            ->with($with)
             ->asArray()
             ->one();
 
@@ -365,6 +397,8 @@ class IndexController extends BasicController
             }
         }
 
+        $result['coupon'] = M('coupon', 'UserCoupon')::find()->where(['UID' => $id, 'is_deleted' => 0])->count('id');
+
         return $result;
     }
 
@@ -401,18 +435,18 @@ class IndexController extends BasicController
             Error('用户不存在');
         }
 
-        if ($post['mobile']) {
-            if (!preg_match("/^1[34578]\d{9}$/", $post['mobile'])) {
+        if (N('mobile')) {
+            if (!preg_match("/^1[0-9]{10}$/", $post['mobile'])) {
                 Error('请填写正确手机号');
             }
-        }
-        $check = M('users', 'User')::find()->where(['and', ['mobile' => $post['mobile']], ['<>', 'id', $id]])->with(['oauth' => function ($query) {
-            $query->select('UID,type');
-        }])->asArray()->all();
-        if (!empty($check)) {
-            foreach ($check as $value) {
-                if ($value['oauth']['type'] === $model->oauth->type) {
-                    Error('手机号已存在');
+            $check = M('users', 'User')::find()->where(['and', ['mobile' => $post['mobile']], ['<>', 'id', $id]])->with(['oauth' => function ($query) {
+                $query->select('UID,type');
+            }])->asArray()->all();
+            if (!empty($check)) {
+                foreach ($check as $value) {
+                    if ($value['oauth']['type'] === $model->oauth->type) {
+                        Error('手机号已存在');
+                    }
                 }
             }
         }

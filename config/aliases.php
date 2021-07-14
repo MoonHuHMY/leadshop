@@ -2,8 +2,8 @@
 /**
  * @Author: qinuoyun
  * @Date:   2021-01-05 10:39:18
- * @Last Modified by:   wiki
- * @Last Modified time: 2021-02-01 18:30:46
+ * @Last Modified by:   qinuoyun
+ * @Last Modified time: 2021-06-28 13:30:49
  */
 
 return [
@@ -21,6 +21,9 @@ return [
     '@statistical/api'    => '@leadmall/modules/statistical/api',
     '@sms/api'            => '@leadmall/modules/sms/api',
     '@subscribe/api'      => '@leadmall/modules/subscribe/api',
+    '@coupon/api'         => '@leadmall/modules/coupon/api',
+    '@collect/api'        => '@leadmall/modules/collect/api',
+    '@live/api'           => '@leadmall/modules/live/api',
 
     '@demo/app'           => '@leadmall/modules/demo/app',
     '@basics/app'         => '@leadmall/modules/basics/app',
@@ -37,6 +40,8 @@ return [
     '@sms/app'            => '@leadmall/modules/sms/app',
     '@mp/app'             => '@leadmall/modules/mp/app',
     '@subscribe/app'      => '@leadmall/modules/subscribe/app',
+    '@coupon/app'         => '@leadmall/modules/coupon/app',
+    '@live/app'           => '@leadmall/modules/live/app',
 
     '@demo/models'        => '@leadmall/modules/demo/models',
     '@basics/models'      => '@leadmall/modules/basics/models',
@@ -52,4 +57,11 @@ return [
     '@statistical/models' => '@leadmall/modules/statistical/models',
     '@sms/models'         => '@leadmall/modules/sms/models',
     '@subscribe/models'   => '@leadmall/modules/subscribe/models',
+    '@coupon/models'      => '@leadmall/modules/coupon/models',
+    '@collect/models'     => '@leadmall/modules/collect/models',
+
+    '@basics/common'      => '@leadmall/modules/basics/common',
+
+    '@live/models'        => '@leadmall/modules/live/models',
+
 ];

@@ -41,10 +41,10 @@ class CommonWechat extends BaseObject
             throw new \Exception('渠道参数不完整。');
         }
         $this->wechat = &load_wechat('Accesstoken',[
-            'token'          => $mpConfig['token'], // 填写你设定的key
+            'token'          => $mpConfig['token'] ?? '', // 填写你设定的key
             'appid'          => $mpConfig['AppID'], // 填写高级调用功能的app id, 请在微信开发模式后台查询
             'appsecret'      => $mpConfig['AppSecret'], // 填写高级调用功能的密钥
-            'encodingaeskey' => $mpConfig['encodingAesKey'], // 填写加密用的EncodingAESKey（可选，接口传输选择加密时必需）
+            'encodingaeskey' => $mpConfig['encodingAesKey'] ?? '', // 填写加密用的EncodingAESKey（可选，接口传输选择加密时必需）
         ]);
         return $this->wechat;
     }
@@ -69,9 +69,9 @@ class CommonWechat extends BaseObject
             return $this->xWechatPay;
         }
         if ($option) {
-            $payType['appid'] = $option['appid'];
-            $payType['mchid'] = $option['mchid'];
-            $payType['key'] = $option['key'];
+            $payType['appid'] = trim($option['appid']);
+            $payType['mchid'] = trim($option['mchid']);
+            $payType['key'] = trim($option['key']);
             $payType['certPem'] = $option['certPem'];
             $payType['keyPem'] = $option['keyPem'];
             $payType['isService'] = false;
@@ -101,9 +101,9 @@ class CommonWechat extends BaseObject
                     list($sslCer, $sslKey) = $this->generatePem($payType['certPem'], $payType['keyPem']);
                 }
                 $this->xWechatPay = load_wechat('Pay',[
-                    'appid'          => $payType['appid'],
-                    'mch_id'         => $payType['mchid'],
-                    'partnerkey'     => $payType['key'],
+                    'appid'          => trim($payType['appid']),
+                    'mch_id'         => trim($payType['mchid']),
+                    'partnerkey'     => trim($payType['key']),
                     'ssl_cer'        => $sslCer ?? '',
                     'ssl_key'        => $sslKey ?? ''
                 ]);

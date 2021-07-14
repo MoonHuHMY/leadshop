@@ -10,8 +10,10 @@ namespace order\api;
 
 use app\components\subscribe\OrderRefundMessage;
 use app\components\subscribe\OrderSaleVerifyMessage;
+use app\components\subscribe\TaskSendMessage;
 use framework\common\BasicController;
 use order\models\OrderAfter;
+use sms\app\IndexController as smsController;
 use Yii;
 use yii\data\ActiveDataProvider;
 
@@ -42,8 +44,8 @@ class AfterController extends BasicController
         $keyword = Yii::$app->request->post('keyword', []);
 
         $merchant_id = 1;
-        $AppID = Yii::$app->params['AppID'];
-        $where = ['after.merchant_id' => $merchant_id, 'after.AppID' => $AppID];
+        $AppID       = Yii::$app->params['AppID'];
+        $where       = ['after.merchant_id' => $merchant_id, 'after.AppID' => $AppID, 'after.is_deleted' => 0];
 
         //申请类型
         $type = $keyword['type'] ?? false;
@@ -68,7 +70,7 @@ class AfterController extends BasicController
         }
 
         $search_key = $keyword['search_key'] ?? false;
-        $search = $keyword['search'] ?? '';
+        $search     = $keyword['search'] ?? '';
 
         //订单编号
         if ($search_key == 'order_sn' && $search) {
@@ -191,12 +193,12 @@ class AfterController extends BasicController
         }
 
         $merchant_id = 1;
-        $AppID = Yii::$app->params['AppID'];
+        $AppID       = Yii::$app->params['AppID'];
         if (empty($where)) {
-            $where = ['after.merchant_id' => $merchant_id, 'after.AppID' => $AppID];
+            $where = ['after.merchant_id' => $merchant_id, 'after.AppID' => $AppID, 'after.is_deleted' => 0];
         } else {
 
-            $where = ['and', $where, ['after.merchant_id' => $merchant_id, 'after.AppID' => $AppID]];
+            $where = ['and', $where, ['after.merchant_id' => $merchant_id, 'after.AppID' => $AppID, 'after.is_deleted' => 0]];
         }
 
         //申请类型
@@ -211,6 +213,12 @@ class AfterController extends BasicController
             $where = ['and', $where, ['after.source' => $source]];
         }
 
+        //订单类型
+        $order_type = $keyword['order_type'] ?? '';
+        if ($order_type) {
+            $where = ['and', $where, ['after.order_type' => $order_type]];
+        }
+
         //时间区间
         $time_start = $keyword['time_start'] ?? false;
         if ($time_start > 0) {
@@ -222,7 +230,7 @@ class AfterController extends BasicController
         }
 
         $search_key = $keyword['search_key'] ?? false;
-        $search = $keyword['search'] ?? '';
+        $search     = $keyword['search'] ?? '';
 
         //订单编号
         if ($search_key == 'order_sn' && $search) {
@@ -263,7 +271,7 @@ class AfterController extends BasicController
         }
 
         //处理排序
-        $sort = isset($keyword['sort']) && is_array($keyword['sort']) ? $keyword['sort'] : [];
+        $sort    = isset($keyword['sort']) && is_array($keyword['sort']) ? $keyword['sort'] : [];
         $orderBy = [];
         if (empty($sort)) {
             $orderBy = ['after.created_time' => SORT_DESC];
@@ -275,7 +283,7 @@ class AfterController extends BasicController
 
         $data = new ActiveDataProvider(
             [
-                'query' => $this->modelClass::find()
+                'query'      => $this->modelClass::find()
                     ->alias('after')
                     ->joinWith([
                         'buyer as buyer',
@@ -293,7 +301,8 @@ class AfterController extends BasicController
 
         $list = $data->getModels();
         foreach ($list as $key => &$value) {
-            $value['images'] = to_array($value['images']);
+            $value['images']                = to_array($value['images']);
+            $value['merchant_freight_info'] = to_array($value['merchant_freight_info']);
         }
         //将所有返回内容中的本地地址代替字符串替换为域名
         $list = str2url($list);
@@ -307,7 +316,7 @@ class AfterController extends BasicController
      */
     public function actionView()
     {
-        $id = Yii::$app->request->get('id', false);
+        $id       = Yii::$app->request->get('id', false);
         $behavior = Yii::$app->request->get('behavior', false);
 
         if ($behavior === 'order_goods') {
@@ -327,12 +336,12 @@ class AfterController extends BasicController
             ->asArray()
             ->one();
         if ($result) {
-            $result['images'] = to_array($result['images']);
-            $result['process'] = to_array($result['process']);
-            $result['return_address'] = to_array($result['return_address']);
-            $result['user_freight_info'] = to_array($result['user_freight_info']);
+            $result['images']                = to_array($result['images']);
+            $result['process']               = to_array($result['process']);
+            $result['return_address']        = to_array($result['return_address']);
+            $result['user_freight_info']     = to_array($result['user_freight_info']);
             $result['merchant_freight_info'] = to_array($result['merchant_freight_info']);
-            $result = str2url($result);
+            $result                          = str2url($result);
             return $result;
         } else {
             Error('售后不存在');
@@ -361,10 +370,13 @@ class AfterController extends BasicController
                 $model = $this->refund();
                 break;
             case 'salesreturn': //退货退款
-                $model = $this->salesreturn();
+                $model = $this->salesReturn();
                 break;
             case 'salesexchange': //换货
-                $model = $this->salesexchange();
+                $model = $this->salesExchange();
+                break;
+            case 'exchangefreight': //换货物流
+                $model = $this->exchangeFreight();
                 break;
             default:
                 Error('未定义操作');
@@ -383,17 +395,17 @@ class AfterController extends BasicController
      */
     public function refuse()
     {
-        $id = Yii::$app->request->get('id', false);
-        $post = Yii::$app->request->post();
+        $id    = Yii::$app->request->get('id', false);
+        $post  = Yii::$app->request->post();
         $model = $this->modelClass::findOne($id);
         if (empty($model)) {
             Error('售后订单不存在');
         }
         $process = to_array($model->process);
-        $time = time();
+        $time    = time();
         if ($model->status === 100) {
             //首次拒绝
-            $model->status = 101;
+            $model->status      = 101;
             $model->refuse_time = $time;
             array_unshift($process, ['label' => '卖家', 'content' => '拒绝售后 ' . date('Y-m-d H:i:s', $time)]);
             if (isset($post['refuse_reason'])) {
@@ -401,7 +413,7 @@ class AfterController extends BasicController
             }
         } elseif ($model->status === 102) {
             //二次拒绝后转完成
-            $model->status = 201;
+            $model->status      = 201;
             $model->finish_time = $time;
             array_unshift($process, ['label' => '结束', 'content' => '已完成(已拒绝) ' . date('Y-m-d H:i:s', $time)]);
             if (isset($post['refuse_reason'])) {
@@ -425,7 +437,7 @@ class AfterController extends BasicController
      */
     public function pass()
     {
-        $id = Yii::$app->request->get('id', false);
+        $id    = Yii::$app->request->get('id', false);
         $model = $this->modelClass::findOne($id);
         if (empty($model)) {
             Error('售后订单不存在');
@@ -439,7 +451,7 @@ class AfterController extends BasicController
                 Error('退货地址不能为空');
             }
             //退货退款
-            $model->status = 121;
+            $model->status         = 121;
             $model->return_address = to_json($return_address);
         } elseif ($model->type === 2) {
             $return_address = Yii::$app->request->post('return_address', false);
@@ -447,7 +459,7 @@ class AfterController extends BasicController
                 Error('退货地址不能为空');
             }
             //换货
-            $model->status = 131;
+            $model->status         = 131;
             $model->return_address = to_json($return_address);
         } else {
             //退款
@@ -472,9 +484,11 @@ class AfterController extends BasicController
      */
     public function refund()
     {
-        $id = Yii::$app->request->get('id', false);
+        $id            = Yii::$app->request->get('id', false);
         $actual_refund = Yii::$app->request->post('actual_refund', false);
-        $model = $this->modelClass::findOne($id);
+        $actual_score  = Yii::$app->request->post('actual_score', 0);
+        $model         = $this->modelClass::findOne($id);
+
         if (empty($model)) {
             Error('售后订单不存在');
         }
@@ -486,19 +500,29 @@ class AfterController extends BasicController
             Error('退款金额异常');
         }
 
-        $order_info = M('order', 'Order')::find()->where(['order_sn' => $model->order_sn])->select('pay_amount,pay_number')->asArray()->one();
+        if ($actual_score) {
+            if ($actual_score < 0 || $actual_score > $model->return_score) {
+                Error('退还积分异常');
+            }
+        }
+
+        $order_info   = M('order', 'Order')::find()->where(['order_sn' => $model->order_sn])->select('pay_amount,pay_number,source')->asArray()->one();
         $return_order = [
-            'order_sn' => $order_info['pay_number'],
+            'order_sn'   => $order_info['pay_number'],
             'pay_amount' => $order_info['pay_amount'],
+            'source'     => $order_info['source'],
         ];
         $return_sn = get_sn('rsn');
-        return Yii::$app->payment->refund($return_order, $return_sn, $actual_refund, function () use ($model, $actual_refund, $return_sn) {
-            $time = time();
-            $model->actual_refund = $actual_refund;
-            $model->return_sn = $return_sn;
-            $model->status = 200;
-            $model->return_time = $time;
-            $model->finish_time = $time;
+
+        return Yii::$app->payment->refund($return_order, $return_sn, $actual_refund, function () use ($model, $actual_refund, $actual_score, $return_sn) {
+            $time                     = time();
+            $model->actual_refund     = $actual_refund;
+            $model->actual_score      = $actual_score;
+            $model->return_score_type = $this->plugins("task", "config.integral_return");
+            $model->return_sn         = $return_sn;
+            $model->status            = 200;
+            $model->return_time       = $time;
+            $model->finish_time       = $time;
 
             $process = to_array($model->process);
             array_unshift($process, ['label' => '卖家', 'content' => '退款' . date('Y-m-d H:i:s', $time)]);
@@ -518,7 +542,14 @@ class AfterController extends BasicController
                     }
                     $order_model->save();
                 }
+
                 $this->orderFinishCheck($model->order_sn);
+                $this->module->event->refunded = ['order_sn' => $model->order_sn, 'order_goods_id' => $model->order_goods_id, 'return_number' => $model->return_number];
+                $this->module->trigger('refunded');
+
+                //处理任务中心积分退还问题
+                $this->onReturnScore($model);
+
                 return $model;
             } else {
                 Error('操作失败');
@@ -526,38 +557,99 @@ class AfterController extends BasicController
         });
     }
 
-    private function onRefund($model, $actual_refund, $return_sn, $msg)
+    /**
+     * 执行积分退还
+     * @param  string $model [description]
+     * @return [type]        [description]
+     */
+    public function onReturnScore($model)
     {
-        $time = time();
-        $model->actual_refund = $actual_refund;
-        $model->return_sn = $return_sn;
-        $model->status = 200;
-        $model->return_time = $time;
-        $model->finish_time = $time;
+        //判断是否安装
+        $task_status = $this->plugins("task", "status");
+        $task_return = $this->plugins("task", "config.integral_return");
+        //用于判断积分可退
+        if ($model->order_type == 'task' && $task_status && $task_return) {
+            $ScoreModel = '\plugins\task\models\TaskScore';
+            //预下单积分处理
+            $ScoreClass             = (new $ScoreModel());
+            $ScoreClass->task_id    = 0;
+            $ScoreClass->UID        = $model->UID;
+            $ScoreClass->start_time = time();
+            $ScoreClass->status     = 1;
+            $ScoreClass->order_sn   = $model->order_sn;
+            $ScoreClass->type       = 'add';
+            $ScoreClass->number     = $model->actual_score;
+            $ScoreClass->remark     = "订单退款退积分";
+            $ScoreClass->insert();
+            //积分返回用户账户
+            $balance = $this->onUserNumer($model->UID, $model->actual_score);
 
-        $process = to_array($model->process);
-        array_unshift($process, ['label' => '卖家', 'content' => $msg . date('Y-m-d H:i:s', $time)]);
-        array_unshift($process, ['label' => '结束', 'content' => '已完成 ' . date('Y-m-d H:i:s', $time)]);
-        $model->process = to_json($process);
+            //读取用户信息
+            $UserData = \users\models\User::find()->where(["id" => $model->UID])->one();
 
-        if ($model->save()) {
-            M('order', 'Order')::updateAll(['after_sales' => 1, 'finish_time' => $time], ['order_sn' => $model->order_sn]);
-            $this->orderFinishCheck($model->order_sn);
-            return $model;
-        } else {
-            Error('操作失败');
+            //处理执行消息订阅
+            \Yii::$app->subscribe
+                ->setUser($model->UID)
+                ->setPage('plugins/task/index')
+                ->send(new TaskSendMessage([
+                    'number'  => $model->actual_score,
+                    'balance' => $balance,
+                    'remark'  => "订单退款退积分",
+                    'time'    => date("Y年m月d日 H:m", time()),
+                ]));
+
+            //判断手机号是否存在
+            if ($UserData && $UserData->mobile) {
+                //处理短信模板
+                $event      = array('sms' => []);
+                $event      = json_decode(json_encode($event));
+                $event->sms = array(
+                    'type'   => 'score_changes',
+                    'mobile' => [$UserData->mobile],
+                    'params' => [
+                        'name1' => '变动',
+                        'name2' => $model->actual_score,
+                        'name3' => $balance,
+                    ],
+                );
+                //执行短信发送
+                (new smsController($this->id, $this->module))->sendSms($event);
+            }
+
         }
+    }
+
+    /**
+     * 处理积分返回用户账号
+     * @param  string $UID    [description]
+     * @param  [type] $number [description]
+     * @return [type]         [description]
+     */
+    public function onUserNumer($UID = '', $number)
+    {
+        //获取用户信息
+        $UserModel = '\plugins\task\models\TaskUser';
+        $UserClass = $UserModel::find()->where(["UID" => $UID])->one();
+        //处理用户积分信息
+        $UserClass->number += $number;
+        $UserClass->total += $number;
+        //执行积分数据写入
+        $returned = $UserClass->save();
+        return $UserClass->number;
     }
 
     /**
      * 退货退款
      * @return [type] [description]
      */
-    public function salesreturn()
+    public function salesReturn()
     {
-        $id = Yii::$app->request->get('id', false);
+
+        $id            = Yii::$app->request->get('id', false);
         $actual_refund = Yii::$app->request->post('actual_refund', false);
-        $model = $this->modelClass::findOne($id);
+        $actual_score  = Yii::$app->request->post('actual_score', 0);
+        $model         = $this->modelClass::findOne($id);
+
         if (empty($model)) {
             Error('售后订单不存在');
         }
@@ -569,19 +661,28 @@ class AfterController extends BasicController
             Error('退款金额异常');
         }
 
-        $order_info = M('order', 'Order')::find()->where(['order_sn' => $model->order_sn])->select('pay_amount,pay_number')->asArray()->one();
+        if ($actual_score) {
+            if ($actual_score < 0 || $actual_score > $model->return_score) {
+                Error('退还积分异常');
+            }
+        }
+
+        $order_info   = M('order', 'Order')::find()->where(['order_sn' => $model->order_sn])->select('pay_amount,pay_number,source')->asArray()->one();
         $return_order = [
-            'order_sn' => $order_info['pay_number'],
+            'order_sn'   => $order_info['pay_number'],
             'pay_amount' => $order_info['pay_amount'],
+            'source'     => $order_info['source'],
         ];
         $return_sn = get_sn('rsn');
-        return Yii::$app->payment->refund($return_order, $return_sn, $actual_refund, function () use ($model, $actual_refund, $return_sn) {
-            $time = time();
-            $model->actual_refund = $actual_refund;
-            $model->return_sn = $return_sn;
-            $model->status = 200;
-            $model->return_time = $time;
-            $model->finish_time = $time;
+        return Yii::$app->payment->refund($return_order, $return_sn, $actual_refund, function () use ($model, $actual_refund, $actual_score, $return_sn) {
+            $time                     = time();
+            $model->actual_refund     = $actual_refund;
+            $model->actual_score      = $actual_score;
+            $model->return_score_type = $this->plugins("task", "config.integral_return");
+            $model->return_sn         = $return_sn;
+            $model->status            = 200;
+            $model->return_time       = $time;
+            $model->finish_time       = $time;
 
             $process = to_array($model->process);
             array_unshift($process, ['label' => '卖家', 'content' => '确认收货并退款' . date('Y-m-d H:i:s', $time)]);
@@ -602,6 +703,12 @@ class AfterController extends BasicController
                     $order_model->save();
                 }
                 $this->orderFinishCheck($model->order_sn);
+
+                $this->module->event->refunded = ['order_sn' => $model->order_sn, 'order_goods_id' => $model->order_goods_id, 'return_number' => $model->return_number];
+                $this->module->trigger('refunded');
+
+                //处理任务中心积分退还问题
+                $this->onReturnScore($model);
                 return $model;
             } else {
                 Error('操作失败');
@@ -613,9 +720,9 @@ class AfterController extends BasicController
      * 换货
      * @return [type] [description]
      */
-    public function salesexchange()
+    public function salesExchange()
     {
-        $id = Yii::$app->request->get('id', false);
+        $id    = Yii::$app->request->get('id', false);
         $model = $this->modelClass::findOne($id);
         if (empty($model)) {
             Error('售后订单不存在');
@@ -624,12 +731,12 @@ class AfterController extends BasicController
         if ($model->status !== 132) {
             Error('非法操作');
         }
-        $time = time();
-        $merchant_freight_info = Yii::$app->request->post('merchant_freight_info', []);
+        $time                         = time();
+        $merchant_freight_info        = Yii::$app->request->post('merchant_freight_info', []);
         $model->merchant_freight_info = to_json($merchant_freight_info);
-        $model->status = 200;
-        $model->exchange_time = $time;
-        $model->finish_time = $time;
+        $model->status                = 200;
+        $model->exchange_time         = $time;
+        $model->finish_time           = $time;
 
         $process = to_array($model->process);
         array_unshift($process, ['label' => '卖家', 'content' => '确认收货并发货 ' . date('Y-m-d H:i:s', $time)]);
@@ -657,10 +764,29 @@ class AfterController extends BasicController
         }
     }
 
+    /**
+     * 修改换货物流
+     */
+    public function exchangeFreight()
+    {
+        $id    = Yii::$app->request->get('id', false);
+        $model = $this->modelClass::findOne($id);
+        if (empty($model)) {
+            Error('售后订单不存在');
+        }
+        $merchant_freight_info        = Yii::$app->request->post('merchant_freight_info', []);
+        $model->merchant_freight_info = to_json($merchant_freight_info);
+        if ($model->save()) {
+            return $model;
+        } else {
+            Error('修改失败');
+        }
+    }
+
     public function orderFinishCheck($order_sn)
     {
         $order_after_goods_number = M('order', 'OrderAfter')::find()->where(['order_sn' => $order_sn, 'status' => 200])->sum('return_number');
-        $order_goods_number = M('order', 'OrderGoods')::find()->where(['order_sn' => $order_sn])->sum('goods_number');
+        $order_goods_number       = M('order', 'OrderGoods')::find()->where(['order_sn' => $order_sn])->sum('goods_number');
 
         if ($order_goods_number === $order_after_goods_number) {
             M('order', 'Order')::updateAll(['status' => 204], ['order_sn' => $order_sn]);
@@ -683,16 +809,16 @@ class AfterController extends BasicController
             case '121':
             case '131':
                 $this->module->event->sms = [
-                    'type' => 'order_verify',
+                    'type'   => 'order_verify',
                     'mobile' => [$model->user->mobile],
                     'params' => [
-                        'status' => '通过'
-                    ]
+                        'status' => '通过',
+                    ],
                 ];
                 $subscribeData = [
-                    'result' => '审核通过',
-                    'orderNo' => $model->after_sn,
-                    'orderAmount' => $model->order->pay_amount
+                    'result'      => '审核通过',
+                    'orderNo'     => $model->after_sn,
+                    'orderAmount' => $model->order->pay_amount,
                 ];
                 $subscribe = new OrderSaleVerifyMessage($subscribeData);
                 break;
@@ -700,16 +826,16 @@ class AfterController extends BasicController
             case '101':
             case '201':
                 $this->module->event->sms = [
-                    'type' => 'order_verify',
+                    'type'   => 'order_verify',
                     'mobile' => [$model->user->mobile],
                     'params' => [
-                        'status' => '拒绝'
-                    ]
+                        'status' => '拒绝',
+                    ],
                 ];
                 $subscribeData = [
-                    'result' => '审核不通过',
-                    'orderNo' => $model->after_sn,
-                    'orderAmount' => $model->order->pay_amount
+                    'result'      => '审核不通过',
+                    'orderNo'     => $model->after_sn,
+                    'orderAmount' => $model->order->pay_amount,
                 ];
                 $subscribe = new OrderSaleVerifyMessage($subscribeData);
                 break;
@@ -718,18 +844,18 @@ class AfterController extends BasicController
                 //退款成功
                 if ($model->type === 0 || $model->type === 1) {
                     $this->module->event->sms = [
-                        'type' => 'order_refund_success',
+                        'type'   => 'order_refund_success',
                         'mobile' => [$model->user->mobile],
                         'params' => [
-                            'code' => substr($model->order_sn, -4)
-                        ]
+                            'code' => substr($model->order_sn, -4),
+                        ],
                     ];
 
                     $subscribeData = [
                         'refundAmount' => $model->return_amount,
-                        'orderNo' => $model->order->order_sn,
-                        'goodsName' => $model->goods->goods_name,
-                        'applyTime' => date('Y年m月d日 H:i', time())
+                        'orderNo'      => $model->order->order_sn,
+                        'goodsName'    => $model->goods->goods_name,
+                        'applyTime'    => date('Y年m月d日 H:i', time()),
                     ];
                     $subscribe = new OrderRefundMessage($subscribeData);
                 }

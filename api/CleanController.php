@@ -18,7 +18,7 @@ class CleanController extends BasicController
     public function actionIndex()
     {
         @\Yii::$app->cache->flush();
-        $this->clear([\Yii::$app->basePath . '/system/wechat/Cache']);
+        $this->clear([\Yii::$app->runtimePath . '/wechat-cache']);
         $this->clear([\Yii::$app->basePath . '/web/temp']);
         //请理assets资源文件夹
         $assetsPath = \Yii::$app->basePath . '/web/assets';

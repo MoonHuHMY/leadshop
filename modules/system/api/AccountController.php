@@ -6,6 +6,7 @@
  */
 namespace system\api;
 
+use framework\common\AccessToken;
 use framework\common\BasicController;
 use Yii;
 
@@ -29,8 +30,9 @@ class AccountController extends BasicController
             //删除用户密码字段
             unset($data['password']);
             //获取Token数据
-            $token         = $this->getToken($data['id']);
-            $data['token'] = $token;
+            $data['token_type']    = 'Bearer';
+            $data['access_token']  = AccessToken::getToken($data['id']);
+            $data['refresh_token'] = AccessToken::getToken($data['id'], 2);
             return $data;
         } else {
             Error('用户不存在或密码错误');
@@ -43,15 +45,7 @@ class AccountController extends BasicController
      */
     public function actionLogout()
     {
-        $post = Yii::$app->request->post();
-        $data = $this->modelClass::find()->where(['mobile' => $post['mobile'], 'password' => $post['password']])->one();
-        if ($data) {
-            $token         = $this->getToken($data['id']);
-            $data['token'] = $token;
-            return $data;
-        } else {
-            return null;
-        }
+        return null;
     }
 
     /**
@@ -79,16 +73,22 @@ class AccountController extends BasicController
     }
 
     /**
-     * 后台登录
+     *
      * @return [type] [description]
      */
     public function actionReset()
     {
-        $post = Yii::$app->request->post();
-        $data = $this->modelClass::find()->where(['mobile' => $post['mobile'], 'password' => $post['password']])->one();
-        if ($data) {
-            $token         = $this->getToken($data['id']);
-            $data['token'] = $token;
+        //调用模型
+        $model    = new $this->modelClass();
+        $postData = Yii::$app->request->post();
+        $token    = $postData['refresh_token'] ? $postData['refresh_token'] : "";
+        $token    = AccessToken::resetToken($token, 2);
+        $id       = $token->getClaim('id');
+        if ($id) {
+            $data                  = $model::findOne($id)->toArray();
+            $data['token_type']    = 'Bearer';
+            $data['access_token']  = AccessToken::getToken($data['id']);
+            $data['refresh_token'] = AccessToken::getToken($data['id'], 2);
             return $data;
         } else {
             return null;
@@ -201,6 +201,7 @@ class AccountController extends BasicController
 
     /**
      * 获取Token信息
+     * 超时时间:21600
      * @param  string $id [description]
      * @return [type]      [description]
      */
@@ -211,13 +212,15 @@ class AccountController extends BasicController
         $signer = $jwt->getSigner('HS256');
         $key    = $jwt->getKey();
         $time   = time();
+        $host   = Yii::$app->request->hostInfo;
+        $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
         // Adoption for lcobucci/jwt ^4.0 version
         $token = $jwt->getBuilder()
-            ->issuedBy('http://www.heshop.com') // Configures the issuer (iss claim)
-            ->permittedFor('http://mail.heshop.com') // Configures the audience (aud claim)
-            ->identifiedBy('jub4q3yrgt2', true) // Configures the id (jti claim), replicating as a header item
+            ->issuedBy($host) // Configures the issuer (iss claim)
+            ->permittedFor($origin) // Configures the audience (aud claim)
+            ->identifiedBy(Yii::$app->params['AppID'] ? Yii::$app->params['AppID'] : '', true) // Configures the id (jti claim), replicating as a header item
             ->issuedAt($time) // Configures the time that the token was issue (iat claim)
-            ->expiresAt($time + 3600) // Configures the expiration time of the token (exp claim)
+            ->expiresAt($time + 21600) // Configures the expiration time of the token (exp claim)
             ->withClaim('id', $id) // Configures a new claim, called "id"
             ->getToken($signer, $key); // Retrieves the generated token
         return (string) $token;
@@ -225,7 +228,14 @@ class AccountController extends BasicController
 
     public function changePwd()
     {
-        $pass = Yii::$app->request->post('old_password');
+        $host = Yii::$app->request->hostInfo;
+        if ($host == "http://demo.leadshop.vip") {
+            return true;
+        }
+        if ($host == "https://demo.leadshop.vip") {
+            return true;
+        }
+        $pass     = Yii::$app->request->post('old_password');
         $newPass1 = Yii::$app->request->post('new_password1');
         $newPass2 = Yii::$app->request->post('new_password2');
         if (!$pass || !$newPass1 || !$newPass2) {

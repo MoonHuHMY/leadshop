@@ -3,7 +3,7 @@
  * @Author: qinuoyun
  * @Date:   2020-08-20 13:46:09
  * @Last Modified by:   qinuoyun
- * @Last Modified time: 2021-01-05 10:17:04
+ * @Last Modified time: 2021-06-26 13:35:48
  */
 namespace framework\common;
 
@@ -139,5 +139,52 @@ class CommonModels extends \yii\db\ActiveRecord
         }
         $msg = isset($model->errors) ? current($model->errors)[0] : '数据异常！';
         return $msg;
+    }
+
+    public static function updateDb()
+    {
+        $lastVersion    = '1.2.0';
+        $currentVersion = app_version();
+        $versions       = require \Yii::$app->basePath . '/system/update.php';
+        foreach ($versions as $v => $sql) {
+            $lastVersion = $v;
+            if (version_compare($v, $currentVersion) > 0) {
+                self::executeSql($sql);
+            }
+        }
+        $info = [
+            'version'    => $currentVersion,
+            'db_version' => $lastVersion,
+        ];
+        file_put_contents(Yii::$app->basePath . '/web/version.json', json_encode($info));
+    }
+
+    public static function executeSql($sql)
+    {
+        $sql   = str_replace('heshop_initialize_prefix_', Yii::$app->db->tablePrefix, $sql);
+        $sql   = str_replace("\r", "\n", $sql);
+        $array = explode(";\n", trim($sql));
+        foreach ($array as $item) {
+            try {
+                Yii::$app->db->createCommand(trim($item))->execute();
+            } catch (\Exception $exception) {
+                Yii::error('===更新语句' . $sql . '失败===');
+                Yii::error($exception);
+                continue;
+            }
+        }
+    }
+
+    /**
+     * 批量写入数据
+     * @return [type] [description]
+     */
+    public static function batchInsert($fields, $data)
+    {
+        $tableName = self::tableName();
+        return Yii::$app->db
+            ->createCommand()
+            ->batchInsert($tableName, $fields, $data)
+            ->execute();
     }
 }

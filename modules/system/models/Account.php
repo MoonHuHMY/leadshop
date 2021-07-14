@@ -6,10 +6,9 @@
  */
 namespace system\models;
 
+use framework\common\AccessToken;
 use framework\common\CommonModels;
-use sizeg\jwt\Jwt;
 use Yii;
-use yii\web\ForbiddenHttpException;
 
 class Account extends CommonModels implements \yii\web\IdentityInterface
 {
@@ -65,24 +64,20 @@ class Account extends CommonModels implements \yii\web\IdentityInterface
         return static::findOne($id);
     }
 
+    /**
+     * Token验证处理
+     * @param  [type] $token [description]
+     * @param  [type] $type  [description]
+     * @return [type]        [description]
+     */
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        $token = Yii::$app->jwt->getParser()->parse((string) $token);
-        $data  = Yii::$app->jwt->getValidationData();
-        $data->setCurrentTime(time());
-        if ($token->validate($data) || true) {
-            $id = $token->getClaim('id');
-            if ($id) {
-                $data        = static::findOne($id);
-                $data->uid   = $id;
-                $data->token = (string) $token;
-                return $data;
-            } else {
-                return null;
-            }
-        } else {
-            throw new ForbiddenHttpException('Token validation timeout');
-        }
+        $token       = AccessToken::accessToken($token);
+        $id          = $token->getClaim('id');
+        $data        = static::findOne($id);
+        $data->uid   = $id;
+        $data->token = (string) $token;
+        return $data;
     }
 
     public function getId()

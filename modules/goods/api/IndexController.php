@@ -14,6 +14,7 @@ use yii\data\ActiveDataProvider;
 
 class IndexController extends BasicController
 {
+    public $goodsModel = 'goods\models\Goods';
 
     /**
      * 重写父类
@@ -45,30 +46,46 @@ class IndexController extends BasicController
     public function fitment()
     {
         $goods_id = Yii::$app->request->get('goods_id', '');
-        $goods_id = explode(',', $goods_id);
-        $AppID    = Yii::$app->params['AppID'];
-        $where    = ['id' => $goods_id, 'AppID' => $AppID, 'is_sale' => 1];
+        $is_task  = Yii::$app->request->get('is_task', false);
+        if ($is_task) {
+            $auto = Yii::$app->request->get('auto', 20);
+            return $this->goodsModel::find()
+                ->from(['g' => $this->goodsModel::tableName()])
+                ->joinWith('task')
+                ->where([
+                    "goods_is_sale" => 1,
+                ])
+                ->limit($auto)
+                ->asArray()
+                ->all();
 
-        $data = M()::find()
-            ->where($where)
-            ->orderBy(['created_time' => SORT_DESC])
-            ->asArray()
-            ->all();
+        } else {
+            $goods_id = explode(',', $goods_id);
+            $AppID    = Yii::$app->params['AppID'];
+            $where    = ['id' => $goods_id, 'AppID' => $AppID, 'is_sale' => 1];
 
-        foreach ($data as $key => &$value) {
-            $value['slideshow'] = to_array($value['slideshow']);
-        }
-        //将所有返回内容中的本地地址代替字符串替换为域名
-        $data = str2url($data);
+            $data = M()::find()
+                ->where($where)
+                ->orderBy(['created_time' => SORT_DESC])
+                ->asArray()
+                ->all();
 
-        $data = array_column($data, null, 'id');
-        $list = [];
-        foreach ($goods_id as $id) {
-            if ($data[$id]) {
-                array_push($list, $data[$id]);
+            foreach ($data as $key => &$value) {
+                $value['slideshow'] = to_array($value['slideshow']);
             }
+            //将所有返回内容中的本地地址代替字符串替换为域名
+            $data = str2url($data);
+
+            $data = array_column($data, null, 'id');
+            $list = [];
+            foreach ($goods_id as $id) {
+                if ($data[$id]) {
+                    array_push($list, $data[$id]);
+                }
+            }
+            return $list;
         }
-        return $list;
+
     }
 
     public function actionTabcount()
@@ -102,6 +119,7 @@ class IndexController extends BasicController
 
         //价格区间
         $price_start = $keyword['price_start'] ?? -1;
+
         if ($price_start !== '' && $price_start >= 0) {
             $where = ['and', $where, ['>=', 'price', $price_start]];
         }
@@ -174,33 +192,66 @@ class IndexController extends BasicController
         $pageSize = $headers->get('X-Pagination-Per-Page') ?? 20;
         //商品分组
         $keyword = Yii::$app->request->post('keyword', []);
+        //商品分组
+        $task_in = Yii::$app->request->get('task_in', 0);
 
         //处理获取商品类型
         $tab_key = $keyword['tab_key'] ?? 'all';
-        switch ($tab_key) {
-            case 'onsale': //上架中
-                $where = ['is_sale' => 1, 'is_recycle' => 0, 'status' => 0];
-                break;
-            case 'nosale': //下架中
-                $where = ['is_sale' => 0, 'is_recycle' => 0, 'status' => 0];
-                break;
-            case 'soldout': //售罄
-                $where = ['and', ['is_recycle' => 0, 'status' => 0], ['<=', 'stocks', 0]];
-                break;
-            case 'recycle': //回收站
-                $where = ['is_recycle' => 1, 'is_deleted' => 0];
-                break;
-            case 'drafts': //草稿箱
-                $where = ['and', ['is_recycle' => 0], ['<>', 'status', 0]];
-                break;
-            default: //默认获取全部
-                $where = ['is_recycle' => 0, 'status' => 0];
-                break;
+
+        //获取积分商品
+        $is_task = $keyword['is_task'] ?? 0;
+
+        //判断是否安装
+        $task_status = $this->plugins("task", "status");
+        //用于判断插件是否安装
+        if ($is_task && $task_status) {
+            switch ($tab_key) {
+                case 'onsale': //上架中
+                    $where = ['t.goods_is_sale' => 1, 't.is_recycle' => 0, 'status' => 0];
+                    break;
+                case 'nosale': //下架中
+                    $where = ['t.goods_is_sale' => 0, 't.is_recycle' => 0, 'status' => 0];
+                    break;
+                case 'soldout': //售罄
+                    $where = ['and', ['t.is_recycle' => 0, 'status' => 0], ['<=', 'stocks', 0]];
+                    break;
+                case 'recycle': //回收站
+                    $where = ['t.is_recycle' => 1, 'is_deleted' => 0];
+                    break;
+                case 'drafts': //草稿箱
+                    $where = ['and', ['t.is_recycle' => 0], ['<>', 'status', 0]];
+                    break;
+                default: //默认获取全部
+                    $where = ['t.is_recycle' => 0, 'status' => 0];
+                    break;
+            }
+        } else {
+            switch ($tab_key) {
+                case 'onsale': //上架中
+                    $where = ['is_sale' => 1, 'is_recycle' => 0, 'status' => 0];
+                    break;
+                case 'nosale': //下架中
+                    $where = ['is_sale' => 0, 'is_recycle' => 0, 'status' => 0];
+                    break;
+                case 'soldout': //售罄
+                    $where = ['and', ['is_recycle' => 0, 'status' => 0], ['<=', 'stocks', 0]];
+                    break;
+                case 'recycle': //回收站
+                    $where = ['is_recycle' => 1, 'is_deleted' => 0];
+                    break;
+                case 'drafts': //草稿箱
+                    $where = ['and', ['is_recycle' => 0], ['<>', 'status', 0]];
+                    break;
+                default: //默认获取全部
+                    $where = ['is_recycle' => 0, 'status' => 0];
+                    break;
+            }
         }
 
         $merchant_id = 1;
         $AppID       = Yii::$app->params['AppID'];
-        $where       = ['and', $where, ['merchant_id' => $merchant_id, 'AppID' => $AppID]];
+
+        $where = ['and', $where, ['merchant_id' => $merchant_id, 'AppID' => $AppID]];
 
         //商品分类筛选
         $group = $keyword['group'] ?? false;
@@ -246,11 +297,12 @@ class IndexController extends BasicController
             $param     = M('goods', 'GoodsData')::find()->where(['goods_sn' => $search])->select('goods_id')->asArray()->all();
             $goods_arr = array_column($param, 'goods_id');
 
-            $where = ['and', $where, ['or', ['like', 'name', $search], ['in', 'id', $goods_arr], ['id' => $search]]];
+            $where = ['and', $where, ['or', ['like', 'name', $search], ['in', 'g.id', $goods_arr], ['g.id' => $search]]];
         }
 
         //处理排序
-        $sort    = isset($keyword['sort']) && is_array($keyword['sort']) ? $keyword['sort'] : [];
+        $sort = isset($keyword['sort']) && is_array($keyword['sort']) ? $keyword['sort'] : [];
+
         $orderBy = [];
         if (empty($sort)) {
             $orderBy = ['created_time' => SORT_DESC];
@@ -259,17 +311,53 @@ class IndexController extends BasicController
                 $orderBy[$key] = $value === 'ASC' ? SORT_ASC : SORT_DESC;
             }
         }
-
-        $data = new ActiveDataProvider(
-            [
-                'query'      => M()::find()
-                    ->where($where)
-                    ->with('data')
-                    ->orderBy($orderBy)
-                    ->asArray(),
-                'pagination' => ['pageSize' => $pageSize, 'validatePage' => false],
-            ]
-        );
+        //判断是否安装
+        $task_status = $this->plugins("task", "status");
+        //用于判断插件是否安装
+        if ($is_task && $task_status) {
+            $data = new ActiveDataProvider(
+                [
+                    'query'      => M()::find()
+                        ->where($where)
+                        ->from(['g' => M()::tableName()])
+                        ->joinWith('task')
+                        ->with('data')
+                        ->orderBy($orderBy)
+                        ->asArray(),
+                    'pagination' => ['pageSize' => $pageSize, 'validatePage' => false],
+                ]
+            );
+        } elseif ($task_in && $task_status) {
+            $taskGoodsClass = 'plugins\task\models\TaskGoods';
+            $taskRow        = $taskGoodsClass::find()->where(["is_deleted" => 0])->asArray()->all();
+            $taskid_list    = array_column($taskRow, 'goods_id');
+            $where          = ['and', $where, ['is_recycle' => 0, 'status' => 0]];
+            //剔除已经存在的积分商品
+            $data = new ActiveDataProvider(
+                [
+                    'query'      => M()::find()
+                        ->where($where)
+                        ->from(['g' => M()::tableName()])
+                        ->andwhere(['not in', "id", $taskid_list])
+                        ->with('data')
+                        ->orderBy($orderBy)
+                        ->asArray(),
+                    'pagination' => ['pageSize' => $pageSize, 'validatePage' => false],
+                ]
+            );
+        } else {
+            $data = new ActiveDataProvider(
+                [
+                    'query'      => M()::find()
+                        ->where($where)
+                        ->with('data')
+                        ->from(['g' => M()::tableName()])
+                        ->orderBy($orderBy)
+                        ->asArray(),
+                    'pagination' => ['pageSize' => $pageSize, 'validatePage' => false],
+                ]
+            );
+        }
 
         $list    = $data->getModels();
         $id_list = array_column($list, 'id');
@@ -295,7 +383,13 @@ class IndexController extends BasicController
     {
         $id = Yii::$app->request->get('id', false);
 
-        $result = M()::find()->where(['id' => $id, 'is_recycle' => 0])->with(['param', 'body'])->asArray()->one();
+        $result = M()::find()->where(['id' => $id, 'is_recycle' => 0])->with([
+            'param',
+            'body',
+            'coupon' => function ($q) {
+                $q->with(['info' => function ($q2) {$q2->select('id,name');}]);
+            },
+        ])->asArray()->one();
         if (empty($result)) {
             Error('商品不存在');
         }
@@ -337,6 +431,9 @@ class IndexController extends BasicController
                 break;
             case 'logisticssetting': //物流设置
                 return $this->logisticsSetting();
+                break;
+            case 'marketingsetting': //营销设置
+                return $this->marketingSetting();
                 break;
             case 'othersetting': //其他设置
                 return $this->otherSetting();
@@ -543,63 +640,71 @@ class IndexController extends BasicController
         $post['goods_data'] = to_array($post['goods_data']);
 
         $transaction = Yii::$app->db->beginTransaction(); //启动数据库事务
+
+        //规格存储
+        $param               = M('goods', 'GoodsParam')::find()->where(['goods_id' => $id])->one();
+        $param->param_data   = to_json($post['param_data']);
+        $param->updated_time = time();
+        $param_res           = $param->save();
+
+        //规格商品批量插入处理
+        M('goods', 'GoodsData')::deleteAll(['goods_id' => $id]); //批量插入前先删除之前数据
+        $row   = [];
+        $col   = [];
+        $price = null;
+        foreach ($post['goods_data'] as $v) {
+            if ($v['price'] > 9999999 || $v['cost_price'] > 9999999) {
+                $transaction->rollBack(); //事务回滚
+                Error('金额不能超过9999999');
+            }
+            if ($v['stocks'] > 9999999) {
+                $transaction->rollBack(); //事务回滚
+                Error('库存不能超过9999999');
+            }
+            if ($v['weight'] > 9999999) {
+                $transaction->rollBack(); //事务回滚
+                Error('重量不能超过9999999');
+            }
+            if ($price === null || $v['price'] < $price) {
+                $price = $v['price'];
+            }
+            $v = [
+                "param_value" => $v['param_value'],
+                "price"       => $v['price'],
+                "stocks"      => $v['stocks'],
+                "cost_price"  => $v['cost_price'],
+                "weight"      => $v['weight'],
+                "goods_sn"    => $v['goods_sn'],
+            ];
+            $v['goods_id']     = $id;
+            $v['created_time'] = time();
+            array_push($row, array_values($v));
+            if (empty($col)) {
+                $col = array_keys($v);
+            }
+        }
+
         $model->setScenario('param_setting');
+        $post['price'] = $price;
         $model->setAttributes($post);
         if ($model->validate()) {
             $res = $model->save();
-
-            //规格存储
-            $param               = M('goods', 'GoodsParam')::find()->where(['goods_id' => $id])->one();
-            $param->param_data   = to_json($post['param_data']);
-            $param->updated_time = time();
-            $param_res           = $param->save();
-
-            //规格商品批量插入处理
-            M('goods', 'GoodsData')::deleteAll(['goods_id' => $id]); //批量插入前先删除之前数据
-            $row = [];
-            $col = [];
-            foreach ($post['goods_data'] as $v) {
-                if ($v['price'] > 9999999 || $v['cost_price'] > 9999999) {
-                    $transaction->rollBack(); //事务回滚
-                    Error('金额不能超过9999999');
-                }
-                if ($v['stocks'] > 9999999) {
-                    $transaction->rollBack(); //事务回滚
-                    Error('库存不能超过9999999');
-                }
-                if ($v['weight'] > 9999999) {
-                    $transaction->rollBack(); //事务回滚
-                    Error('重量不能超过9999999');
-                }
-                $v = [
-                    "param_value" => $v['param_value'],
-                    "price"       => $v['price'],
-                    "stocks"      => $v['stocks'],
-                    "cost_price"  => $v['cost_price'],
-                    "weight"      => $v['weight'],
-                    "goods_sn"    => $v['goods_sn'],
-                ];
-                $v['goods_id']     = $id;
-                $v['created_time'] = time();
-                array_push($row, array_values($v));
-                if (empty($col)) {
-                    $col = array_keys($v);
-                }
-            }
-            $prefix     = Yii::$app->db->tablePrefix;
-            $table_name = $prefix . 'goods_data';
-            $batch_res  = Yii::$app->db->createCommand()->batchInsert($table_name, $col, $row)->execute();
-
-            if ($res && $param_res && $batch_res) {
-                $transaction->commit(); //事务执行
-                return ['id' => $model->id, 'status' => $model->status];
-            } else {
-                $transaction->rollBack(); //事务回滚
-                Error('保存失败');
-            }
-
+        } else {
+            $transaction->rollBack(); //事务回滚
+            return $model;
         }
-        return $model;
+
+        $prefix     = Yii::$app->db->tablePrefix;
+        $table_name = $prefix . 'goods_data';
+        $batch_res  = Yii::$app->db->createCommand()->batchInsert($table_name, $col, $row)->execute();
+        if ($res && $param_res && $batch_res) {
+            $transaction->commit(); //事务执行
+            return ['id' => $model->id, 'status' => $model->status];
+        } else {
+            $transaction->rollBack(); //事务回滚
+            Error('保存失败');
+        }
+
     }
 
     /**
@@ -635,6 +740,50 @@ class IndexController extends BasicController
     }
 
     /**
+     * 商品发送优惠券
+     */
+    public function marketingSetting()
+    {
+        $id = Yii::$app->request->get('id', false);
+
+        $model = M()::findOne($id);
+        if (empty($model)) {
+            Error('商品不存在');
+        }
+
+        $transaction = Yii::$app->db->beginTransaction();
+        if ($model->status === 3) {
+            $model->status = 4;
+            if (!$model->save()) {
+                $transaction->rollBack();
+                Error('保存失败');
+            }
+        } elseif ($model->status !== 0 && !$model->status >= 3) {
+            Error('不能跳步骤');
+        }
+
+        $coupon = Yii::$app->request->post('coupon', []);
+        M('goods', 'GoodsCoupon')::deleteAll(['goods_id' => $id]); //批量插入前先删除之前数据
+        $col  = ['goods_id', 'coupon_id', 'number', 'created_time'];
+        $row  = [];
+        $time = time();
+        foreach ($coupon as $v) {
+            array_push($row, [$id, $v['coupon_id'], $v['number'], $time]);
+        }
+        $prefix     = Yii::$app->db->tablePrefix;
+        $table_name = $prefix . 'goods_coupon';
+        $batch_res  = Yii::$app->db->createCommand()->batchInsert($table_name, $col, $row)->execute();
+
+        if ($batch_res === count($row)) {
+            $transaction->commit();
+            return ['id' => $model->id, 'status' => $model->status];
+        } else {
+            $transaction->rollBack();
+            Error('保存失败');
+        }
+    }
+
+    /**
      * 其他设置
      * @return [type] [description]
      */
@@ -650,9 +799,9 @@ class IndexController extends BasicController
             Error('商品不存在');
         }
 
-        if ($model->status === 3) {
+        if ($model->status === 4) {
             $post['status'] = 0;
-        } elseif ($model->status !== 0 && !$model->status >= 3) {
+        } elseif ($model->status !== 0 && !$model->status >= 4) {
             Error('不能跳步骤');
         }
 
@@ -741,7 +890,8 @@ class IndexController extends BasicController
      */
     public function actionDelete()
     {
-        $id = Yii::$app->request->get('id', false);
+        $id      = Yii::$app->request->get('id', false);
+        $is_task = Yii::$app->request->get('is_task', false);
         if (!$id) {
             Error('ID缺失');
         }
@@ -749,13 +899,21 @@ class IndexController extends BasicController
         $data = [
             'is_recycle' => 1,
         ];
-
-        $result = M()::updateAll($data, ['id' => $id]);
-
-        if ($result) {
-            return $result;
+        if ($is_task) {
+            $TaskGoodsModel = 'plugins\task\models\TaskGoods';
+            $result         = $TaskGoodsModel::updateAll($data, ['goods_id' => $id]);
+            if ($result) {
+                return $result;
+            } else {
+                Error('删除失败');
+            }
         } else {
-            Error('删除失败');
+            $result = M()::updateAll($data, ['id' => $id]);
+            if ($result) {
+                return $result;
+            } else {
+                Error('删除失败');
+            }
         }
 
     }
@@ -766,7 +924,8 @@ class IndexController extends BasicController
      */
     public function actionRemove()
     {
-        $id = Yii::$app->request->get('id', false);
+        $id      = Yii::$app->request->get('id', false);
+        $is_task = Yii::$app->request->get('is_task', false);
         if (!$id) {
             Error('ID缺失');
         }
@@ -775,13 +934,22 @@ class IndexController extends BasicController
             'is_deleted'   => 1,
             'deleted_time' => time(),
         ];
-
-        $result = M()::updateAll($data, ['is_recycle' => 1, 'id' => $id]);
-
-        if ($result) {
-            return $result;
+        if ($is_task) {
+            $TaskGoodsModel = 'plugins\task\models\TaskGoods';
+            $result         = $TaskGoodsModel::updateAll($data, ['goods_id' => $id]);
+            if ($result) {
+                return $result;
+            } else {
+                Error('删除失败');
+            }
         } else {
-            Error('删除失败');
+            $result = M()::updateAll($data, ['is_recycle' => 1, 'id' => $id]);
+
+            if ($result) {
+                return $result;
+            } else {
+                Error('删除失败');
+            }
         }
 
     }
@@ -792,7 +960,8 @@ class IndexController extends BasicController
      */
     public function actionRestore()
     {
-        $id = Yii::$app->request->get('id', false);
+        $id      = Yii::$app->request->get('id', false);
+        $is_task = Yii::$app->request->get('is_task', false);
         if (!$id) {
             return false;
         }
@@ -801,14 +970,24 @@ class IndexController extends BasicController
             'is_recycle'   => 0,
             'deleted_time' => null,
         ];
-
-        $result = M()::updateAll($data, ['id' => $id]);
-
-        if ($result) {
-            return $result;
+        if ($is_task) {
+            $TaskGoodsModel = 'plugins\task\models\TaskGoods';
+            $result         = $TaskGoodsModel::updateAll($data, ['goods_id' => $id]);
+            if ($result) {
+                return $result;
+            } else {
+                Error('删除失败');
+            }
         } else {
-            Error('恢复失败');
+            $result = M()::updateAll($data, ['id' => $id]);
+
+            if ($result) {
+                return $result;
+            } else {
+                Error('恢复失败');
+            }
         }
+
     }
 
 }

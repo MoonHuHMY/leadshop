@@ -14,7 +14,7 @@ class Goods extends CommonModels
 {
     const id               = ['bigkey' => 20, 'unique', 'comment' => 'ID'];
     const name             = ['varchar' => 100, 'notNull', 'comment' => '商品名称'];
-    const group            = ['varchar' => 255, 'notNull', 'comment' => '分类列表'];
+    const group            = ['varchar' => 1000, 'notNull', 'comment' => '分类列表'];
     const price            = ['decimal' => '10,2', 'notNull', 'comment' => '商品价格'];
     const line_price       = ['decimal' => '10,2', 'default' => 0, 'comment' => '划线价'];
     const status           = ['tinyint' => 3, 'notNull', 'default' => 1, 'comment' => '商品状态： 0 正常 1 失效/下架'];
@@ -63,7 +63,7 @@ class Goods extends CommonModels
         return [
             //基本信息设置
             [['name', 'group', 'slideshow', 'is_video', 'merchant_id', 'AppID'], 'required', 'message' => '{attribute}不能为空'],
-            [['video', 'video_cover'], 'required',
+            [['video'], 'required',
                 'when' => function ($model) {
                     return $model->is_video === 1 ? true : false;
                 }, 'message' => '{attribute}不能为空'],
@@ -171,12 +171,25 @@ class Goods extends CommonModels
             'services'         => '服务列表',
             'is_sale'          => '上架状态',
             'status'           => '商品状态',
+            'coupon'           => '发放优惠券',
         ];
     }
 
     public function getParam()
     {
         return $this->hasOne('goods\models\GoodsParam', ['goods_id' => 'id'])->with(['goods_data'])->select('id,goods_id,param_data');
+    }
+
+    public function getSpecs()
+    {
+        return $this->hasOne('goods\models\GoodsData', ['goods_id' => 'id']);
+    }
+
+    public function getTask()
+    {
+        $TaskGoods = 'plugins\task\models\TaskGoods';
+        //->select('name,keyword,icon,type,total,acquiremaximumz,maximum,remark,url,status,extend');
+        return $this->hasOne($TaskGoods::className(), ['goods_id' => 'id'])->from(['t' => $TaskGoods::tableName()]);
     }
 
     public function getData()
@@ -189,9 +202,19 @@ class Goods extends CommonModels
         return $this->hasOne('goods\models\GoodsBody', ['goods_id' => 'id'])->select('id,content');
     }
 
+    public function getCoupon()
+    {
+        return $this->hasMany('goods\models\GoodsCoupon', ['goods_id' => 'id'])->select('id,goods_id,coupon_id,number');
+    }
+
     public function getPackage()
     {
         return $this->hasOne('logistics\models\PackageFreeRules', ['id' => 'pfr_id'])->select('id,name,type,free_area');
+    }
+
+    public function getTaskgoods()
+    {
+        return $this->hasOne('plugins\task\models\TaskGoods', ['goods_id' => 'id']);
     }
 
     public function getFreight()
