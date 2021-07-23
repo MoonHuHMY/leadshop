@@ -54,6 +54,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 * 扫码关注“企码星球”体验Leadshop公众号+小程序
 <br>
  <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/14/SPpkWJfKviDWHsO7e0Yh6ZUohHX718rc7gzyUlff.jpg">
+
 * 操作文档：<a href="https://help.leadshop.vip" target="_blank"> **help.leadshop.vip** </a>
 
 ## 开源无加密
