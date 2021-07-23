@@ -178,7 +178,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 Powered By Leadshop © 2021
 
 ## 🚫  **禁止** 
-禁止未经官方允许私自删除Leadshop前后端版权！
+禁止未经Leadshop官方许可私自删除Leadshop前后端版权！
 <br>
 Leadshop每年都需要投入大量资金宣传推广产品和品牌，从而为更多用户创造价值！
 <br>
