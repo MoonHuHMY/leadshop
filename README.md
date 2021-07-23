@@ -34,9 +34,6 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 ## 下期更新计划
 * <a href="https://www.leadshop.vip/category/9?search_ids=9" target="_blank"> **【预告】电子面单/商品参数/商品副标题/开屏广告/小程序跳转/发布商品等功能的开发及优化** </a>
 
- <img border="0" src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210714/1.png">
- <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/07/15/tsY56GtDBuqSZ4TT2eABdVe8M7RChhPxpGBF3oj8.png">
-<br>
  <img border="0" src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210714/2.png">
 
 ## 更新历史
@@ -53,7 +50,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 * 密码:123456
 
 * <a href="https://app.cloud.tencent.com/?app=Leadshop" target="_blank"> **腾讯云在线体验https://app.cloud.tencent.com/?app=Leadshop** </a>
-
+ <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/07/23/lBE6wgjWIoVsYzOO839I56FdgkUz0dLpl0KES7Pe.png">
 * 扫码关注“企码星球”体验Leadshop公众号+小程序
 
  <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/05/14/SPpkWJfKviDWHsO7e0Yh6ZUohHX718rc7gzyUlff.jpg">
