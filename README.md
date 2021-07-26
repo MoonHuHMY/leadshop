@@ -34,6 +34,8 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 ## 下期更新计划
 * <a href="https://www.leadshop.vip/category/9?search_ids=9" target="_blank"> **【预告】电子面单/商品参数/商品副标题/开屏广告/小程序跳转/发布商品等功能的开发及优化** </a>
 
+* <a href="https://mp.weixin.qq.com/s/WxA_kQIdx0H95ctkVMxlhg" target="_blank"> **【已上线】LEADSHOP第一款围绕积分开发的插件 ——【任务中心插件】详细介绍** </a>
+
  <img border="0" src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210714/2.png">
 
 ## 更新历史
