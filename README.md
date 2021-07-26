@@ -36,7 +36,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 
 * <a href="https://mp.weixin.qq.com/s/WxA_kQIdx0H95ctkVMxlhg" target="_blank"> **【已上线】LEADSHOP第一款围绕积分开发的插件 ——【任务中心插件】详细介绍及视频演示** </a>
 
- <img border="0" src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210714/2.png">
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210726/2.png)
 
 ## 更新历史
 * <a href="http://help.leadshop.vip/2278957" target="_blank"> **点击查看往期更新历史** </a>
