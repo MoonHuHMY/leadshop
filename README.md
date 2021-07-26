@@ -49,7 +49,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 
 * 密码:123456
 
-* <a href="https://app.cloud.tencent.com/?app=Leadshop" target="_blank"> **腾讯云在线体验https://app.cloud.tencent.com/?app=Leadshop** </a>
+* <a href="https://app.cloud.tencent.com/?app=Leadshop" target="_blank"> **点击进入腾讯云开源中心在线体验** </a>
  <img border="0" src="https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/07/23/lBE6wgjWIoVsYzOO839I56FdgkUz0dLpl0KES7Pe.png">
 * 扫码关注“企码星球”体验Leadshop公众号+小程序
 <br>
