@@ -1,7 +1,7 @@
 ## 项目介绍
-Leadshop是一款提供持续更新迭代服务的免费商城系统，旨在打造极致的用户体验！
+Leadshop是一款提供持续更新迭代服务的企业级商用电商软件，旨在打造极致的用户体验！
 
-Leadshop由浙江禾成云计算有限公司（<a href="https://www.leadshop.vip" target="_blank"> **官网www.leadshop.vip** </a>）研发，主要面向中小型企业，助力搭建电商平台，并提供专业的技术支持。免费提供长期更新服务，应用涉及**可视化DIY拖拽装修** 、促销转化、裂变分销、用户精细化管理、数据分析等多个维度，追求极致体验，全面赋能商家，为商家创造价值。
+Leadshop由浙江禾成云计算有限公司（<a href="https://www.leadshop.vip" target="_blank"> **官网www.leadshop.vip** </a>）研发，主要面向中小型企业，助力搭建电商平台，并提供专业的技术支持。免费提供长期更新服务，应用涉及**可视化DIY拖拽设计** 、促销转化、裂变分销、用户精细化管理、数据分析等多个维度，追求极致体验，全面赋能商家，为商家创造价值。
 
 **Leadshop无偿供大家使用，您的star是我们前进的动力** 
 
@@ -34,7 +34,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 ## 下期更新计划
 * <a href="https://www.leadshop.vip/category/9?search_ids=9" target="_blank"> **【预告】电子面单/商品参数/商品副标题/开屏广告/小程序跳转/发布商品等功能的开发及优化** </a>
 
-* <a href="https://mp.weixin.qq.com/s/WxA_kQIdx0H95ctkVMxlhg" target="_blank"> **【已上线】LEADSHOP第一款围绕积分开发的插件 ——【任务中心插件】详细介绍** </a>
+* <a href="https://mp.weixin.qq.com/s/WxA_kQIdx0H95ctkVMxlhg" target="_blank"> **【已上线】LEADSHOP第一款围绕积分开发的插件 ——【任务中心插件】详细介绍及视频演示** </a>
 
  <img border="0" src="https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210714/2.png">
 
