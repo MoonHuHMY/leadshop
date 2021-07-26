@@ -159,7 +159,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 
 ## Leadshop功能简介
 ![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/readme/1.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210714/2.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210726/2.png)
 ![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/readme/3.png)
 ![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/readme/4.png)
 ![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/readme/5.png)
