@@ -1077,3 +1077,21 @@ CREATE TABLE `heshop_initialize_prefix_task_user` (
   `deleted_time` int(10) DEFAULT '0' COMMENT '删除时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `heshop_initialize_prefix_waybill` (
+  `id` bigint(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `code` varchar(10) NOT NULL COMMENT '物流公司编号',
+  `name` varchar(256) NOT NULL COMMENT '名称',
+  `mobile` varchar(32) NOT NULL COMMENT '联系方式',
+  `province` varchar(50) NOT NULL COMMENT '省',
+  `city` varchar(50) NOT NULL COMMENT '市',
+  `district` varchar(50) NOT NULL COMMENT '区县',
+  `address` varchar(255) NOT NULL COMMENT '详细地址',
+  `AppID` varchar(50) NOT NULL COMMENT '应用ID',
+  `merchant_id` bigint(10) NOT NULL COMMENT '商户ID',
+  `created_time` int(10) DEFAULT '0' COMMENT '创建时间',
+  `updated_time` int(10) DEFAULT '0' COMMENT '更新时间',
+  `deleted_time` int(10) DEFAULT '0' COMMENT '删除时间',
+  `is_deleted` tinyint(100) DEFAULT '0' COMMENT '是否删除',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4;

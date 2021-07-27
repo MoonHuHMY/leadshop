@@ -440,7 +440,7 @@ class AfterController extends BasicController
             Error('未定义操作');
         }
         $this->orderAfter($model);
-        return ['status' => $model->status];
+        return $model;
     }
 
     /**

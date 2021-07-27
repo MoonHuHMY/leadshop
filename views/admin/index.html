@@ -64,7 +64,7 @@
   <link href="/assets/admin/css/goods-interfaceSet.0d76ad03.css" rel="prefetch">
   <link href="/assets/admin/css/goods-parameterTemplate.6e57e1d1.css" rel="prefetch">
   <link href="/assets/admin/css/goods-parameterTemplateEdit.952e3d09.css" rel="prefetch">
-  <link href="/assets/admin/css/goods-publish.a302f767.css" rel="prefetch">
+  <link href="/assets/admin/css/goods-publish.e304028f.css" rel="prefetch">
   <link href="/assets/admin/css/goods-service-publish.75d0226c.css" rel="prefetch">
   <link href="/assets/admin/css/goods-service.1ca664df.css" rel="prefetch">
   <link href="/assets/admin/css/order-bulkShipping.823a346a.css" rel="prefetch">
@@ -101,7 +101,7 @@
   <link href="/assets/admin/js/chunk-2fccff14.051dd120.js" rel="prefetch">
   <link href="/assets/admin/js/chunk-3f30fe6a.88dce569.js" rel="prefetch">
   <link href="/assets/admin/js/chunk-3feaba58.35b4ba72.js" rel="prefetch">
-  <link href="/assets/admin/js/chunk-57978f68.af89e59a.js" rel="prefetch">
+  <link href="/assets/admin/js/chunk-57978f68.4fd440cd.js" rel="prefetch">
   <link href="/assets/admin/js/chunk-5d429aaa.424c6386.js" rel="prefetch">
   <link href="/assets/admin/js/chunk-6918de29.edd53896.js" rel="prefetch">
   <link href="/assets/admin/js/chunk-74382fc8.e08a8a15.js" rel="prefetch">
@@ -112,7 +112,7 @@
   <link href="/assets/admin/js/error-404.0acfe549.js" rel="prefetch">
   <link href="/assets/admin/js/error-500.8459144d.js" rel="prefetch">
   <link href="/assets/admin/js/finish-index.7ec2c2f2.js" rel="prefetch">
-  <link href="/assets/admin/js/finish-screen.c4671191.js" rel="prefetch">
+  <link href="/assets/admin/js/finish-screen.3e6655c8.js" rel="prefetch">
   <link href="/assets/admin/js/finish-tabbar.6efbff02.js" rel="prefetch">
   <link href="/assets/admin/js/goods-collect-edit.11015823.js" rel="prefetch">
   <link href="/assets/admin/js/goods-collect-list.31eaddfd.js" rel="prefetch">
@@ -124,7 +124,7 @@
   <link href="/assets/admin/js/goods-interfaceSet.b3d17a76.js" rel="prefetch">
   <link href="/assets/admin/js/goods-parameterTemplate.e0c501e1.js" rel="prefetch">
   <link href="/assets/admin/js/goods-parameterTemplateEdit.cb320b52.js" rel="prefetch">
-  <link href="/assets/admin/js/goods-publish.34e0954a.js" rel="prefetch">
+  <link href="/assets/admin/js/goods-publish.2c7d4254.js" rel="prefetch">
   <link href="/assets/admin/js/goods-service-publish.6f9e0187.js" rel="prefetch">
   <link href="/assets/admin/js/goods-service.f69e705e.js" rel="prefetch">
   <link href="/assets/admin/js/order-bulkShipping.47517b31.js" rel="prefetch">
@@ -146,18 +146,18 @@
   <link href="/assets/admin/js/users-editLabel.f3bc6f48.js" rel="prefetch">
   <link href="/assets/admin/js/users-userLabel.614dfa66.js" rel="prefetch">
   <link href="/assets/admin/js/vendors~goods-publish.1e23851c.js" rel="prefetch">
-  <link href="/assets/admin/css/index.4b069b3c.css" rel="preload" as="style">
+  <link href="/assets/admin/css/index.29ee5636.css" rel="preload" as="style">
   <link href="/assets/admin/js/echarts.65b431f9.js" rel="preload" as="script">
   <link href="/assets/admin/js/element-ui.8efdcf87.js" rel="preload" as="script">
-  <link href="/assets/admin/js/index.5eebf322.js" rel="preload" as="script">
-  <link href="/assets/admin/css/index.4b069b3c.css" rel="stylesheet">
+  <link href="/assets/admin/js/index.5d4ab2fb.js" rel="preload" as="script">
+  <link href="/assets/admin/css/index.29ee5636.css" rel="stylesheet">
 </head>
 
 <body><noscript><strong>We're sorry but leadshop doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript>
   <div id="app"></div>
   <script src="/assets/admin/js/echarts.65b431f9.js"></script>
   <script src="/assets/admin/js/element-ui.8efdcf87.js"></script>
-  <script src="/assets/admin/js/index.5eebf322.js"></script>
+  <script src="/assets/admin/js/index.5d4ab2fb.js"></script>
 </body>
 
 </html>
