@@ -79,9 +79,9 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 ## 数据表格导出
 * 采用高性能的 js-xlsx数据导出，易于扩展，兼容性强。
 
-* 接口文档：
-- 后台接口： <a href="http://doc.leadshop.vip/api.html" target="_blank"> **doc.leadshop.vip/api.html** </a>
-- 小程序(公众号)接口：<a href="http://doc.leadshop.vip/app.html" target="_blank"> **doc.leadshop.vip/app.html** </a>
+## 接口文档：
+* 后台接口： <a href="http://doc.leadshop.vip/api.html" target="_blank"> **doc.leadshop.vip/api.html** </a>
+* 小程序(公众号)接口：<a href="http://doc.leadshop.vip/app.html" target="_blank"> **doc.leadshop.vip/app.html** </a>
 
 ## 安装
 
