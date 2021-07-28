@@ -76,6 +76,7 @@ class CrontabController extends BasicsModules implements Map
             Error('店铺不存在');
         }
         \Yii::$app->params = json_decode(file_get_contents($file), true);
+
         $accessToken       = \Yii::$app->request->get('access_token');
         if (!$accessToken) {
             Error('定时任务access_token不存在');

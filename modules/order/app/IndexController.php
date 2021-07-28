@@ -239,7 +239,7 @@ class IndexController extends BasicController
             foreach ($return_data['goods_data'] as &$value) {
                 $number += $value['goods_number'];
             }
-            $return_data['goods_number_amount'] = round($number, 2);
+            $return_data['goods_number_amount'] = qm_round($number, 2);
             return str2url($return_data);
         }
 
@@ -857,6 +857,7 @@ class IndexController extends BasicController
                     $v['package']          = $value['package'];
                     $v['ft_type']          = $value['ft_type'];
                     $v['ft_price']         = $value['ft_price'];
+                    $v['is_promoter']      = $value['is_promoter'];
                     if ($calculate == 'calculate') {
                         $v['failure_reason'] = $failure_reason;
                         $v['failure_number'] = $failure_number;
@@ -1090,21 +1091,23 @@ class IndexController extends BasicController
             unset($value['package']);
             unset($value['ft_type']);
             unset($value['ft_price']);
-            $value['total_amount']   = $goods_price;
-            $value['pay_amount']     = $goods_price;
-            $value['coupon_reduced'] = 0;
+            $value['total_amount']     = $goods_price;
+            $value['pay_amount']       = $goods_price;
+            $value['coupon_reduced']   = 0;
+            $value['promoter_reduced'] = 0;
 
         }
 
         $total_amount = $goods_amount + $freight_amount;
         $return_data  = [
-            'total_amount'   => $total_amount,
-            'goods_amount'   => $goods_amount,
-            'pay_amount'     => $total_amount,
-            'freight_amount' => $freight_amount,
-            'coupon_reduced' => 0,
-            'merchant_id'    => $merchant_id,
-            'goods_data'     => $goods,
+            'total_amount'     => $total_amount,
+            'goods_amount'     => $goods_amount,
+            'pay_amount'       => $total_amount,
+            'freight_amount'   => $freight_amount,
+            'coupon_reduced'   => 0,
+            'promoter_reduced' => 0,
+            'merchant_id'      => $merchant_id,
+            'goods_data'       => $goods,
         ];
 
         $return_data = $this->buildReducePrice($return_data);
@@ -1425,9 +1428,37 @@ class IndexController extends BasicController
             }
 
             foreach ($data['goods_data'] as &$value) {
-                $goods_pay_amount        = round($value['pay_amount'] * $discount, 2);
+                $goods_pay_amount        = qm_round($value['pay_amount'] * $discount, 2);
                 $value['coupon_reduced'] = $value['pay_amount'] - $goods_pay_amount;
                 $value['pay_amount']     = $goods_pay_amount;
+            }
+        }
+
+        $promoter_setting = StoreSetting('promoter_setting');
+        if ($promoter_setting['status']) {
+            $UID    = Yii::$app->user->identity->id;
+            $p_info = M('promoter', 'Promoter')::findOne(['UID' => $UID]);
+            if ($p_info && $p_info->status == 2) {
+                $AppID       = Yii::$app->params['AppID'];
+                $p_l_info    = M('promoter', 'PromoterLevel')::findOne(['level' => $p_info->level, 'AppID' => $AppID]);
+                $p_ratio     = $p_l_info->first / 100;
+                $count_rules = StoreSetting('commission_setting', 'count_rules');
+                foreach ($data['goods_data'] as &$value) {
+                    if ($count_rules === 1) {
+                        $commission_amount = $value['pay_amount'];
+                    } else {
+                        $commission_amount = $value['pay_amount'] - $value['goods_number'] * $value['goods_cost_price'];
+                    }
+                    if ($commission_amount > 0) {
+                        $value['promoter_reduced'] = qm_round($commission_amount * $p_ratio);
+                        $value['pay_amount']       = qm_round($value['pay_amount'] - $value['promoter_reduced']);
+                        $data['promoter_reduced'] += $value['promoter_reduced'];
+                    }
+                    unset($value['is_promoter']);
+                }
+
+                $data['pay_amount'] = $data['pay_amount'] - $data['promoter_reduced'];
+
             }
         }
 

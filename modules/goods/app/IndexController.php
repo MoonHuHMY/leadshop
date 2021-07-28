@@ -498,7 +498,15 @@ class IndexController extends BasicController
             $result['task'] = $task;
         }
 
-        M()::updateAllCounters(['visits' => 1], ['id' => $id]);
+        $scale = 0;
+        $count_rules = StoreSetting('commission_setting','count_rules');
+        $commission_key = $count_rules == 1 ? 'max_price' : 'max_profits';
+        $promoter_status = StoreSetting('commission_setting','status');
+        $promoter_model = M('promoter','Promoter')::findOne(['UID'=>$UID]);
+        if ($promoter_status && $promoter_model && $promoter_model->status == 2) {
+           $scale = $promoter_model->levelInfo->first/100;
+        }
+        $result['commission'] = qm_round($result[$commission_key]*$scale);
 
         return $result;
     }

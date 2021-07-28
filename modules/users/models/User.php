@@ -12,6 +12,7 @@ use sizeg\jwt\Jwt;
 use Yii;
 use yii\web\UnauthorizedHttpException;
 use \framework\common\TokenHttpException;
+use promoter\models\Promoter;
 
 /**
  * This is the model class for table "{{%user}}".
@@ -22,6 +23,7 @@ use \framework\common\TokenHttpException;
  * @property string $realname 用户姓名
  * @property string $avatar 头像
  * @property int $gender 性别 0未知 1男 2女
+ * @property int parent_id 上级id
  * @property int $status 帐号状态 0正常  1禁用
  * @property string $AppID 应用ID
  * @property int $is_deleted 是否删除
@@ -29,6 +31,7 @@ use \framework\common\TokenHttpException;
  * @property int $updated_time 更新时间
  * @property int $deleted_time 删除事件
  * @property Oauth $oauth 删除事件
+ * @property Promoter $promoter 删除事件
  */
 class User extends CommonModels implements \yii\web\IdentityInterface
 {
@@ -42,8 +45,10 @@ class User extends CommonModels implements \yii\web\IdentityInterface
     const wechat       = ['varchar' => 50, 'comment' => '微信号'];
     const avatar       = ['varchar' => 255, 'comment' => '头像'];
     const gender       = ['tinyint' => 1, 'default' => 0, 'comment' => '性别 0未知 1男 2女'];
+    const parent_id    = ['bigint' => 10, 'notNull', 'default' => 0, 'index' => '父级ID', 'comment' => '上级id'];
     const status       = ['tinyint' => 1, 'notNull', 'default' => 0, 'comment' => '帐号状态 0正常  1禁用'];
     const AppID        = ['varchar' => 32, 'notNull', 'comment' => '应用ID'];
+    const bind_time    = ['bigint' => 10, 'comment' => '绑定父级时间'];
     const created_time = ['bigint' => 10, 'comment' => '创建时间'];
     const updated_time = ['bigint' => 10, 'comment' => '修改时间'];
     const deleted_time = ['bigint' => 10, 'comment' => '删除时间'];
@@ -127,11 +132,12 @@ class User extends CommonModels implements \yii\web\IdentityInterface
 
     public static function findIdentityByAccessToken($token, $type = null)
     {
-        $token  = Yii::$app->jwt->getParser()->parse((string) $token);
-        $data   = Yii::$app->jwt->getValidationData();
-        $AppID  = Yii::$app->params['AppID'] ? Yii::$app->params['AppID'] : '';
-        $host   = Yii::$app->request->hostInfo;
-        $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+        $token = Yii::$app->jwt->getParser()->parse((string) $token);
+        $data  = Yii::$app->jwt->getValidationData();
+        $AppID = Yii::$app->params['AppID'] ? Yii::$app->params['AppID'] : '';
+        $host  = Yii::$app->request->hostInfo;
+        // $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+        $origin = '';
         $data->setIssuer($host);
         $data->setAudience($origin);
         $data->setId($AppID);
@@ -206,5 +212,10 @@ class User extends CommonModels implements \yii\web\IdentityInterface
     public function getCoupon()
     {
         return $this->hasMany('coupon\models\UserCoupon', ['UID' => 'id']);
+    }
+
+    public function getPromoter()
+    {
+        return $this->hasOne('promoter\models\Promoter', ['UID' => 'id']);
     }
 }

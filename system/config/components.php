@@ -74,6 +74,9 @@ $components = [
         ],
         'crontab'      => [
             'class' => \app\components\crontab\Crontab::class,
+        ],
+        'currency'     => [
+            'class' => \app\components\currency\Currency::class,
         ]
     ],
 ];

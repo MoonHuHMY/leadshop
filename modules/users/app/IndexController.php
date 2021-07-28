@@ -33,10 +33,10 @@ class IndexController extends BasicController
         $behavior = Yii::$app->request->get('behavior', '');
 
         switch ($behavior) {
-            case 'visit': //用户设置
+            case 'visit': //用户访问
                 return $this->visit();
                 break;
-            case 'info': //用户设置
+            case 'info': //用户详情
                 $UID = Yii::$app->user->identity->id;
                 return $this->modelClass::find()->where(['id' => $UID])->one();
                 break;

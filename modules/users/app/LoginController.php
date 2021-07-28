@@ -36,7 +36,7 @@ abstract class LoginController extends BasicController
         $register = false;
         $t        = \Yii::$app->db->beginTransaction();
         $userInfo = $this->getUserInfo();
-        $user     = User::find()->alias('u')->joinWith(['oauth as o'])->where([
+        $user     = User::find()->alias('u')->joinWith(['oauth as o', 'promoter as p'])->where([
             'u.AppID'      => \Yii::$app->params['AppID'],
             'u.is_deleted' => 0,
             'o.oauthID'    => $userInfo->openId,
@@ -68,8 +68,9 @@ abstract class LoginController extends BasicController
             Error($oauth->getFirstErrors());
         }
         $t->commit();
-        $res          = ArrayHelper::toArray($user);
-        $res['token'] = $this->getToken($user->id);
+        $res                    = ArrayHelper::toArray($user);
+        $res['promoter_status'] = $user->promoter?$user->promoter->status:0;
+        $res['token']           = $this->getToken($user->id);
         $res['register'] = ['coupon_list' => []];
         if ($register) {
             //先登录用户
@@ -166,7 +167,8 @@ abstract class LoginController extends BasicController
         $key    = $jwt->getKey();
         $time   = time();
         $host   = Yii::$app->request->hostInfo;
-        $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+        $origin = '';
+        // $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
         // Adoption for lcobucci/jwt ^4.0 version
         $token = $jwt->getBuilder()
             ->issuedBy($host) // Configures the issuer (iss claim)

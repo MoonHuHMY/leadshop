@@ -738,15 +738,15 @@ class IndexController extends BasicController
         $transaction = Yii::$app->db->beginTransaction(); //启动数据库事务
         if (isset($post['goods_amount']) && $post['goods_amount'] >= 0) {
 
-            $goods_amount = $model->goods_reduced + $model->goods_amount + $model->coupon_reduced;
+            $goods_amount = $model->goods_reduced + $model->goods_amount + $model->coupon_reduced + $model->promoter_reduced;
 
             $order_goods_list = M('order', 'OrderGoods')::find()->where(['order_sn' => $model->order_sn])->select('id,total_amount')->asArray()->all();
 
             foreach ($order_goods_list as $v) {
-                $pay_amount = $goods_amount <= 0 ? 0 : round($v['total_amount'] * ($post['goods_amount'] / $goods_amount), 2);
+                $pay_amount = $goods_amount <= 0 ? 0 : qm_round($v['total_amount'] * ($post['goods_amount'] / $goods_amount), 2);
                 M('order', 'OrderGoods')::updateAll(['pay_amount' => $pay_amount], ['id' => $v['id']]);
             }
-            $model->goods_reduced = $goods_amount - $post['goods_amount'] - $model->coupon_reduced;
+            $model->goods_reduced = $goods_amount - $post['goods_amount'] - $model->coupon_reduced - $model->promoter_reduced;
             $model->goods_amount  = $post['goods_amount'];
         } else {
             Error('商品价格不符合要求');

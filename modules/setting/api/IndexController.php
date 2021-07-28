@@ -145,6 +145,28 @@ class IndexController extends BasicController
             $model->AppID       = $AppID;
         }
 
+        if ($post['keyword'] === 'commission_setting') {
+            if ($post['content']['count_rules'] === 2) {
+                $check = M('goods','Goods')::findOne(['is_deleted'=>0,'is_promoter'=>1,'max_profits'=>null]);
+                if ($check) {
+                    Error('有分销商品还未设置成本价,不能使用利润佣金规则');
+                }
+            }
+        }
+
+        if ($post['keyword'] === 'promoter_setting') {
+            if ($post['content']['bind_type'] === 2) {
+                if(isset($model->content)){
+                    $content = to_array($model->content);
+                    if ($content['bind_type'] !== 2) {
+                        $post['content']['protect_time'] = time();
+                    }
+                }else {
+                    $post['content']['protect_time'] = time();
+                }
+            }
+        }
+
         $post['content'] = url2str($post['content']);
         $model->content  = to_json($post['content']);
         if ($model->save()) {

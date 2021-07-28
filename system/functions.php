@@ -488,6 +488,18 @@ if (!function_exists('Error')) {
     }
 }
 
+if (!function_exists('StoreSetting')) {
+    /**
+     * [Error description]
+     * @param string $value [description]
+     */
+    function StoreSetting($keyword = '', $content_key = '')
+    {
+        $class = new framework\common\StoreSetting();
+        return $class->get($keyword, $content_key);
+    }
+}
+
 if (!function_exists('is_object')) {
     /**
      * [is_object description]
@@ -507,7 +519,6 @@ if (!function_exists('is_object')) {
 }
 
 //用于直接写入
-
 if (!function_exists('getDirList')) {
     /**
      * 获取文件目录
@@ -717,7 +728,12 @@ if (!function_exists('to_array')) {
      */
     function to_array($json = '')
     {
-        return $json ? json_decode($json, true) : null;
+        $ret = json_decode($json, true);
+        if (json_last_error()) {
+            return $json;
+        } else {
+            return $ret;
+        }
     }
 }
 
@@ -791,6 +807,16 @@ if (!function_exists('url2str')) {
         $value_str = str_replace($url . WE7_ROOT, URL_STRING, $value_str);
         $new_value = to_array($value_str);
         return $new_value;
+    }
+}
+
+if (!function_exists('qm_round')) {
+    /**
+     * 保留小数
+     */
+    function qm_round($value, $number = 2)
+    {
+        return number_format($value, $number, '.', '');
     }
 }
 
