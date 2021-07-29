@@ -112,7 +112,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 
 ### 重新安装
 1. 清除数据库
-2. 删除/server/install.lock 文件
+2. 删除/install.lock 文件
 
 ## 目录说明
 ```
