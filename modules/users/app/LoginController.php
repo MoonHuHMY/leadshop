@@ -69,7 +69,19 @@ abstract class LoginController extends BasicController
         }
         $t->commit();
         $res                    = ArrayHelper::toArray($user);
-        $res['promoter_status'] = $user->promoter?$user->promoter->status:0;
+        $res['promoter_status'] = 0;
+        $res['promoter_show'] = 0;
+        $res['recruiting_show'] = 0;
+        $promoter = $user->promoter;
+        if ($promoter) {
+            $res['promoter_status'] = $promoter->status;
+            if ($promoter->repel_time || $promoter->status === 2) {
+                $res['promoter_show'] = 1;
+            }
+            if ($promoter->status < 0) {
+                $res['recruiting_show'] = 1;
+            }
+        }
         $res['token']           = $this->getToken($user->id);
         $res['register'] = ['coupon_list' => []];
         if ($register) {

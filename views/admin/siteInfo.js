@@ -5,7 +5,7 @@
  * @LastEditTime: 2021-07-23 23:04:33
  */
 (function () {
-  let origin = 'https://dev.91bd.cn';
+  let origin = window.location.origin;
   window.$_W = {
     AppURL: origin + '/index.php?q=',
     AppWEB: origin + '/index.php?r=wechat',

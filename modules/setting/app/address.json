@@ -2396,9 +2396,12 @@
           { "id": 1357, "name": "历城区", "parent_id": 1352, "level": "district" },
           { "id": 1358, "name": "长清区", "parent_id": 1352, "level": "district" },
           { "id": 1359, "name": "平阴县", "parent_id": 1352, "level": "district" },
-          { "id": 1360, "name": "济阳县", "parent_id": 1352, "level": "district" },
+          { "id": 1360, "name": "济阳区", "parent_id": 1352, "level": "district" },
           { "id": 1361, "name": "商河县", "parent_id": 1352, "level": "district" },
-          { "id": 1362, "name": "章丘区", "parent_id": 1352, "level": "district" }
+          { "id": 1362, "name": "章丘区", "parent_id": 1352, "level": "district" },
+          { "id": 10081, "name": "莱芜区", "parent_id": 1352, "level": "district" },
+          { "id": 10082, "name": "钢城区", "parent_id": 1352, "level": "district" },
+          { "id": 10083, "name": "济南高新技术产业开发区", "parent_id": 1352, "level": "district" }
         ]
       },
       {

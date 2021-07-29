@@ -304,7 +304,7 @@ class IndexController extends BasicController
                 break;
         }
         $t->commit();
-        return $res;
+        return $data;
     }
 
     private function bind()
@@ -361,7 +361,7 @@ class IndexController extends BasicController
                 $data                = $model;
             } else {
                 if ($data->invite_id <= 0) {
-                    $model->invite_id = (0 - $invite_id);
+                    $data->invite_id = (0 - $invite_id);
                 }
                 if ($data->status >= 0) {
                     $data->status = $data->status === 0 ? -1 : -2;
