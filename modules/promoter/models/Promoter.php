@@ -37,6 +37,7 @@ class Promoter extends CommonModels
     const commission        = ['decimal' => '10,2', 'default' => 0, 'comment' => '待提现佣金'];
     const commission_amount = ['decimal' => '10,2', 'default' => 0, 'comment' => '总已结算佣金'];
     const status            = ['tinyint' => 2, 'default' => 0, 'comment' => '-2清退后接到招募令 -1接到招募令 0普通用户 1申请待审核 2审核通过 3已拒绝 4已清退'];
+    const note              = ['varchar' => 255, 'default' => '', 'comment' => '拒绝原因'];
     const transfer_id       = ['bigint' => 20, 'comment' => '移交用户ID'];
     const repel_time        = ['bigint' => 10, 'comment' => '清退时间'];
     const invite_id         = ['bigint' => 10, 'notNull', 'default' => 0, 'comment' => '邀请方ID'];
@@ -64,7 +65,7 @@ class Promoter extends CommonModels
         return [
             [['UID', 'level', 'start_level', 'status', 'transfer_id', 'repel_time', 'join_time', 'invite_id', 'created_time', 'updated_time', 'deleted_time', 'is_deleted'], 'integer'],
             [['UID', 'created_time', 'status'], 'required'],
-            ['apply_content', 'string'],
+            [['apply_content', 'note'], 'string'],
         ];
     }
 
@@ -83,6 +84,7 @@ class Promoter extends CommonModels
             'repel_time'    => '清退时间',
             'join_time'     => '加入时间',
             'apply_content' => '申请内容',
+            'note'          => '拒绝原因',
             'created_time'  => 'Created Time',
             'updated_time'  => 'Updated Time',
             'deleted_time'  => 'Deleted Time',

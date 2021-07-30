@@ -78,7 +78,7 @@ abstract class LoginController extends BasicController
             if ($promoter->repel_time || $promoter->status === 2) {
                 $res['promoter_show'] = 1;
             }
-            if ($promoter->status < 0) {
+            if ($promoter->status < 0 || $promoter->status === 1 || $promoter->status === 3) {
                 $res['recruiting_show'] = 1;
             }
         }

@@ -434,10 +434,10 @@ class IndexController extends BasicController
             ->select('sum(c.commission) all_commission_amount,sum(c.sales_amount) sales_amount')
             ->asArray()
             ->one();
-        $data['sales_amount']          = $pc_data['sales_amount'];
+        $data['sales_amount']          = $pc_data['sales_amount'] ?: 0;
         $data['wait_account']          = qm_round($pc_data['all_commission_amount'] - $data['commission_amount']); //累计佣金-累计已结算佣金=待结算
         $data['is_withdrawal']         = qm_round($data['commission_amount'] - $data['commission']); //累计已结算-待提现=已提现
-        $data['all_commission_amount'] = $pc_data['all_commission_amount'];
+        $data['all_commission_amount'] = $pc_data['all_commission_amount'] ?: 0;
 
         return $data;
     }
@@ -607,6 +607,7 @@ class IndexController extends BasicController
     private function refuse()
     {
         $id    = Yii::$app->request->get('id', 0);
+        $note  = Yii::$app->request->post('note', '');
         $model = Promoter::findOne(['UID' => $id]);
         if (!$model) {
             Error('分销申请不存在');
@@ -615,6 +616,7 @@ class IndexController extends BasicController
             Error('该用户不处于待审核状态');
         }
 
+        $model->note   = $note;
         $model->status = 3;
 
         if ($model->save()) {
