@@ -91,29 +91,36 @@ class IndexController extends BasicController
         $next_level              = $level_data[1];
         $next_level['condition'] = to_array($next_level['condition']);
         $next_level['lack']      = null;
+        $process                 = 1;
         foreach ($next_level['condition'] as $k => $v) {
             if ($v['checked']) {
                 switch ($k) {
                     case 'all_children':
                         if ($data['all_children'] < $v['num']) {
-                            $next_level['lack'] = ['condition' => '当前下线数', 'num' => ($v['num'] - $data['all_children'])];
+                            if (($data['all_children'] / $v['num']) < $process) {
+                                $process            = $data['all_children'] / $v['num'];
+                                $next_level['lack'] = ['condition' => '当前下线数', 'lack_num' => ($v['num'] - $data['all_children']), 'get_num' => $data['all_children'], 'all_num' => $v['num']];
+                            }
                         }
                         break;
                     case 'total_bonus':
                         if ($data['all_commission_amount'] < $v['num']) {
-                            $next_level['lack'] = ['condition' => '累计佣金', 'num' => ($v['num'] - $data['all_commission_amount'])];
+                            if (($data['all_commission_amount'] / $v['num']) < $process) {
+                                $process            = $data['all_commission_amount'] / $v['num'];
+                                $next_level['lack'] = ['condition' => '累计佣金', 'lack_num' => ($v['num'] - $data['all_commission_amount']), 'get_num' => $data['all_commission_amount'], 'all_num' => $v['num']];
+                            }
                         }
                         break;
                     case 'total_money':
                         if ($p_c['sales_amount'] < $v['num']) {
-                            $next_level['lack'] = ['condition' => '累计销售金额', 'num' => ($v['num'] - $p_c['sales_amount'])];
+                            if (($p_c['sales_amount'] / $v['num']) < $process) {
+                                $process            = $p_c['sales_amount'] / $v['num'];
+                                $next_level['lack'] = ['condition' => '累计销售金额', 'lack_num' => ($v['num'] - $p_c['sales_amount']), 'get_num' => $p_c['sales_amount'], 'all_num' => $v['num']];
+                            }
                         }
                         break;
 
                 }
-            }
-            if ($next_level['lack']) {
-                break;
             }
         }
         $data['next_level'] = $next_level;

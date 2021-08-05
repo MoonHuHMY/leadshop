@@ -1,11 +1,5 @@
-/*
- * @Author: fjt
- * @Date: 2021-07-23 21:48:02
- * @LastEditors: fjt
- * @LastEditTime: 2021-07-23 23:04:33
- */
 (function () {
-  let origin = window.location.origin;
+  let origin = 'https://dev.91bd.cn';
   window.$_W = {
     AppURL: origin + '/index.php?q=',
     AppWEB: origin + '/index.php?r=wechat',

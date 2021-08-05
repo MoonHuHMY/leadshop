@@ -1,5 +1,5 @@
 <?php
-$db = file_exists(__DIR__ . '/db.php') ? require __DIR__ . '/db.php' : [
+$db = file_exists(__DIR__ . '/db.php') ? require(__DIR__ . '/db.php') : [
     'class'       => 'yii\db\Connection',
     'dsn'         => '',
     'username'    => '',
@@ -20,15 +20,8 @@ $config = [
     'timeZone' => 'Asia/Shanghai',
     'aliases'    => $aliases,
     'basePath'   => dirname(__DIR__),
-    'timeZone'   => 'PRC',
     'components' => [
-        'db'    => $db,
-        'redis' => [
-            'class'    => \yii\redis\Connection::class,
-            'hostname' => '127.0.0.1',
-            'port'     => 6379,
-            'database' => 0,
-        ],
+        'db'         => $db
     ],
     'params'     => $params,
 ];

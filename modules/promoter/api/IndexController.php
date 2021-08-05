@@ -586,10 +586,12 @@ class IndexController extends BasicController
 
         $t = Yii::$app->db->beginTransaction();
         if ($model->save()) {
-            $c_res = Promoter::updateAllCounters(['invite_number' => 1], ['UID' => $model->invite_id]);
-            if (!$c_res) {
-                $t->rollBack();
-                Error('系统错误');
+            if ($model->invite_id) {
+                $c_res = Promoter::updateAllCounters(['invite_number' => 1], ['UID' => $model->invite_id]);
+                if (!$c_res) {
+                    $t->rollBack();
+                    Error('系统错误');
+                }
             }
             $ComPromoter = new ComPromoter();
             $ComPromoter->setLevel([$id], 2);
