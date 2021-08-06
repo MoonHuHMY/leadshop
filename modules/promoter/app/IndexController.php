@@ -43,6 +43,9 @@ class IndexController extends BasicController
             case 'apply_check':
                 return $this->applyCheck();
                 break;
+            case 'apply_audit':
+                return $this->applyAudit();
+                break;
             default:
                 return $this->promoterInfo();
                 break;
@@ -312,6 +315,11 @@ class IndexController extends BasicController
         }
         $t->commit();
         return $data;
+    }
+
+    private function applyAudit(){
+        $UID        = Yii::$app->user->identity->id;
+        return Promoter::findOne(['UID' => $UID]);
     }
 
     private function bind()

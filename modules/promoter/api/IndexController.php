@@ -148,7 +148,7 @@ class IndexController extends BasicController
         }
 
         $query->addSelect([
-            'p.id', 'p.UID', 'p.commission', 'p.status', 'p.apply_time', 'p.join_time', 'p.invite_number',
+            'p.id', 'p.UID', 'p.commission', 'p.status', 'p.apply_time', 'p.apply_content', 'p.join_time', 'p.invite_number',
             'com.sales_amount', 'com.all_commission_amount',
             'l.name level_name',
             'u.avatar', 'u.nickname', 'u.mobile', 'u.realname',
@@ -185,6 +185,7 @@ class IndexController extends BasicController
             if ($setting['self_buy'] === 2) {
                 $value['all_children']++;
             }
+            $value['apply_content']         = to_array($value['apply_content']);
             $value['sales_amount']          = $value['sales_amount'] ?: 0.00;
             $value['all_commission_amount'] = $value['all_commission_amount'] ?: 0.00;
         }
@@ -382,6 +383,7 @@ class IndexController extends BasicController
             'avatar'   => $user_info->avatar,
             'realname' => $user_info->realname,
             'mobile'   => $user_info->mobile,
+            'type'     => $user_info->oauth->type,
         ];
         $data['level_name'] = $model->levelInfo->name;
         if ($model->transfer_id && $model->status === 4) {
@@ -435,6 +437,7 @@ class IndexController extends BasicController
             ->asArray()
             ->one();
         $data['sales_amount']          = $pc_data['sales_amount'] ?: 0;
+        $data['apply_content']         = to_array($data['apply_content']);
         $data['wait_account']          = qm_round($pc_data['all_commission_amount'] - $data['commission_amount']); //累计佣金-累计已结算佣金=待结算
         $data['is_withdrawal']         = qm_round($data['commission_amount'] - $data['commission']); //累计已结算-待提现=已提现
         $data['all_commission_amount'] = $pc_data['all_commission_amount'] ?: 0;
@@ -522,8 +525,6 @@ class IndexController extends BasicController
         $res = $model->save();
 
         if ($res && $user_res) {
-            $ComPromoter = new ComPromoter();
-            $ComPromoter->setLevel([$UID], 2);
             if ($model->invite_id) {
                 $c_res = Promoter::updateAllCounters(['invite_number' => 1], ['UID' => $model->invite_id]);
                 if (!$c_res) {
@@ -532,6 +533,8 @@ class IndexController extends BasicController
                 }
             }
             $t->commit();
+            $ComPromoter = new ComPromoter();
+            $ComPromoter->setLevel([$UID], 2);
             return true;
         } else {
             $t->rollBack();
@@ -558,8 +561,30 @@ class IndexController extends BasicController
                 return $this->dispense();
                 break;
             default:
-                Error('未定义操作');
+                return $this->edit();
                 break;
+        }
+    }
+
+    private function edit()
+    {
+        $id          = Yii::$app->request->get('id', 0);
+        $start_level = Yii::$app->request->post('level', 1);
+        $model       = Promoter::findOne(['UID' => $id]);
+        if (!$model) {
+            Error('分销申请不存在');
+        }
+        if ($model->status != 2) {
+            Error('该用户还不是分销商');
+        }
+
+        $model->start_level = $start_level;
+        $model->level       = $start_level;
+
+        if ($model->save()) {
+            return $model;
+        } else {
+            Error('保存失败');
         }
     }
 

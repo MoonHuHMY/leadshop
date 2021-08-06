@@ -112,6 +112,8 @@ class ComPromoter
         ->asArray()
         ->all();
 
+        yii::error($check_list);
+
         $level_data        = PromoterLevel::find()->where(['AppID' => $AppID, 'is_auto' => 1])->select('level,first,second,third,update_type,condition')->orderBy(['level' => SORT_DESC])->asArray()->all();
         $level_update_data = [];
         foreach ($level_data as $lv) {
@@ -120,7 +122,7 @@ class ComPromoter
             $new_check_list                  = []; //用于储存不符合当前等级的用户,在下一个等级判断使用
             foreach ($check_list as $v) {
 
-                if ($v['start_level'] > $lv['level']) {
+                if ($v['start_level'] >= $lv['level']) {
                     if (isset($level_update_data[$v['start_level']])) {
                         array_push($level_update_data[$v['start_level']], $v['UID']);
                     } else {
@@ -128,7 +130,6 @@ class ComPromoter
                     }
 
                 } else {
-
                     $checked_num = 0; //需要满足数
                     $got_num     = 0; //已获得数
 

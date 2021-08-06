@@ -58,7 +58,8 @@ class LevelController extends BasicController
             Error('该等级不存在');
         }
         $level = ArrayHelper::toArray($level);
-        $level['condition'] = to_array($level['condition']);
+        $condition = to_array($level['condition']);
+        $level['condition'] = empty($condition) ? (object)[] : $condition;
         return $level;
     }
 
@@ -107,23 +108,41 @@ class LevelController extends BasicController
 
     private function getOptions()
     {
-        $list = PromoterLevel::find()->select('level')->where([
+        $list = PromoterLevel::find()->select(['name', 'level', 'first', 'second', 'third'])->where([
             'AppID' => \Yii::$app->params['AppID'],
             'is_deleted' => 0
-        ])->column();
-
+        ])->all();
+        $levelColumn = array_column($list, 'level');
+        $firstColumn = array_column($list,  'first', 'level');
         $newList = [];
         for ($i = 1; $i <= 10; $i++) {
             $newList[] = [
-                'name' => '等级' . $i,
+                'name' => $this->getLevelNames()[$i],
                 'level' => $i,
-                'disabled' => in_array($i, $list),
+                'third' => $firstColumn[$i] ?? null,
+                'disabled' => in_array($i, $levelColumn),
             ];
         }
 
         return [
             'list' => $newList,
             'level' => StoreSetting('promoter_setting', 'level_number')
+        ];
+    }
+
+    private function getLevelNames()
+    {
+        return [
+            1 => '默认一级',
+            2 => '二级',
+            3 => '三级',
+            4 => '四级',
+            5 => '五级',
+            6 => '六级',
+            7 => '七级',
+            8 => '八级',
+            9 => '九级',
+            10 => '十级'
         ];
     }
 }
