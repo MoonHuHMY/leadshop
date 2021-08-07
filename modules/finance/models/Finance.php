@@ -4,6 +4,7 @@ namespace finance\models;
 
 use framework\common\CommonModels;
 use promoter\models\Promoter;
+use users\models\Oauth;
 use users\models\User;
 
 /**
@@ -20,7 +21,6 @@ use users\models\User;
  * @property string $remark 备注
  * @property string $name 真实姓名
  * @property string $model 提现来源(promoter)
- * @property int $transfer_status 0.待转账 | 1.已转账  | 2.拒绝转账
  * @property int $mobile 手机
  * @property string $AppID 应用ID
  * @property int $merchant_id 商户ID
@@ -42,7 +42,6 @@ class Finance extends CommonModels
     const remark = ['varchar' => 1024, 'notNull', 'default' => '', 'comment' => '备注'];
     const name = ['varchar' => 50, 'notNull', 'comment' => '真实姓名'];
     const model = ['varchar' => 50, 'notNull', 'comment' => '提现来源(promoter)'];
-    const transfer_status = ['tinyint' => 1, 'notNull', 'default' => 0, 'comment' => '0.待转账 | 1.已转账  | 2.拒绝转账'];
     const mobile = ['bigint' => 11, 'notNull', 'comment' => '手机'];
     const AppID = ['varchar' => 50, 'notNull', 'comment' => '应用ID'];
     const merchant_id = ['bigint' => 10, 'notNull', 'comment' => '商户ID'];
@@ -68,7 +67,7 @@ class Finance extends CommonModels
     public function rules()
     {
         return [
-            [['UID', 'type', 'status', 'transfer_status', 'mobile', 'merchant_id', 'created_time', 'updated_time', 'deleted_time', 'is_deleted'], 'integer'],
+            [['UID', 'type', 'status', 'mobile', 'merchant_id', 'created_time', 'updated_time', 'deleted_time', 'is_deleted'], 'integer'],
             [['order_sn', 'price', 'extra', 'name', 'model', 'mobile', 'AppID', 'merchant_id'], 'required'],
             [['price', 'service_charge'], 'number'],
             [['extra'], 'string'],
@@ -94,7 +93,6 @@ class Finance extends CommonModels
             'remark' => 'Remark',
             'name' => 'Name',
             'model' => 'Model',
-            'transfer_status' => 'Transfer Status',
             'mobile' => 'Mobile',
             'AppID' => 'App ID',
             'merchant_id' => 'Merchant ID',
@@ -141,6 +139,11 @@ class Finance extends CommonModels
     public function getUser()
     {
         return $this->hasOne(User::className(), ['id' => 'UID']);
+    }
+
+    public function getOauth()
+    {
+        return $this->hasOne(Oauth::className(), ['UID' => 'UID']);
     }
 
     public function getPromoter()

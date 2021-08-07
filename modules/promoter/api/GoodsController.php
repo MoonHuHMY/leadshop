@@ -69,8 +69,9 @@ class GoodsController extends BasicController
                     $q->select('id,goods_id,price,cost_price');
                 },
             ])->asArray()->all();
-
+            $count_rules = StoreSetting('commission_setting', 'count_rules');
             foreach ($goods_list as $value) {
+
                 if (!$value['max_price']) {
                     $max_price   = 0;
                     $max_profits = 0;
@@ -78,9 +79,8 @@ class GoodsController extends BasicController
                     foreach ($value['goodsdata'] as $v) {
                         if ($v['cost_price'] === null) {
                             $check_cost = false;
-                            break;
                         }
-                        if (($v['price'] - $v['cost_price']) > $max_profits) {
+                        if ($check_cost && ($v['price'] - $v['cost_price']) > $max_profits) {
                             $max_profits = ($v['price'] - $v['cost_price']);
                         }
                         if ($v['price'] > $max_price) {
@@ -88,16 +88,19 @@ class GoodsController extends BasicController
                         }
                     }
                     if (!$check_cost) {
-                        continue;
+                        $max_profits = null;
                     }
                     $res = Goods::updateAll(['max_price' => $max_price, 'max_profits' => $max_profits], ['id' => $value['id']]);
                     if (!$res) {
                         Error('系统繁忙');
                     }
-                    array_push($id_list, $value['id']);
-                } elseif ($value['max_profits'] !== null) {
-                    array_push($id_list, $value['id']);
+                    $value['max_price'] = $max_price;
+                    $value['max_profits'] = $max_profits;
                 }
+                if ($count_rules === 2 && $value['max_profits'] === null) {
+                    Error('存在未设置成本价的商品');
+                }
+                array_push($id_list, $value['id']);
 
             }
         } else {
@@ -116,7 +119,7 @@ class GoodsController extends BasicController
             $time     = time();
             foreach ($id_list as $v) {
                 if (!in_array($v, $p_g_list)) {
-                    array_push($row, [$v,0,$time]);
+                    array_push($row, [$v, 0, $time]);
                 }
             }
             if (count($row)) {

@@ -43,6 +43,7 @@ class LevelController extends BasicController
             Error('该等级不存在');
         }
         $level->attributes = \Yii::$app->request->post();
+        $level->condition = to_json(\Yii::$app->request->post('condition'));
         if (!$level->save()) {
             Error($level->getErrorMsg());
         } else {
@@ -119,7 +120,7 @@ class LevelController extends BasicController
             $newList[] = [
                 'name' => $this->getLevelNames()[$i],
                 'level' => $i,
-                'third' => $firstColumn[$i] ?? null,
+                'first' => $firstColumn[$i] ?? null,
                 'disabled' => in_array($i, $levelColumn),
             ];
         }

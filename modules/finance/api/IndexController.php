@@ -44,8 +44,15 @@ class IndexController extends BasicController
         $get = \Yii::$app->request->get();
         $query = Finance::find()
             ->alias('f')
-            ->innerJoinWith(['promoter p'])
+            ->innerJoinWith(['promoter p' => function ($query) {
+                $query->with(['levelInfo' => function ($query1) {
+                    $query1->select(['level', 'name']);
+                }]);
+            }])
             ->innerJoinWith(['user u'])
+            ->with(['oauth' => function ($query) {
+                $query->select(['UID', 'type']);
+            }])
             ->where(["f.AppID" => \Yii::$app->params['AppID'], "f.is_deleted" => 0]);
         $keyword = $get['keyword'] ?? false;
         if ($keyword) {
@@ -73,6 +80,12 @@ class IndexController extends BasicController
         $level = $get['level'] ?? false;
         if ($level) {
             $query->andWhere(['p.level' => $level]);
+        }
+        $status = $get['status'] ?? false;
+        if ($status) {
+            if ($status != -1) {
+                $query->andWhere(['f.status' => $status]);
+            }
         }
         $data = new ActiveDataProvider(
             [
