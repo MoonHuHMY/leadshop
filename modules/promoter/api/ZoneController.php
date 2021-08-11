@@ -17,6 +17,7 @@ class ZoneController extends BasicController
     {
         $actions = parent::actions();
         unset($actions['create']);
+        unset($actions['index']);
         unset($actions['update']);
         return $actions;
     }

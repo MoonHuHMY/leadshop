@@ -6,8 +6,10 @@ use framework\common\BasicController;
 use promoter\models\Promoter;
 use promoter\models\PromoterZone;
 use promoter\models\PromoterZoneUpvote;
+use setting\models\Setting;
 use yii\data\ActiveDataProvider;
 use yii\helpers\ArrayHelper;
+use yii\web\ForbiddenHttpException;
 
 class ZoneController extends BasicController
 {
@@ -28,21 +30,34 @@ class ZoneController extends BasicController
         $behavior = \Yii::$app->request->get('behavior', 'zone');
         switch ($behavior) {
             case 'zone':
-                return $this->addZone();
+                return $this->editZone();
             case 'vote':
                 return $this->vote();
         }
 
     }
 
-    private function addZone()
+    public function actionUpdate()
+    {
+        return $this->editZone();
+    }
+
+    private function editZone()
     {
         $promoter = Promoter::findOne(['UID' => \Yii::$app->user->id]);
         if (!$promoter) {
             Error('你不是分销商');
         }
+        $id = \Yii::$app->request->get('id');
+        if ($id) {
+            $model = PromoterZone::find()->where(['id' => $id, 'UID' => \Yii::$app->user->id])->limit(1)->one();
+            if (!$model) {
+                Error('该动态不存在');
+            }
+        } else {
+            $model = new PromoterZone();
+        }
         $post = \Yii::$app->request->post();
-        $model = new PromoterZone();
         $model->attributes = $post;
         $model->AppID = \Yii::$app->params['AppID'];
         $model->is_admin = 0;
@@ -53,6 +68,9 @@ class ZoneController extends BasicController
         }
         if (isset($post['video_list'])) {
             $model->video_list = to_json($post['video_list']);
+        }
+        if (isset($post['link'])) {
+            $model->link = to_json($post['link']);
         }
         if (!$model->save()) {
             Error($model->getErrorMsg());
@@ -103,7 +121,13 @@ class ZoneController extends BasicController
         $pageSize = $headers->get('X-Pagination-Per-Page') ?? 20;
         $query = PromoterZone::find()
             ->where(['AppID' => \Yii::$app->params['AppID'], 'is_deleted' => 0])
-            ->with(['upvote']);
+            ->with(['upvote' => function ($query) {
+                $query->select(['UID', 'zone_id'])->with(['user' => function ($query) {
+                    $query->select(['nickname', 'id', 'avatar']);
+                }]);
+            }, 'user' => function ($query) {
+                $query->select(['nickname', 'id', 'avatar']);
+            }]);
         $get = \Yii::$app->request->get();
         $type = $get['type'] ?? false;
         if ($type) {
@@ -116,6 +140,12 @@ class ZoneController extends BasicController
             ]
         );
 
+        $logo = 'https://qmxq.oss-cn-hangzhou.aliyuncs.com/home.png';
+        $res = Setting::findOne(['AppID' => \Yii::$app->params['AppID'], 'keyword' => 'setting_collection']);
+        if ($res) {
+            $info = to_array($res['content']);
+            $logo = $info['store_setting']['logo'] ?? 'https://qmxq.oss-cn-hangzhou.aliyuncs.com/home.png';
+        }
         $list = $data->getModels();
         $list = str2url($list);
         foreach ($list as $key => &$value) {
@@ -125,6 +155,14 @@ class ZoneController extends BasicController
             }
             $value['pic_list'] = to_array($value['pic_list']);
             $value['video_list'] = to_array($value['video_list']);
+            $value['link'] = to_array($value['link']);
+            $value['upvote_count'] = count($value['upvote']);
+            $value['can_edit'] = $value['UID'] == \Yii::$app->user->id;
+            $value['can_delete'] = $value['UID'] == \Yii::$app->user->id;
+            if ($value['is_admin']) {
+                $value['user']['nickname'] = 'admin';
+                $value['user']['avatar'] = str2url($logo);
+            }
         }
         $data->setModels($list);
         return $data;
@@ -145,4 +183,23 @@ class ZoneController extends BasicController
         $material['pic_list'] = to_array($material['pic_list']);
         return $material;
     }
+
+    public function actionDelete()
+    {
+        $get   = \Yii::$app->request->get();
+        $id    = intval($get['id']);
+        $model = PromoterZone::find()->where(['id' => $id, 'UID' => \Yii::$app->user->id])->limit(1)->one();
+        if ($model) {
+            $model->deleted_time = time();
+            $model->is_deleted   = 1;
+            if ($model->save()) {
+                return true;
+            } else {
+                throw new ForbiddenHttpException('删除失败，请检查is_deleted字段是否存在');
+            }
+        } else {
+            throw new ForbiddenHttpException('删除失败，数据不存在');
+        }
+    }
+
 }

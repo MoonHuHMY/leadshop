@@ -3,6 +3,7 @@
 namespace promoter\models;
 
 use framework\common\CommonModels;
+use users\models\User;
 
 /**
  * This is the model class for table "{{%promoter_zone}}".
@@ -97,5 +98,10 @@ class PromoterZone extends CommonModels
     public function getUpvote()
     {
         return $this->hasMany(PromoterZoneUpvote::className(), ['zone_id' => 'id']);
+    }
+
+    public function getUser()
+    {
+        return $this->hasOne(User::className(), ['id' => 'UID']);
     }
 }

@@ -10,7 +10,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         document.documentElement.style.fontSize = document.documentElement.clientWidth / 20 + 'px';
     });
-
+    
     let origin = window.location.origin;
     window.siteinfo = {
         "uniacid": "3",
@@ -30,8 +30,8 @@
     }
 
     <?php if (!empty($tabBar)) {
-        echo "window.siteinfo.tabBar = " . json_encode($tabBar);
-      }?>
+          echo "window.siteinfo.tabBar = " . json_encode($tabBar);
+        }?>
 
     var coverSupport =
         'CSS' in window &&
@@ -51,7 +51,7 @@
     <div id="app"></div>
     <script src="https://res2.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
     <script src="/assets/wechat/static/js/chunk-vendors.d630ff75.js"></script>
-    <script src="/assets/wechat/static/js/index.b1cc953b.js"></script>
+    <script src="/assets/wechat/static/js/index.9e82a7c9.js"></script>
 </body>
 
 </html>

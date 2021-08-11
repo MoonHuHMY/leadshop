@@ -78,18 +78,22 @@ class LevelController extends BasicController
 
     public function actionDelete()
     {
-        $id = \Yii::$app->request->post('id');
+        $id = \Yii::$app->request->get('id');
         if ($id == 1) {
             Error('默认等级无法删除');
         }
+        $level = PromoterLevel::findOne($id);
+        if (!$level) {
+            Error('等级不存在');
+        }
         /**@var Promoter $model*/
-        $model = Promoter::find()->where(['id' => $id, 'AppID' => \Yii::$app->params['AppID'], 'is_deleted' => 0])->one();
+        $model = Promoter::find()->where(['level' => $level->level, 'is_deleted' => 0])->one();
         if ($model) {
             Error('该等级分销商数不为0,无法删除');
         }
-        $model->deleted_time = time();
-        $model->is_deleted = 1;
-        if (!$model->save()) {
+        $level->deleted_time = time();
+        $level->is_deleted = 1;
+        if (!$level->save()) {
             Error('删除失败');
         }
         return true;
@@ -102,7 +106,7 @@ class LevelController extends BasicController
         return PromoterLevel::find()->alias('pl')
             ->where(['pl.AppID' => \Yii::$app->params['AppID'], 'pl.is_deleted' => 0])
             ->select(['pl.id', 'pl.level', 'pl.name', 'pl.first', 'pl.second', 'pl.third', 'pl.is_auto', 'pl.update_type', 'promoter_count' => $subQuery, 'pl.created_time'])
-            ->orderBy(['created_time' => SORT_DESC])
+            ->orderBy(['pl.level' => SORT_ASC])
             ->asArray()
             ->all();
     }
