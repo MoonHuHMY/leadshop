@@ -58,6 +58,7 @@ class ZoneController extends BasicController
             $model = new PromoterZone();
         }
         $post = \Yii::$app->request->post();
+        $model->scenario = 'admin';
         $model->attributes = $post;
         $model->AppID = \Yii::$app->params['AppID'];
         $model->is_admin = 0;
@@ -133,6 +134,15 @@ class ZoneController extends BasicController
         if ($type) {
             $query->andWhere(['type' => $type]);
         }
+        $content = $get['content'] ?? false;
+        if ($content) {
+            $query->andWhere(['like', 'content', $content]);
+        }
+        $uid = $get['UID'] ?? false;
+        if (!$uid) {
+            Error('用户id不能为空');
+        }
+        $query->andWhere(['UID' => $uid]);
         $data = new ActiveDataProvider(
             [
                 'query' => $query->orderBy(['created_time' => SORT_DESC])->asArray(),
@@ -150,7 +160,7 @@ class ZoneController extends BasicController
         $list = str2url($list);
         foreach ($list as $key => &$value) {
             $value['is_vote'] = 0;
-            if (in_array(\Yii::$app->user->id, array_column($value['upvote'], "UID" ))) {
+            if (!\Yii::$app->user->isGuest && in_array(\Yii::$app->user->id, array_column($value['upvote'], "UID" ))) {
                 $value['is_vote'] = 1;
             }
             $value['pic_list'] = to_array($value['pic_list']);

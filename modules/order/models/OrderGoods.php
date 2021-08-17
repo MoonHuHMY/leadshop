@@ -106,6 +106,11 @@ class OrderGoods extends CommonModels
         return $this->hasOne('order\models\OrderFreight', ['order_sn' => 'order_sn'])->select('order_sn,type,code,logistics_company,freight_sn,created_time');
     }
 
+    public function getBag()
+    {
+        return $this->hasMany('order\models\OrderFreightGoods', ['order_goods_id' => 'id'])->select('freight_id,order_goods_id,bag_goods_number');
+    }
+
     public function getAfter()
     {
         return $this->hasMany('order\models\OrderAfter', ['order_sn' => 'order_sn'])->select('order_sn,order_goods_id,type,status,return_number');

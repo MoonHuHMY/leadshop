@@ -45,8 +45,9 @@ abstract class LoginController extends BasicController
             'o.oauthID'    => $userInfo->openId,
         ])->one();
         if (!$user) {
-            $register = true;
+            $register           = true;
             $user               = new User();
+            $user->mobile       = null;
             $user->created_time = time();
             $user->updated_time = time();
         }
@@ -92,7 +93,7 @@ abstract class LoginController extends BasicController
             Yii::$app->user->login($user);
             $this->module->event->param = $user;
             $this->module->trigger('user_register');
-            $cacheKey = 'user_register_send_' . Yii::$app->user->id . '_' . Yii::$app->params['AppID'];
+            $cacheKey   = 'user_register_send_' . Yii::$app->user->id . '_' . Yii::$app->params['AppID'];
             $couponList = Yii::$app->cache->get($cacheKey);
             if ($couponList && count($couponList) > 0) {
                 $res['register']['coupon_list'] = $couponList;
@@ -177,8 +178,8 @@ abstract class LoginController extends BasicController
     public function getToken($id = '')
     {
         /** @var Jwt $jwt */
-        $jwt    = Yii::$app->jwt;
-        $signer = $jwt->getSigner('HS256');
+        $jwt      = Yii::$app->jwt;
+        $signer   = $jwt->getSigner('HS256');
         $identify = $this->getIdentify();
         $key    = $jwt->getKey($identify);
         $time   = time();

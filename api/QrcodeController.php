@@ -38,6 +38,9 @@ class QrcodeController extends BasicsModules implements Map
         }
 
         $url = $page;
+        if ($scene && $scene != 'index') {
+            $url .= '?' . $scene;
+        }
 
         $mpConfig    = isset(Yii::$app->params['apply']['weapp']) ? Yii::$app->params['apply']['weapp'] : null;
         $weapp_url   = '';
@@ -47,9 +50,6 @@ class QrcodeController extends BasicsModules implements Map
                 'appid'     => $mpConfig['AppID'], // 填写高级调用功能的app id, 请在微信开发模式后台查询
                 'appsecret' => $mpConfig['AppSecret'], // 填写高级调用功能的密钥
             ]);
-            if ($scene && $scene != 'index') {
-                $url .= '?' . $scene;
-            }
             try {
                 $weapp_img   = $wechat->createQrcode($data);
                 $type        = getimagesizefromstring($weapp_img)['mime']; //获取二进制流图片格式

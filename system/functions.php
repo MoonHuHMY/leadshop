@@ -140,9 +140,9 @@ if (!function_exists('createPoster')) {
                 imagecopy($target_img, $canvas, 0, 0, $start_x, $start_y, $resize_w, $resize_h);
 
                 //处理图片圆角问题
-                // if ($val['radius'] > 0) {
-                //     $canvas = radius_img($target_img, $val['width'], $val['height'], $val['radius'], $val['color']);
-                // }
+                if ($val['radius'] > 0) {
+                    $canvas = radius_img($target_img, $val['width'], $val['height'], $val['radius'], $val['color']);
+                }
 
                 //一下注释的为了测试用
                 // if ($img_type == 'png') {
@@ -202,6 +202,7 @@ if (!function_exists('radius_img')) {
         list($R, $G, $B) = explode(',', $color);
         //拾取一个完全透明的颜色,最后一个参数127为全透明
         $bg = imagecolorallocatealpha($img, $R, $G, $B, 127);
+        imagecolortransparent($img, $bg);
         imagefill($img, 0, 0, $bg);
         $r = $radius; //圆 角半径
         for ($x = 0; $x < $w; $x++) {

@@ -46,15 +46,86 @@ class PosterController extends BasicsModules implements Map
             return $this->goods($type, $goods_id);
         }
 
+        if ($goods_id && ($is_task || $is_task == 'true')) {
+            return $this->goodstask($type, $goods_id);
+        }
+
         $coupon_id = Yii::$app->request->get('coupon_id', false);
         if ($coupon_id) {
             return $this->coupon($type, $coupon_id);
         }
 
-        if ($goods_id && ($is_task || $is_task == 'true')) {
-            return $this->goodstask($type, $goods_id);
+        $store = Yii::$app->request->get('store', false);
+        if ($store) {
+            return $this->store($type);
         }
 
+    }
+
+    public function store($type){
+        $store_setting = StoreSetting('setting_collection','store_setting');
+        //图片转换
+            $config = array(
+                'text'       => array(
+                    array(
+                        'text'      => $store_setting['name'],
+                        'left'      => 375-(mb_strlen($store_setting['name']) * 16),
+                        'top'       => 243,
+                        'fontPath'  => realpath('../system/static/PingFang.ttf'), //字体文件
+                        'fontSize'  => 32, //字号
+                        'fontColor' => '34,34,34', //字体颜色
+                        'angle'     => 0,
+                        'lineation' => 0,
+                    ),
+                    array(
+                        'text'      => $type == 1 ? '长按识别二维码' : '长按识别小程序码',
+                        'left'      => $type == 1 ? 305 : 295,
+                        'top'       => 615,
+                        'fontPath'  => realpath('../system/static/PingFang.ttf'), //字体文件
+                        'fontSize'  => 16, //字号
+                        'fontColor' => '153,153,153', //字体颜色
+                        'angle'     => 0,
+                        'lineation' => 0,
+                    ),
+
+                ),
+                'image'      => array(
+                    array(
+                        'url'     => $store_setting['logo'],
+                        'left'    => 295,
+                        'top'     => 32,
+                        'right'   => 0,
+                        'stream'  => 0,
+                        'bottom'  => 0,
+                        'width'   => 160,
+                        'height'  => 160,
+                        'opacity' => 100,
+                        'radius'  => 80,
+                        'color'   => '255, 255, 255',
+                    ),
+                    //二维码
+                    array(
+                        'url'     => $type == 1 ? $this->getWechatQrCode("pages/index/index", "") : $this->getWeappQrCode("pages/index/index", ""),
+                        'left'    => 285,
+                        'top'     => 418,
+                        'right'   => 0,
+                        'stream'  => 1,
+                        'bottom'  => 0,
+                        'width'   => 180,
+                        'height'  => 180,
+                        'opacity' => 100,
+                        'radius'  => 0,
+                        'color'   => '255, 255, 255',
+                    ),
+                ),
+                'background' => realpath('../system/static/store_bg.png'),
+            );
+            //createPoster($config);
+            ob_start();
+            echo createPoster($config);
+            $imagedata = ob_get_contents();
+            ob_end_clean();
+            return 'data:image/png;base64,' . base64_encode($imagedata);
     }
 
     public function coupon($type, $coupon_id)

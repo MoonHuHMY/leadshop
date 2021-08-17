@@ -31,7 +31,7 @@ class PromoterZone extends CommonModels
     const id = ['bigkey' => 20, 'unique', 'comment' => 'ID'];
     const UID = ['bigint' => 20, 'notNull', 'comment' => '用户ID'];
     const is_admin = ['tinyint' => 1, 'notNull', 'default' => 0, 'comment' => '是否为管理员'];
-    const name = ['varchar' => 10, 'notNull', 'comment' => '素材名称'];
+    const name = ['varchar' => 10, 'notNull', 'default' => '', 'comment' => '素材名称'];
     const type = ['tinyint' => 1, 'notNull', 'default' => 1, 'comment' => '1图片 2视频'];
     const content = ['varchar' => 200, 'notNull', 'comment' => '素材文案'];
     const pic_list = ['varchar' => 2048, 'notNull', 'default' => '', 'comment' => '图片列表'];
@@ -59,9 +59,9 @@ class PromoterZone extends CommonModels
     public function rules()
     {
         return [
-            [['UID', 'name', 'content', 'AppID', 'merchant_id'], 'required'],
+            [['UID', 'content', 'AppID', 'merchant_id'], 'required'],
             [['UID', 'is_admin', 'type', 'merchant_id', 'created_time', 'updated_time', 'deleted_time', 'is_deleted'], 'integer'],
-            [['name'], 'string', 'max' => 10],
+            [['name'], 'string', 'max' => 10, 'on' => 'admin'],
             [['content'], 'string', 'max' => 200],
             [['pic_list'], 'string', 'max' => 2048],
             [['video_list', 'video_cover'], 'string', 'max' => 512],

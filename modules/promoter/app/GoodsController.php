@@ -30,7 +30,7 @@ class GoodsController extends BasicController
         //获取分页信息
         $pageSize = $headers->get('X-Pagination-Per-Page') ?? 20;
 
-        $get = Yii::$app->request->post('get', []);
+        $get = Yii::$app->request->get();
 
         $AppID = Yii::$app->params['AppID'];
         $where = ['g.AppID' => $AppID, 'g.is_promoter' => 1];

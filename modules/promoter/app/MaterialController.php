@@ -39,6 +39,10 @@ class MaterialController extends BasicController
         if ($type) {
             $query->andWhere(['type' => $type]);
         }
+        $content = $get['content'] ?? false;
+        if ($content) {
+            $query->andWhere(['like', 'content', $content]);
+        }
         $data = new ActiveDataProvider(
             [
                 'query' => $query->orderBy(['created_time' => SORT_DESC])->asArray(),

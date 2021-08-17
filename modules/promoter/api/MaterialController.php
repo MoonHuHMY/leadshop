@@ -41,6 +41,30 @@ class MaterialController extends BasicController
         }
     }
 
+    public function actionUpdate()
+    {
+        $id = \Yii::$app->request->get('id');
+        $post = \Yii::$app->request->post();
+        $model = PromoterMaterial::findOne($id);
+        if (!$model) {
+            Error('素材不存在');
+        }
+        $model->attributes = $post;
+        $model->AppID = \Yii::$app->params['AppID'];
+        $model->merchant_id = 1;
+        if (isset($post['pic_list'])) {
+            $model->pic_list = to_json($post['pic_list']);
+        }
+        if (isset($post['video_list'])) {
+            $model->video_list = to_json($post['video_list']);
+        }
+        if (!$model->save()) {
+            Error($model->getErrorMsg());
+        } else {
+            return $model->id;
+        }
+    }
+
     public function actionIndex()
     {
         //获取头部信息
@@ -91,16 +115,16 @@ class MaterialController extends BasicController
     public function actionView()
     {
         $id = \Yii::$app->request->get('id', 0);
-        /**@var PromoterMaterial $material*/
-        $material = PromoterMaterial::find()
+        /**@var PromoterMaterial $model*/
+        $model = PromoterMaterial::find()
             ->where(['id' => $id, 'is_deleted' => 0])
             ->with(['goods'])
             ->one();
-        if (!$material) {
+        if (!$model) {
             Error('该素材不存在');
         }
-        $material = ArrayHelper::toArray($material);
-        $material['goods'] = ArrayHelper::toArray($material->goods);
+        $material = ArrayHelper::toArray($model);
+        $material['goods'] = ArrayHelper::toArray($model->goods);
         if (!empty($material['goods']) && !empty($material['goods']['slideshow'])) {
             $material['goods']['slideshow'] = to_array($material['goods']['slideshow']);
         }
