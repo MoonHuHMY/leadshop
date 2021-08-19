@@ -7,6 +7,7 @@ use framework\common\BasicController;
 use promoter\models\Promoter;
 use promoter\models\PromoterCommission;
 use promoter\models\PromoterLevel;
+use promoter\models\PromoterLevelChangeLog;
 use promoter\models\PromoterLoseLog;
 use promoter\models\PromoterOrder;
 use users\models\User;
@@ -126,7 +127,19 @@ class IndexController extends BasicController
                 }
             }
         }
+
+        $data['down_level_status'] = 0;
+        $level_change_log          = PromoterLevelChangeLog::find()->where(['UID' => $UID, 'look_status' => 0])->select('old_level')->orderBy(['old_level' => SORT_DESC])->one();
+        if ($level_change_log) {
+            if ($level_change_log->old_level > $data['level']) {
+                $data['down_level_status'] = -1;
+            } elseif ($level_change_log->old_level < $data['level']) {
+                $data['down_level_status'] = 1;
+            }
+            PromoterLevelChangeLog::updateAll(['look_status' => 1], ['UID' => $UID, 'look_status' => 0]);
+        }
         $data['next_level'] = $next_level;
+
         return $data;
     }
 
@@ -168,7 +181,7 @@ class IndexController extends BasicController
                 'parent' => to_json($first_children),
             ];
             $data['second_today_get']  = User::find()->where(['and', ['>=', 'bind_time', $today_time], ['parent_id' => $first_children]])->count('id');
-            $data['second-today_lose'] = PromoterLoseLog::find()->where(['and', ['>=', 'created_time', $today_time], ['parent_id' => $first_children]])->count('id');
+            $data['second_today_lose'] = PromoterLoseLog::find()->where(['and', ['>=', 'created_time', $today_time], ['parent_id' => $first_children]])->count('id');
         }
 
         if ($level_number > 2) {
@@ -241,7 +254,7 @@ class IndexController extends BasicController
         $query->leftJoin(['sq' => $subQuery], 'sq.UID = u.id');
         $query->addSelect([
             'p.UID', 'p.status', 'p.join_time',
-            'u.avatar', 'u.nickname', 'u.mobile', 'u.realname', 'u.bind_time',
+            'u.id', 'u.avatar', 'u.nickname', 'u.mobile', 'u.realname', 'u.bind_time',
             "commission"            => "IF(sq.`commission`,sq.`commission`, 0)",
             "sales_amount"          => "IF(sq.`sales_amount`,sq.`sales_amount`, 0)",
             "promoter_order_number" => "IF(sq.`promoter_order_number`,sq.`promoter_order_number`, 0)",
@@ -317,8 +330,9 @@ class IndexController extends BasicController
         return $data;
     }
 
-    private function applyAudit(){
-        $UID        = Yii::$app->user->identity->id;
+    private function applyAudit()
+    {
+        $UID = Yii::$app->user->identity->id;
         return Promoter::findOne(['UID' => $UID]);
     }
 

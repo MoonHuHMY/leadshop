@@ -5,6 +5,7 @@ namespace promoter\app;
 use app\components\ComPromoter;
 use framework\common\BasicController;
 use Yii;
+use yii\data\ActiveDataProvider;
 
 class OrderController extends BasicController
 {
@@ -45,7 +46,7 @@ class OrderController extends BasicController
         //获取分页信息
         $pageSize = $headers->get('X-Pagination-Per-Page') ?? 20;
         //订单分组
-        $get = Yii::$app->request->post();
+        $get = Yii::$app->request->get();
 
         $UID = Yii::$app->user->identity->id;
 
@@ -108,7 +109,7 @@ class OrderController extends BasicController
         //获取分页信息
         $pageSize = $headers->get('X-Pagination-Per-Page') ?? 20;
         //订单分组
-        $get = Yii::$app->request->post();
+        $get = Yii::$app->request->get();
 
         $UID = Yii::$app->user->identity->id;
 
@@ -153,7 +154,7 @@ class OrderController extends BasicController
                     ->alias('c')
                     ->joinWith([
                         'promoterOrder as o' => function ($q) {
-                            $q->select('order_goods_id,status,order_sn,UID')->with('user');
+                            $q->select('order_goods_id,status,order_sn,UID')->with(['user','orderGoods']);
                         },
                     ])
                     ->where($where)

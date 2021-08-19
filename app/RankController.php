@@ -84,7 +84,7 @@ class RankController extends BasicsModules implements Map
                         }
                     }
                 }
-                $query->addSelect(["all_children" => $all_children])->orderBy(['all_children' => SORT_DESC]);
+                $query->addSelect(["all_children" => $all_children])->orderBy(['all_children' => SORT_DESC, 'p.id' => SORT_ASC]);
                 break;
             case 'total_bonus':
                 $subQuery = PromoterCommission::find()
@@ -98,7 +98,7 @@ class RankController extends BasicsModules implements Map
                     $subQuery->andWhere(['between', 'created_time', strtotime(date('Y-m-01')), time()]);
                 }
                 $query->leftJoin(['sq' => $subQuery], 'sq.beneficiary = p.UID');
-                $query->addSelect(["total_bonus" => "IF(sq.`num`,sq.`num`, 0)"])->orderBy(['total_bonus' => SORT_DESC]);
+                $query->addSelect(["total_bonus" => "IF(sq.`num`,sq.`num`, 0)"])->orderBy(['total_bonus' => SORT_DESC, 'p.id' => SORT_ASC]);
                 break;
             case 'total_money':
                 $subQuery = PromoterCommission::find()
@@ -112,12 +112,23 @@ class RankController extends BasicsModules implements Map
                     $subQuery->andWhere(['between', 'created_time', strtotime(date('Y-m-01')), time()]);
                 }
                 $query->leftJoin(['sq' => $subQuery], 'sq.beneficiary = p.UID');
-                $query->addSelect(["total_money" => "IF(sq.`num`,sq.`num`, 0)"])->orderBy(['total_money' => SORT_DESC]);
+                $query->addSelect(["total_money" => "IF(sq.`num`,sq.`num`, 0)"])->orderBy(['total_money' => SORT_DESC, 'p.id' => SORT_ASC]);
                 break;
             default:
                 Error('排名维度未开启');
                 break;
         }
-        return $query->asArray()->limit($setting['ranking_num'] ?? 20)->all();
+        $rankList = $query->asArray()->limit($setting['ranking_num'] ?? 20)->all();
+        $myRank = null;
+        foreach ($rankList as $k => $rank) {
+            if ($rank['UID'] == \Yii::$app->user->id) {
+                $myRank = $k;
+                break;
+            }
+        }
+        return [
+            'my_rank' => $myRank,
+            'rank_list' => $rankList
+        ];
     }
 }

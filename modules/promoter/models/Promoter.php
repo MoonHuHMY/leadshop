@@ -163,7 +163,18 @@ class Promoter extends CommonModels
      */
     public function getTotalMoney()
     {
-        return $this->sales_amount;
+        $res = PromoterCommission::find()
+            ->alias('pc')
+            ->leftJoin(['po' => PromoterOrder::tableName()], 'pc.order_goods_id = po.order_goods_id')
+            ->andWhere(['>=', 'po.status', 0])
+            ->andWhere(['beneficiary' => \Yii::$app->user->id])
+            ->groupBy('pc.beneficiary')
+            ->select('sum(pc.sales_amount) sales_amount')
+            ->one();
+        if (!$res) {
+            return 0;
+        }
+        return $res->sales_amount;
     }
 
     /**

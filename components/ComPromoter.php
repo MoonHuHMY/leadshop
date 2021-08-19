@@ -6,10 +6,9 @@
 namespace app\components;
 
 use promoter\models\Promoter;
-use promoter\models\PromoterOrder;
-use promoter\models\PromoterLevel;
 use promoter\models\PromoterCommission;
-use promoter\models\PromoterLoseLog;
+use promoter\models\PromoterLevel;
+use promoter\models\PromoterOrder;
 use users\models\User;
 use Yii;
 
@@ -50,17 +49,16 @@ class ComPromoter
      * 用户失去下级记录
      */
     public function loseLog($data, $type)
-    {   
+    {
         $col  = ['parent_id', 'UID', 'type', 'created_time'];
         $row  = [];
         $time = time();
-        yii::error($data);
         foreach ($data as $v) {
             array_push($row, [$v['parent_id'], $v['id'], $type, $time]);
         }
-        $prefix      = Yii::$app->db->tablePrefix;
-        $table = $prefix . 'promoter_lose_log';
-        $res   = Yii::$app->db->createCommand()->batchInsert($table, $col, $row)->execute();
+        $prefix = Yii::$app->db->tablePrefix;
+        $table  = $prefix . 'promoter_lose_log';
+        $res    = Yii::$app->db->createCommand()->batchInsert($table, $col, $row)->execute();
         return $res;
     }
 
@@ -72,6 +70,7 @@ class ComPromoter
     {
         $setting = StoreSetting('promoter_setting');
         $AppID   = Yii::$app->params['AppID'];
+        $time = time();
 
         $level_number = $type === 1 ? $setting['level_number'] : $setting['level_number'] - 1;
         $check_uid    = [];
@@ -96,8 +95,8 @@ class ComPromoter
             }
         }
 
-        $check_uid  = array_unique($check_uid);
-        $comQuery = PromoterCommission::find()
+        $check_uid = array_unique($check_uid);
+        $comQuery  = PromoterCommission::find()
             ->alias('pc')
             ->leftJoin(['po' => PromoterOrder::tableName()], 'pc.order_goods_id = po.order_goods_id')
             ->andWhere(['>=', 'po.status', 0])
@@ -105,17 +104,20 @@ class ComPromoter
             ->select('pc.beneficiary,sum(pc.sales_amount) sales_amount,sum(pc.commission) all_commission_amount');
 
         $check_list = Promoter::find()
-        ->alias('p')
-        ->leftJoin(['com' => $comQuery], 'com.beneficiary = p.UID')
-        ->where(['and',['p.UID' => $check_uid],['p.status'=>2]])
-        ->select('p.UID,p.level,p.start_level,com.all_commission_amount,com.sales_amount')
-        ->asArray()
-        ->all();
+            ->alias('p')
+            ->leftJoin(['com' => $comQuery], 'com.beneficiary = p.UID')
+            ->where(['and', ['p.UID' => $check_uid], ['p.status' => 2]])
+            ->select('p.UID,p.level,p.start_level,com.all_commission_amount,com.sales_amount')
+            ->asArray()
+            ->all();
 
-        yii::error($check_list);
-
-        $level_data        = PromoterLevel::find()->where(['AppID' => $AppID, 'is_auto' => 1])->select('level,first,second,third,update_type,condition')->orderBy(['level' => SORT_DESC])->asArray()->all();
+        $level_data        = PromoterLevel::find()->where(['AppID' => $AppID, 'is_auto' => 1])->select('name,level,first,second,third,update_type,condition')->orderBy(['level' => SORT_DESC])->asArray()->all();
+        $level_name = PromoterLevel::find()->where(['AppID' => $AppID])->select('name,level')->asArray()->all();
+        $level_name = array_column($level_name, null,'level');
         $level_update_data = [];
+
+        $log_col = ['UID', 'old_level', 'old_level_name', 'new_level', 'new_level_name','type', 'created_time'];
+        $log_row = [];
         foreach ($level_data as $lv) {
             $level_update_data[$lv['level']] = [];
             $condition                       = to_array($lv['condition']);
@@ -125,6 +127,14 @@ class ComPromoter
                 if ($v['start_level'] >= $lv['level']) {
                     if (isset($level_update_data[$v['start_level']])) {
                         array_push($level_update_data[$v['start_level']], $v['UID']);
+                        if ($v['start_level'] != $v['level']) {
+                            if ($v['start_level'] > $v['level']) {
+                                $type = 1;
+                            }else{
+                                $type = 2;
+                            }
+                            array_push($log_row, [$v['UID'],$v['level'],$level_name[$v['level']]['name'],$v['start_level'],$level_name[$v['start_level']]['name'],$type,$time]);
+                        }
                     } else {
                         $level_update_data[$v['start_level']] = [$v['UID']];
                     }
@@ -166,6 +176,14 @@ class ComPromoter
 
                     if ($is_ok) {
                         array_push($level_update_data[$lv['level']], $v['UID']);
+                        if ($lv['level'] != $v['level']) {
+                            if ($lv['level'] > $v['level']) {
+                                $type = 1;
+                            }else{
+                                $type = 2;
+                            }
+                            array_push($log_row, [$v['UID'],$v['level'],$level_name[$v['level']]['name'],$lv['level'],$level_name[$lv['level']]['name'],$type,$time]);
+                        }
                     } else {
                         array_push($new_check_list, $v);
                     }
@@ -177,15 +195,28 @@ class ComPromoter
         }
 
         if (!empty($check_list)) {
-            $check_list = array_column($check_list, 'UID');
+            $level1_data = [];
+            foreach ($check_list as $value) {
+                array_push($level1_data, $value['UID']);
+                if ($v['level'] != 1) {
+                    $type = 2;
+                    array_push($log_row, [$value['UID'],$value['level'],$level_name[$value['level']]['name'],1,$level_name[1]['name'],$type,$time]);
+                }
+            }
             //最后都没有找到符合的,等级归为初始1级
-            Promoter::updateAll(['level' => 1], ['UID' => $check_list]);
+            Promoter::updateAll(['level' => 1], ['UID' => $level1_data]);
         }
 
         foreach ($level_update_data as $level => $data) {
             if (!empty($data)) {
                 Promoter::updateAll(['level' => $level], ['UID' => $data]);
             }
+        }
+
+        if (count($log_row)) {
+            $prefix = Yii::$app->db->tablePrefix;
+            $log_table  = $prefix . 'promoter_level_change_log';
+            Yii::$app->db->createCommand()->batchInsert($log_table, $log_col, $log_row)->execute();
         }
     }
 }

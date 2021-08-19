@@ -165,6 +165,8 @@ class IndexController extends BasicController
             foreach ($sort as $key => $value) {
                 if ($key == 'all_children') {
                     $orderBy['all_children'] = $value === 'ASC' ? SORT_ASC : SORT_DESC;
+                } elseif ($key == 'sales_amount' || $key == 'all_commission_amount') {
+                    $orderBy['com.' . $key] = $value === 'ASC' ? SORT_ASC : SORT_DESC;
                 } else {
                     $orderBy['p.' . $key] = $value === 'ASC' ? SORT_ASC : SORT_DESC;
                 }
@@ -771,9 +773,15 @@ class IndexController extends BasicController
             }
         }
 
-        $ComPromoter->setLevel(array_unique($set_level_uid), 2);
-        $ComPromoter->loseLog([['id' => $id, 'parent_id' => $parent_id]], 1);
-        return $model->save();
+
+        $res =  $model->save();
+        if ($res) {
+            $ComPromoter->setLevel(array_unique($set_level_uid), 2);
+            $ComPromoter->loseLog([['id' => $id, 'parent_id' => $parent_id]], 1);
+            return $res;
+        } else {
+            Error('解除失败');
+        }
     }
 
 }

@@ -25,7 +25,11 @@ class LevelController extends BasicController
 
     public function actionIndex()
     {
-        $promoter = Promoter::findOne(['UID' => \Yii::$app->user->id]);
+        $promoter = Promoter::find()
+            ->where(['UID' => \Yii::$app->user->id])
+            ->with(['levelInfo'])
+            ->limit(1)
+            ->one();
         if (!$promoter) {
             Error('你不是分销商');
         }
@@ -48,10 +52,15 @@ class LevelController extends BasicController
             if ($newItem['condition']['total_money']['checked']) {
                 $newItem['total_money_percent'] = qm_round(((int)$totalMoney / (int)$newItem['condition']['total_money']['num']) * 100, 2);
             }
+            $newItem['all_children'] = $allChildren;
+            $newItem['total_bonus'] = $totalBonus;
+            $newItem['total_money'] = $totalMoney;
             $newList[] = $newItem;
         }
+        $promoterArray = ArrayHelper::toArray($promoter);
+        $promoterArray['level_name'] = $promoter->levelInfo->name ?? '';
         return [
-            'promoter' => $promoter,
+            'promoter' => $promoterArray,
             'level' => $newList
         ];
     }

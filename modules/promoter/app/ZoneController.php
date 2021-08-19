@@ -142,7 +142,11 @@ class ZoneController extends BasicController
         if (!$uid) {
             Error('用户id不能为空');
         }
-        $query->andWhere(['UID' => $uid]);
+        $query->andWhere([
+            'or',
+            ['UID' => $uid],
+            ['is_admin' => 1]
+        ]);
         $data = new ActiveDataProvider(
             [
                 'query' => $query->orderBy(['created_time' => SORT_DESC])->asArray(),

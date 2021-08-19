@@ -145,9 +145,20 @@ class IndexController extends BasicController
                     'actual_price' => qm_round($item->price - $serviceCharge, 2)
                 ],
                 'extra' => [
+                    //姓名
                     'name' => $extra['name'] ?? '',
+                    //电话
                     'mobile' => $extra['mobile'] ?? '',
-                    'bank_name' => $extra['bank_name'] ?? ''
+                    //银行名称
+                    'bank_name' => $extra['bank_name'] ?? '',
+                    //微信号
+                    'wechat' => $extra['wechat'] ?? '',
+                    //支付宝账号
+                    'alipay' => $extra['alipay'] ?? '',
+                    //银行卡号
+                    'bank_no' => $extra['bank_no'] ?? '',
+                    //开户人
+                    'bank_user_name' => $extra['bank_user_name'] ?? '',
                 ],
                 'time' => [
                     'created_time' => $item->created_time,
@@ -167,12 +178,12 @@ class IndexController extends BasicController
         $cashList = $newList;
         $newList = [];
         foreach ($cashList as $item) {
-            $time = date('Y-m-d', strtotime($item['time']['created_time']));
+            $time = date('Y-m', ($item['time']['created_time']));
             if (isset($newList[$time])) {
                 $newList[$time]['list'][] = $item;
             } else {
                 $newItem = [
-                    'date' => date('m月d日', strtotime($time)),
+                    'date' => date('Y年m月', ($item['time']['created_time'])),
                     'list' => [
                         $item
                     ]
