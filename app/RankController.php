@@ -44,7 +44,7 @@ class RankController extends BasicsModules implements Map
         if (!$setting || !$setting['enable'] || empty($setting['ranking_dimension'])) {
             Error('排行榜未开启');
         }
-        $query            = Promoter::find()->select(['p.id', 'p.UID'])->with('user')->alias('p')->where(['p.is_deleted' => 0]);
+        $query            = Promoter::find()->select(['p.id', 'p.UID'])->with('user')->alias('p')->where(['p.status' => 2, 'p.is_deleted' => 0]);
         $rankingDimension = $get['ranking_dimension'] ?? false;
         switch ($rankingDimension) {
             case 'all_children':
@@ -127,7 +127,11 @@ class RankController extends BasicsModules implements Map
             }
         }
         return [
-            'my_rank' => $myRank,
+            'my_rank' => [
+                'nickname' => \Yii::$app->user->identity->nickname,
+                'avatar' => \Yii::$app->user->identity->avatar,
+                'rank' => $myRank + 1
+            ],
             'rank_list' => $rankList
         ];
     }

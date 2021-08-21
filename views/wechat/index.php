@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title></title>
+    <title>applet</title>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.documentElement.style.fontSize = document.documentElement.clientWidth / 20 + 'px';
@@ -30,9 +30,9 @@
     }
 
     <?php if (!empty($tabBar)) {
-        echo "window.siteinfo.tabBar = " . json_encode($tabBar);
-    }?>
-    
+          echo "window.siteinfo.tabBar = " . json_encode($tabBar);
+      }?>
+      
     var coverSupport =
         'CSS' in window &&
         typeof CSS.supports === 'function' &&
@@ -51,7 +51,7 @@
     <div id="app"></div>
     <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
     <script src="/assets/wechat/static/js/chunk-vendors.26dbbd2c.js"></script>
-    <script src="/assets/wechat/static/js/index.77896a5f.js"></script>
+    <script src="/assets/wechat/static/js/index.f0fde3bc.js"></script>
 </body>
 
 </html>

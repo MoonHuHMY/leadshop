@@ -45,4 +45,9 @@ class PromoterLevelChangeLog extends CommonModels
         return [
         ];
     }
+
+    public function getUser()
+    {
+        return $this->hasOne('users\models\User', ['id' => 'UID']);
+    }
 }

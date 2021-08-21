@@ -1,8 +1,7 @@
 <?php
 /**
- * @link http://www.heshop.com/
- * @copyright Copyright (c) 2020 HeShop Software LLC
- * @license http://www.heshop.com/license/
+ * @link https://www.leadshop.vip/
+ * @copyright Copyright ©2020-2021 浙江禾成云计算有限公司
  */
 
 namespace users\app;
@@ -17,7 +16,6 @@ use Yii;
  */
 class IndexController extends BasicController
 {
-    public $modelClass = 'users\models\User';
 
     public function actions()
     {
@@ -37,8 +35,24 @@ class IndexController extends BasicController
                 return $this->visit();
                 break;
             case 'info': //用户详情
-                $UID = Yii::$app->user->identity->id;
-                return $this->modelClass::find()->where(['id' => $UID])->one();
+                $UID                    = Yii::$app->user->identity->id;
+                $user                   = User::findOne($UID);
+                $res                    = $user->toArray();
+                $res['promoter_status'] = 0;
+                $center_show            = StoreSetting('promoter_setting', 'center_show');
+                $res['promoter_show']   = $center_show === 2 ? 2 : 0;
+                $res['recruiting_show'] = 0;
+                $promoter               = $user->promoter;
+                if ($promoter) {
+                    $res['promoter_status'] = $promoter->status;
+                    if ($promoter->repel_time || $promoter->status === 2) {
+                        $res['promoter_show'] = 1;
+                    }
+                    if ($promoter->status < 0 || $promoter->status === 1 || $promoter->status === 3) {
+                        $res['recruiting_show'] = 1;
+                    }
+                }
+                return $res;
                 break;
             default:
                 Error('未定义操作');
@@ -68,7 +82,7 @@ class IndexController extends BasicController
     public function actionRegister()
     {
         //调用模型
-        $model    = new $this->modelClass();
+        $model    = new User;
         $postData = Yii::$app->request->post();
         //加载数据
         $model->load($postData);
@@ -95,7 +109,7 @@ class IndexController extends BasicController
     public function actionReset()
     {
         $post = Yii::$app->request->post();
-        $data = $this->modelClass::find()->where(['mobile' => $post['mobile'], 'password' => $post['password']])->one();
+        $data = User::find()->where(['mobile' => $post['mobile'], 'password' => $post['password']])->one();
         if ($data) {
             $token         = $this->getToken($data['id']);
             $data['token'] = $token;
@@ -313,13 +327,13 @@ class IndexController extends BasicController
         $coupons = Coupon::find()->where([
             'AND',
             [
-                'AppID'  => Yii::$app->params['AppID'],
-                'status' => 1,
-                'is_deleted' => 0
+                'AppID'      => Yii::$app->params['AppID'],
+                'status'     => 1,
+                'is_deleted' => 0,
             ],
             ['>', 'over_num', 0],
             ['>', 'register_limit', 0],
-            ['>', 'end_time', time()]
+            ['>', 'end_time', time()],
         ])->all();
         $success = [];
         /**@var Coupon $coupon*/

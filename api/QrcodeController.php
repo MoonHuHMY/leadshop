@@ -1,10 +1,10 @@
 <?php
 /**
  * 二维码
- * @link http://www.heshop.com/
- * @copyright Copyright (c) 2020 HeShop Software LLC
- * @license http://www.heshop.com/license/
+ * @link https://www.leadshop.vip/
+ * @copyright Copyright ©2020-2021 浙江禾成云计算有限公司
  */
+
 namespace leadmall\api;
 
 use basics\api\BasicsController as BasicsModules;
@@ -56,7 +56,7 @@ class QrcodeController extends BasicsModules implements Map
                 $weapp_url   = $url;
                 $weapp_image = 'data:' . $type . ';base64,' . chunk_split(base64_encode($weapp_img));
             } catch (\Exception $e) {
-                
+
             }
 
         }

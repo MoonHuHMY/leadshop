@@ -45,7 +45,7 @@ class PosterController extends BasicsModules implements Map
             if ($model) {
                 $promoter = $model->promoter;
                 if ($promoter && $promoter->status == 2) {
-                    $scene = 'share_promoter_uid=' . $model->id;
+                    $scene = 'spu=' . $model->id;//spu为share_promoter_uid缩写
                 }
             }
         }
@@ -89,10 +89,10 @@ class PosterController extends BasicsModules implements Map
 
         $scene = $scene && $scene != 'index' ? '&' . $scene : '';
 
-        $dynamic = StoreSetting('promoter_page_setting','dynamic');
+        $dynamic = StoreSetting('promoter_page_setting', 'dynamic');
         if ($dynamic && $dynamic['bg_url']) {
             $dynamic_url = $dynamic['bg_url'];
-        }else{
+        } else {
             $dynamic_url = realpath('../system/static/promoter_zoom_banner.png');
         }
 
@@ -175,6 +175,7 @@ class PosterController extends BasicsModules implements Map
 
     public function invitation($type, $scene)
     {
+        $scene = $scene && $scene != 'index' ? '&' . $scene : '';
 
         //图片转换
         $config = array(
@@ -217,7 +218,7 @@ class PosterController extends BasicsModules implements Map
                 ),
                 //二维码
                 array(
-                    'url'     => $type == 1 ? $this->getWechatQrCode("promoter/pages/recruit", $scene) : $this->getWeappQrCode("promoter/pages/recruit", $scene),
+                    'url'     => $type == 1 ? $this->getWechatQrCode("promoter/pages/recruit", "invite_id=" . $this->user_info->id . $scene) : $this->getWeappQrCode("promoter/pages/recruit", "invite_id=" . $this->user_info->id . $scene),
                     'left'    => 285,
                     'top'     => 712,
                     'right'   => 0,
@@ -609,7 +610,7 @@ class PosterController extends BasicsModules implements Map
                     ),
                     //二维码
                     array(
-                        'url'     => $type == 1 ? $this->getWechatQrCode("pages/goods/detail", "id=" . $model['id'] . "&is_task=1&UID=" . $UID . $scene) : $this->getWeappQrCode("pages/goods/detail", "id=" . $model['id'] . "&is_task=1&&UID=" . $UID . $scene),
+                        'url'     => $type == 1 ? $this->getWechatQrCode("pages/goods/detail", "id=" . $model['id'] . "&is_task=1&UID=" . $UID . $scene) : $this->getWeappQrCode("pages/goods/detail", "id=" . $model['id'] . "&is_task=1&UID=" . $UID . $scene),
                         'left'    => 506,
                         'top'     => 767,
                         'right'   => 0,

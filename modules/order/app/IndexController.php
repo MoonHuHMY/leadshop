@@ -1,9 +1,8 @@
 <?php
 /**
  * 订单控制器
- * @link http://www.heshop.com/
- * @copyright Copyright (c) 2020 HeShop Software LLC
- * @license http://www.heshop.com/license/
+ * @link https://www.leadshop.vip/
+ * @copyright Copyright ©2020-2021 浙江禾成云计算有限公司
  */
 namespace order\app;
 
@@ -282,16 +281,15 @@ class IndexController extends BasicController
             //统计积分总支出
             $score_total_amount += $order_data['total_score'] ?? 0;
 
-            $setting_data = M('setting', 'Setting')::find()->where(['keyword' => 'setting_collection', 'merchant_id' => $order_data['merchant_id'], 'AppID' => $AppID])->select('content')->asArray()->one();
+            $setting_data = StoreSetting('setting_collection');
             if ($setting_data) {
-                $setting_data['content'] = to_array($setting_data['content']);
-                if (isset($setting_data['content']['trade_setting'])) {
-                    $trade_setting = $setting_data['content']['trade_setting'];
+                if (isset($setting_data['trade_setting'])) {
+                    $trade_setting = $setting_data['trade_setting'];
                     if ($trade_setting['cancel_status']) {
                         $order_data['cancel_time'] = (float) $trade_setting['cancel_time'] * 60 * 60 + time();
                     }
                 }
-                if ($setting_data['content']['basic_setting']['run_status'] != 1) {
+                if ($setting_data['basic_setting']['run_status'] != 1) {
                     Error('店铺打烊中');
                 }
             }
@@ -629,17 +627,13 @@ class IndexController extends BasicController
         if ($model->status !== 202) {
             Error('非法操作');
         }
-        $setting_data = M('setting', 'Setting')::find()->where(['keyword' => 'setting_collection', 'merchant_id' => $model->merchant_id, 'AppID' => $model->AppID])->select('content')->asArray()->one();
-        if ($setting_data) {
-            $setting_data['content'] = to_array($setting_data['content']);
-            if (isset($setting_data['content']['trade_setting'])) {
-                $trade_setting = $setting_data['content']['trade_setting'];
-                if ($trade_setting['after_time']) {
-                    $model->finish_time = (float) $trade_setting['after_time'] * 24 * 60 * 60 + time();
-                }
-                if ($trade_setting['evaluate_time']) {
-                    $model->evaluate_time = (float) $trade_setting['evaluate_time'] * 24 * 60 * 60 + time();
-                }
+        $trade_setting = StoreSetting('setting_collection', 'trade_setting');
+        if ($trade_setting) {
+            if ($trade_setting['after_time']) {
+                $model->finish_time = (float) $trade_setting['after_time'] * 24 * 60 * 60 + time();
+            }
+            if ($trade_setting['evaluate_time']) {
+                $model->evaluate_time = (float) $trade_setting['evaluate_time'] * 24 * 60 * 60 + time();
             }
         }
         $model->received_time = time();

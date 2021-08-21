@@ -198,7 +198,7 @@ class ComPromoter
             $level1_data = [];
             foreach ($check_list as $value) {
                 array_push($level1_data, $value['UID']);
-                if ($v['level'] != 1) {
+                if ($value['level'] != 1) {
                     $type = 2;
                     array_push($log_row, [$value['UID'],$value['level'],$level_name[$value['level']]['name'],1,$level_name[1]['name'],$type,$time]);
                 }

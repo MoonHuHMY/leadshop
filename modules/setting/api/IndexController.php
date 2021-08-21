@@ -1,9 +1,8 @@
 <?php
 /**
  * 设置管理
- * @link http://www.heshop.com/
- * @copyright Copyright (c) 2020 HeShop Software LLC
- * @license http://www.heshop.com/license/
+ * @link https://www.leadshop.vip/
+ * @copyright Copyright ©2020-2021 浙江禾成云计算有限公司
  */
 namespace setting\api;
 
@@ -39,18 +38,12 @@ class IndexController extends BasicController
             case 'copyright_information':
                 $keyword = 'copyright_information';
                 break;
-            
+
             default:
                 $keyword = 'web_setting';
                 break;
         }
-        $where       = [
-            'merchant_id' => $merchant_id,
-            'AppID'       => $AppID,
-            'keyword'=>$keyword
-        ];
-        $data = M()::find()->where($where)->select('keyword,content')->asArray()->one();
-        return str2url(to_array($data['content']));
+        return StoreSetting($keyword);
     }
 
     public function actionDelete()
@@ -64,17 +57,7 @@ class IndexController extends BasicController
      */
     public function actionIndex()
     {
-        $merchant_id = 1;
-        $AppID       = Yii::$app->params['AppID'];
-        $where       = [
-            'merchant_id' => $merchant_id,
-            'AppID'       => $AppID,
-        ];
-        $data = M()::find()->where($where)->select('keyword,content')->asArray()->all();
-        foreach ($data as &$value) {
-            $value['content'] = to_array($value['content']);
-        }
-        return str2url($data);
+        return StoreSetting();
     }
 
     /**
@@ -106,30 +89,15 @@ class IndexController extends BasicController
           }
           return $newList;
         }
-        $merchant_id = 1;
-        $AppID       = Yii::$app->params['AppID'];
-        $where       = [
-            'keyword'     => $keyword,
-            'merchant_id' => $merchant_id,
-            'AppID'       => $AppID,
-        ];
-
-        $data = M()::find()->where($where)->select('keyword,content')->asArray()->one();
-
-        if ($data) {
-            $data['content'] = to_array($data['content']);
-            if ($content_key) {
-                if (isset($data['content'][$content_key])) {
-                    return str2url($data['content'][$content_key]);
-                } else {
-                    Error('内容不存在');
-                }
-
-            }
-            return str2url($data);
-        } else {
-            return null;
+        $data = StoreSetting($keyword,$content_key);
+        if (!$content_key) {
+            $new_data = [];
+            $new_data['keyword'] = $keyword;
+            $new_data['content'] = $data;
+            $data = $new_data;
         }
+
+        return $data;
     }
 
     /**

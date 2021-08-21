@@ -97,6 +97,9 @@ class IndexController extends BasicController
         //将所有返回内容中的本地地址代替字符串替换为域名
         $newList = str2url($list);
         foreach ($newList as &$item) {
+            $serviceCharge = qm_round($item['price'] * $item['service_charge'] / 100, 2);
+            $actualPrice = qm_round($item['price'] - $serviceCharge, 2);
+            $item['actual_price'] = $actualPrice;
             $item['extra'] = to_array($item['extra']);
         }
         $data->setModels($newList);
@@ -107,7 +110,7 @@ class IndexController extends BasicController
     {
         $id = \Yii::$app->request->get('id', false);
         $this->post = \Yii::$app->request->post();
-        $finance = Finance::findOne($id);
+        $finance = Finance::findOne(['id' => $id]);
         if (!$finance) {
             Error('该提现记录不存在!');
         }
@@ -192,7 +195,6 @@ class IndexController extends BasicController
         $this->actualPrice = qm_round($finance->price - $serviceCharge, 2);
 
         $type = $finance->type;
-        $type = $this->getType()[$type];
         if (method_exists($this, $type)) {
             $this->$type();
         } else {
@@ -315,15 +317,5 @@ class IndexController extends BasicController
             return true;
         });
         return true;
-    }
-
-    private function getType()
-    {
-        return [
-            '1' => 'auto',
-            '2' => 'wechat',
-            '3' => 'alipay',
-            '4' => 'bank'
-        ];
     }
 }

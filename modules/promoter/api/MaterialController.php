@@ -9,6 +9,8 @@ use yii\helpers\ArrayHelper;
 
 class MaterialController extends BasicController
 {
+    public $modelClass = 'promoter\models\PromoterMaterial';
+
     /**
      * 重写父类
      * @return [type] [description]
@@ -124,11 +126,14 @@ class MaterialController extends BasicController
             Error('该素材不存在');
         }
         $material = ArrayHelper::toArray($model);
-        $material['goods'] = ArrayHelper::toArray($model->goods);
-        if (!empty($material['goods']) && !empty($material['goods']['slideshow'])) {
+        if (!empty($model->goods)) {
+            $material['goods'] = ArrayHelper::toArray($model->goods);
             $material['goods']['slideshow'] = to_array($material['goods']['slideshow']);
+        } else {
+            $material['goods'] = null;
         }
         $material['pic_list'] = to_array($material['pic_list']);
+        $material['video_list'] = to_array($material['video_list']);
         return $material;
     }
 }

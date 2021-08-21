@@ -85,9 +85,9 @@ class IndexController extends BasicController
     public function getSmsConfig()
     {
         $option = [];
-        $config = M('setting', 'Setting')::find()->where(['keyword' => 'sms_setting', 'merchant_id' => 1, 'AppID' => \Yii::$app->params['AppID']])->select('content')->asArray()->one();
+        $config = StoreSetting('sms_setting');
         if ($config) {
-            $option = json_decode($config['content'], true);
+            $option = $config;
         }
         return $this->check($option, $this->getDefault());
     }

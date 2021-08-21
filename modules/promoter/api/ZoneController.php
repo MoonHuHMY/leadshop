@@ -9,6 +9,8 @@ use yii\helpers\ArrayHelper;
 
 class ZoneController extends BasicController
 {
+    public $modelClass = 'promoter\models\PromoterZone';
+
     /**
      * 重写父类
      * @return [type] [description]
@@ -26,6 +28,36 @@ class ZoneController extends BasicController
     {
         $post = \Yii::$app->request->post();
         $model = new PromoterZone();
+        $model->scenario = 'admin';
+        $model->attributes = $post;
+        $model->AppID = \Yii::$app->params['AppID'];
+        $model->is_admin = 1;
+        $model->UID = \Yii::$app->user->id;
+        $model->merchant_id = 1;
+        if (isset($post['pic_list'])) {
+            $model->pic_list = to_json($post['pic_list']);
+        }
+        if (isset($post['video_list'])) {
+            $model->video_list = to_json($post['video_list']);
+        }
+        if (isset($post['link'])) {
+            $model->link = to_json($post['link']);
+        }
+        if (!$model->save()) {
+            Error($model->getErrorMsg());
+        } else {
+            return $model->id;
+        }
+    }
+
+    public function actionUpdate()
+    {
+        $model = PromoterZone::findOne(['id' => \Yii::$app->request->get('id')]);
+        if (!$model) {
+            Error('动态详情不存在');
+        }
+        $post = \Yii::$app->request->post();
+        $model->scenario = 'admin';
         $model->attributes = $post;
         $model->AppID = \Yii::$app->params['AppID'];
         $model->is_admin = 1;

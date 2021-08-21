@@ -62,6 +62,7 @@ class PromoterZone extends CommonModels
             [['UID', 'content', 'AppID', 'merchant_id'], 'required'],
             [['UID', 'is_admin', 'type', 'merchant_id', 'created_time', 'updated_time', 'deleted_time', 'is_deleted'], 'integer'],
             [['name'], 'string', 'max' => 10, 'on' => 'admin'],
+            [['name'], 'required', 'on' => 'admin'],
             [['content'], 'string', 'max' => 200],
             [['pic_list'], 'string', 'max' => 2048],
             [['video_list', 'video_cover'], 'string', 'max' => 512],

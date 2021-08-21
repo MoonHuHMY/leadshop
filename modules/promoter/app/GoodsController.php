@@ -33,7 +33,7 @@ class GoodsController extends BasicController
         $get = Yii::$app->request->get();
 
         $AppID = Yii::$app->params['AppID'];
-        $where = ['g.AppID' => $AppID, 'g.is_promoter' => 1];
+        $where = ['g.AppID' => $AppID, 'g.is_sale' => 1, 'g.is_recycle' => 0, 'g.is_deleted' => 0, 'g.is_promoter' => 1];
 
         //搜索
         $search = $get['search'] ?? '';
@@ -65,17 +65,17 @@ class GoodsController extends BasicController
             ]
         );
 
-        $scale = 0;
-        $UID   = Yii::$app->user->identity->id;
-        $promoter_model = Promoter::findOne(['UID'=>$UID]);
+        $scale          = 0;
+        $UID            = Yii::$app->user->identity->id;
+        $promoter_model = Promoter::findOne(['UID' => $UID]);
         if ($promoter_model && $promoter_model->status == 2) {
-           $scale = $promoter_model->levelInfo->first/100;
+            $scale = $promoter_model->levelInfo->first / 100;
         }
 
-        $list    = $data->getModels();
+        $list = $data->getModels();
         foreach ($list as &$value) {
-            $value['slideshow'] = to_array($value['slideshow']);
-            $value['commission'] = qm_round($value[$commission_key]*$scale);
+            $value['slideshow']  = to_array($value['slideshow']);
+            $value['commission'] = qm_round($value[$commission_key] * $scale);
         }
 
         //将所有返回内容中的本地地址代替字符串替换为域名

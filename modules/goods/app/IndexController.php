@@ -1,17 +1,16 @@
 <?php
 /**
- * @link http://www.heshop.com/
- * @copyright Copyright (c) 2020 HeShop Software LLC
- * @license http://www.heshop.com/license/
+ * @link https://www.leadshop.vip/
+ * @copyright Copyright ©2020-2021 浙江禾成云计算有限公司
  */
 
 namespace goods\app;
 
 use app\forms\video\Video;
 use framework\common\BasicController;
+use goods\models\Goods;
 use Yii;
 use yii\data\ActiveDataProvider;
-use goods\models\Goods;
 
 /**
  * 小程序商品
@@ -172,19 +171,15 @@ class IndexController extends BasicController
         //商品分组
         $is_task = Yii::$app->request->get('is_task', false);
 
-        $setting_data = M('setting', 'Setting')::find()->where(['keyword' => 'setting_collection', 'merchant_id' => 1, 'AppID' => $AppID])->select('content')->asArray()->one();
+        $goods_setting = StoreSetting('setting_collection', 'goods_setting');
 
         $goods_id = false;
-        if ($setting_data && !$is_task) {
-            $setting_data['content'] = to_array($setting_data['content']);
-            if (isset($setting_data['content']['goods_setting'])) {
-                $goods_setting = $setting_data['content']['goods_setting'];
-                if ($goods_setting['recommend_status'] === 2) {
-                    $goods    = $goods_setting['recommend_goods'];
-                    $goods_id = array_column($goods, 'id');
-                    $where    = ['and', $where, ['g.id' => $goods_id]];
+        if ($goods_setting && !$is_task) {
+            if ($goods_setting['recommend_status'] === 2) {
+                $goods    = $goods_setting['recommend_goods'];
+                $goods_id = array_column($goods, 'id');
+                $where    = ['and', $where, ['g.id' => $goods_id]];
 
-                }
             }
         }
 
@@ -476,15 +471,15 @@ class IndexController extends BasicController
             $result['task'] = $task;
         }
 
-        $scale = 0;
-        $count_rules = StoreSetting('commission_setting','count_rules');
-        $commission_key = $count_rules == 1 ? 'max_price' : 'max_profits';
-        $promoter_status = StoreSetting('promoter_setting','status');
-        $promoter_model = M('promoter','Promoter')::findOne(['UID'=>$UID]);
+        $scale           = 0;
+        $count_rules     = StoreSetting('commission_setting', 'count_rules');
+        $commission_key  = $count_rules == 1 ? 'max_price' : 'max_profits';
+        $promoter_status = StoreSetting('promoter_setting', 'status');
+        $promoter_model  = M('promoter', 'Promoter')::findOne(['UID' => $UID]);
         if ($promoter_status && $promoter_model && $promoter_model->status == 2) {
-           $scale = $promoter_model->levelInfo->first/100;
+            $scale = $promoter_model->levelInfo->first / 100;
         }
-        $result['commission'] = qm_round($result[$commission_key]*$scale);
+        $result['commission'] = qm_round($result[$commission_key] * $scale);
         Goods::updateAllCounters(['visits' => 1], ['id' => $id]);
 
         return $result;

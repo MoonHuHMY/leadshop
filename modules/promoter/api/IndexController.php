@@ -3,6 +3,7 @@
 namespace promoter\api;
 
 use app\components\ComPromoter;
+use app\components\subscribe\PromoterVerifyMessage;
 use framework\common\BasicController;
 use promoter\models\Promoter;
 use promoter\models\PromoterCommission;
@@ -570,6 +571,7 @@ class IndexController extends BasicController
 
     private function edit()
     {
+        $AppID = Yii::$app->params['AppID'];
         $id          = Yii::$app->request->get('id', 0);
         $start_level = Yii::$app->request->post('level', 1);
         $model       = Promoter::findOne(['UID' => $id]);
@@ -580,12 +582,36 @@ class IndexController extends BasicController
             Error('该用户还不是分销商');
         }
 
+        $t = Yii::$app->db->beginTransaction();
+        if ($start_level != $model->level) {
+            if ($start_level > $model->level) {
+                $type = 1;
+            } else {
+                $type = 2;
+            }
+            $level_name                = PromoterLevel::find()->where(['AppID' => $AppID])->select('name,level')->asArray()->all();
+            $level_name                = array_column($level_name, null, 'level');
+            $log_model                 = M('promoter', 'PromoterLevelChangeLog', true);
+            $log_model->UID            = $model->UID;
+            $log_model->old_level      = $model->level;
+            $log_model->old_level_name = $level_name[$model->level]['name'];
+            $log_model->new_level      = $start_level;
+            $log_model->new_level_name = $level_name[$start_level]['name'];
+            $log_model->type           = $type;
+            $log_model->created_time   = time();
+            if (!$log_model->save()) {
+                Error('保存失败');
+            }
+        }
+
         $model->start_level = $start_level;
         $model->level       = $start_level;
 
         if ($model->save()) {
+            $t->commit();
             return $model;
         } else {
+            $t->rollBack();
             Error('保存失败');
         }
     }
@@ -620,9 +646,22 @@ class IndexController extends BasicController
                     Error('系统错误');
                 }
             }
+            $t->commit();
             $ComPromoter = new ComPromoter();
             $ComPromoter->setLevel([$id], 2);
-            $t->commit();
+            Yii::$app->subscribe->setUser($model->UID)->setPage('promoter/pages/index')->send(new PromoterVerifyMessage([
+                'result' => '通过',
+                'name'   => $model->user->nickname,
+                'time'   => date('Y-m-d H:i', $model->apply_time),
+            ]));
+            $this->module->event->sms = [
+                'type'   => 'promoter_verify',
+                'mobile' => [$model->user->mobile],
+                'params' => [
+                    'result' => '通过',
+                ],
+            ];
+            $this->module->trigger('send_sms');
             return $model;
         } else {
             Error('审核失败');
@@ -649,6 +688,19 @@ class IndexController extends BasicController
         $model->status = 3;
 
         if ($model->save()) {
+            Yii::$app->subscribe->setUser($model->UID)->setPage('promoter/pages/index')->send(new PromoterVerifyMessage([
+                'result' => '拒绝',
+                'name'   => $model->user->nickname,
+                'time'   => date('Y-m-d H:i', $model->apply_time),
+            ]));
+            $this->module->event->sms = [
+                'type'   => 'promoter_verify',
+                'mobile' => [$model->user->mobile],
+                'params' => [
+                    'result' => '拒绝',
+                ],
+            ];
+            $this->module->trigger('send_sms');
             return $model;
         } else {
             Error('审核失败');
@@ -724,6 +776,14 @@ class IndexController extends BasicController
             $t->commit();
             $ComPromoter->setLevel(array_unique($set_level_uid), 2);
             $ComPromoter->loseLog($lose_list, 2);
+            $this->module->event->sms = [
+                'type'   => 'clear_identity',
+                'mobile' => [$model->user->mobile],
+                'params' => [
+                    'name' => '分销商',
+                ],
+            ];
+            $this->module->trigger('send_sms');
             return $model;
         } else {
             Error('清退失败');
@@ -773,8 +833,7 @@ class IndexController extends BasicController
             }
         }
 
-
-        $res =  $model->save();
+        $res = $model->save();
         if ($res) {
             $ComPromoter->setLevel(array_unique($set_level_uid), 2);
             $ComPromoter->loseLog([['id' => $id, 'parent_id' => $parent_id]], 1);

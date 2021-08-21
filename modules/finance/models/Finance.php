@@ -15,7 +15,7 @@ use users\models\User;
  * @property string $order_sn 提现订单号
  * @property float $price 提现金额
  * @property float $service_charge 提现手续费（%）
- * @property int $type 提现方式 1--自动打款 2--微信打款 3--支付宝打款 4--银行转账 5--打款到余额
+ * @property int $type 提现方式 wechatDib: '自动到账微信零钱', wechat: '提现到微信', alipay: '提现到支付宝',bankCard: '提现到银行卡'
  * @property string $extra 额外信息
  * @property int $status 提现状态 0--申请 1--同意 2--已打款 3--驳回
  * @property string $remark 备注
@@ -36,7 +36,7 @@ class Finance extends CommonModels
     const order_sn = ['varchar' => 50, 'notNull', 'comment' => '提现订单号'];
     const price = ['decimal' => '10,2', 'notNull', 'comment' => '提现金额'];
     const service_charge = ['decimal' => '10,2', 'notNull', 'default' => 0, 'comment' => '提现手续费（%）'];
-    const type = ['tinyint' => 1, 'notNull', 'default' => 1, 'comment' => '提现方式 1--自动打款 2--微信打款 3--支付宝打款 4--银行转账 5--打款到余额'];
+    const type = ['varchar' => 10, 'notNull', 'comment' => "提现方式 wechatDib: '自动到账微信零钱', wechat: '提现到微信', alipay: '提现到支付宝',bankCard: '提现到银行卡'"];
     const extra = ['longtext' => 0, 'notNull', 'comment' => '额外信息'];
     const status = ['tinyint' => 0, 'notNull', 'default' => 0, 'comment' => '提现状态 0--申请 1--同意 2--已打款 3--驳回'];
     const remark = ['varchar' => 1024, 'notNull', 'default' => '', 'comment' => '备注'];
@@ -67,10 +67,10 @@ class Finance extends CommonModels
     public function rules()
     {
         return [
-            [['UID', 'type', 'status', 'mobile', 'merchant_id', 'created_time', 'updated_time', 'deleted_time', 'is_deleted'], 'integer'],
-            [['order_sn', 'price', 'extra', 'name', 'model', 'mobile', 'AppID', 'merchant_id'], 'required'],
+            [['UID', 'status', 'mobile', 'merchant_id', 'created_time', 'updated_time', 'deleted_time', 'is_deleted'], 'integer'],
+            [['order_sn', 'price', 'extra', 'name', 'model', 'mobile', 'AppID', 'merchant_id', 'type'], 'required'],
             [['price', 'service_charge'], 'number'],
-            [['extra'], 'string'],
+            [['extra', 'type'], 'string'],
             [['order_sn', 'name', 'model', 'AppID'], 'string', 'max' => 50],
             [['remark'], 'string', 'max' => 1024],
         ];
@@ -112,11 +112,10 @@ class Finance extends CommonModels
     public function getTypeText($type)
     {
         $typeList = [
-            '1' => '自动打款',
-            '2' => '微信打款',
-            '3' => '支付宝打款',
-            '4' => '银行转账',
-            '5' => '打款到余额'
+            'wechatDib' => '自动到账微信零钱',
+            'wechat' => '提现到微信',
+            'alipay' => '提现到支付宝',
+            'bankCard' => '提现到银行卡'
         ];
         return isset($typeList[$type]) ? $typeList[$type] : '未知类型：' . $type;
     }
@@ -127,11 +126,10 @@ class Finance extends CommonModels
             $type = $this->type;
         }
         $typeList = [
-            '1' => '自动打款',
-            '2' => '微信钱包',
-            '3' => '支付宝',
-            '4' => '银行卡',
-            '5' => '余额'
+            'wechatDib' => '自动到账微信零钱',
+            'wechat' => '提现到微信',
+            'alipay' => '提现到支付宝',
+            'bankCard' => '提现到银行卡'
         ];
         return isset($typeList[$type]) ? $typeList[$type] : '未知类型：' . $type;
     }

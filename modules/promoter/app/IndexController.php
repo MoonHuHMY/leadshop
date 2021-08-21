@@ -81,6 +81,10 @@ class IndexController extends BasicController
 
         $model = Promoter::findOne(['UID' => $UID]);
 
+        if (!$model) {
+            Error('分销商不存在');
+        }
+
         $data                          = $model->toArray();
         $data['all_children']          = $model->getAllChildren();
         $p_c                           = PromoterCommission::find()->where(['and', ['>', 'commission', 0], ['beneficiary' => $UID]])->select('sum(commission) all_commission_amount,sum(sales_amount) sales_amount,count(id) promoter_order_number')->asArray()->one();
@@ -90,40 +94,42 @@ class IndexController extends BasicController
         $data['wait_account']          = qm_round($data['all_commission_amount'] - $data['commission_amount']);
         $data['is_withdrawal']         = qm_round($data['commission_amount'] - $data['commission']);
 
-        $level_data              = PromoterLevel::find()->where(['and', ['>=', 'level', $data['level']], ['AppID' => $AppID, 'is_auto' => 1]])->select('name,level,condition')->orderBy(['level' => SORT_ASC])->limit(2)->asArray()->all();
-        $data['level_name']      = $level_data[0]['name'];
-        $next_level              = $level_data[1];
-        $next_level['condition'] = to_array($next_level['condition']);
-        $next_level['lack']      = null;
-        $process                 = 1;
-        foreach ($next_level['condition'] as $k => $v) {
-            if ($v['checked']) {
-                switch ($k) {
-                    case 'all_children':
-                        if ($data['all_children'] < $v['num']) {
-                            if (($data['all_children'] / $v['num']) < $process) {
-                                $process            = $data['all_children'] / $v['num'];
-                                $next_level['lack'] = ['condition' => '当前下线数', 'lack_num' => ($v['num'] - $data['all_children']), 'get_num' => $data['all_children'], 'all_num' => $v['num']];
+        $level_data         = PromoterLevel::find()->where(['and', ['>=', 'level', $data['level']], ['AppID' => $AppID], ['or', ['is_auto' => 1], ['level' => 1]]])->select('name,level,condition')->orderBy(['level' => SORT_ASC])->limit(2)->asArray()->all();
+        $data['level_name'] = $level_data[0]['name'];
+        $next_level         = $level_data[1] ?? [];
+        if (!empty($next_level)) {
+            $next_level['condition'] = to_array($next_level['condition']);
+            $next_level['lack']      = null;
+            $process                 = 1;
+            foreach ($next_level['condition'] as $k => $v) {
+                if ($v['checked']) {
+                    switch ($k) {
+                        case 'all_children':
+                            if ($data['all_children'] < $v['num']) {
+                                if (($data['all_children'] / $v['num']) < $process) {
+                                    $process            = $data['all_children'] / $v['num'];
+                                    $next_level['lack'] = ['condition' => '当前下线数', 'lack_num' => ($v['num'] - $data['all_children']), 'get_num' => $data['all_children'], 'all_num' => $v['num']];
+                                }
                             }
-                        }
-                        break;
-                    case 'total_bonus':
-                        if ($data['all_commission_amount'] < $v['num']) {
-                            if (($data['all_commission_amount'] / $v['num']) < $process) {
-                                $process            = $data['all_commission_amount'] / $v['num'];
-                                $next_level['lack'] = ['condition' => '累计佣金', 'lack_num' => ($v['num'] - $data['all_commission_amount']), 'get_num' => $data['all_commission_amount'], 'all_num' => $v['num']];
+                            break;
+                        case 'total_bonus':
+                            if ($data['all_commission_amount'] < $v['num']) {
+                                if (($data['all_commission_amount'] / $v['num']) < $process) {
+                                    $process            = $data['all_commission_amount'] / $v['num'];
+                                    $next_level['lack'] = ['condition' => '累计佣金', 'lack_num' => ($v['num'] - $data['all_commission_amount']), 'get_num' => $data['all_commission_amount'], 'all_num' => $v['num']];
+                                }
                             }
-                        }
-                        break;
-                    case 'total_money':
-                        if ($p_c['sales_amount'] < $v['num']) {
-                            if (($p_c['sales_amount'] / $v['num']) < $process) {
-                                $process            = $p_c['sales_amount'] / $v['num'];
-                                $next_level['lack'] = ['condition' => '累计销售金额', 'lack_num' => ($v['num'] - $p_c['sales_amount']), 'get_num' => $p_c['sales_amount'], 'all_num' => $v['num']];
+                            break;
+                        case 'total_money':
+                            if ($p_c['sales_amount'] < $v['num']) {
+                                if (($p_c['sales_amount'] / $v['num']) < $process) {
+                                    $process            = $p_c['sales_amount'] / $v['num'];
+                                    $next_level['lack'] = ['condition' => '累计销售金额', 'lack_num' => ($v['num'] - $p_c['sales_amount']), 'get_num' => $p_c['sales_amount'], 'all_num' => $v['num']];
+                                }
                             }
-                        }
-                        break;
+                            break;
 
+                    }
                 }
             }
         }
@@ -379,7 +385,7 @@ class IndexController extends BasicController
         $UID       = Yii::$app->user->identity->id;
         $invite_id = Yii::$app->request->get('invite_id', 0);
         $data      = Promoter::findOne(['UID' => $UID]);
-        if (empty($data) || ($data->status !== 1 && $data->status !== 2)) {
+        if (empty($data) || ($data->status !== 1 && $data->status !== 2  && $data->status !== 3)) {
             if (empty($data)) {
                 $model               = M('promoter', 'Promoter', true);
                 $model->UID          = $UID;

@@ -77,17 +77,17 @@ class PromoterLevel extends CommonModels
                 $last = null;
                 switch ($level) {
                     case 2:
-                        $last = $this->second;
                         $lastText = '二级分销佣金';
+                        $levelVariable = 'second';
                         break;
                     case 3:
-                        $last = $this->third;
                         $lastText = '三级分销佣金';
+                        $levelVariable = 'third';
                         break;
                     case 1:
                     default:
-                        $last = $this->first;
                         $lastText = '一级分销佣金';
+                        $levelVariable = 'first';
                         break;
                 }
                 if ($level >= 2 && $this->first <= $this->second) {
@@ -103,8 +103,17 @@ class PromoterLevel extends CommonModels
                     ['AppID' => \Yii::$app->params['AppID']],
                     ['<', 'level', $this->level]
                 ])->one();
-                if ($front && $front->first > $last) {
+                if ($front && $front->first >= $this->$levelVariable) {
                     Error($lastText . '需大于' . $front->name . '的一级分销佣金' . $front->first);
+                }
+                /**@var PromoterLevel $backend */
+                $backend = PromoterLevel::find()->where([
+                    'AND',
+                    ['AppID' => \Yii::$app->params['AppID']],
+                    ['>', 'level', $this->level]
+                ])->one();
+                if ($backend && $backend->$levelVariable <= $this->first) {
+                    Error('一级分销佣金需小于' . $backend->name . '的'. $lastText . $backend->$levelVariable);
                 }
             }],
         ];

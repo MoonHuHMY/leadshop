@@ -58,7 +58,6 @@ class ZoneController extends BasicController
             $model = new PromoterZone();
         }
         $post = \Yii::$app->request->post();
-        $model->scenario = 'admin';
         $model->attributes = $post;
         $model->AppID = \Yii::$app->params['AppID'];
         $model->is_admin = 0;

@@ -6,6 +6,7 @@ use framework\common\BasicController;
 use promoter\models\Promoter;
 use promoter\models\PromoterLevel;
 use yii\helpers\ArrayHelper;
+use app\components\ComPromoter;
 
 class LevelController extends BasicController
 {
@@ -47,6 +48,10 @@ class LevelController extends BasicController
         if (!$level->save()) {
             Error($level->getErrorMsg());
         } else {
+            $list = Promoter::find()->where(['level'=>$level->level])->select('UID')->asArray()->all();
+            $list = array_column($list, 'UID');
+            $ComPromoter = new ComPromoter();
+            $ComPromoter->setLevel($list, 3);
             return true;
         }
     }
