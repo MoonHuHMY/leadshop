@@ -41,16 +41,12 @@ class OrderController extends BasicController
      */
     private function getCount()
     {
-        //获取头部信息
-        $headers = Yii::$app->getRequest()->getHeaders();
-        //获取分页信息
-        $pageSize = $headers->get('X-Pagination-Per-Page') ?? 20;
         //订单分组
         $get = Yii::$app->request->get();
 
         $UID = Yii::$app->user->identity->id;
 
-        $where = ['and', ['>=', 'o.status', 0], ['c.beneficiary' => $UID, 'c.is_deleted' => 0]];
+        $where = ['c.beneficiary' => $UID, 'c.is_deleted' => 0];
 
         $time_start = 0;
         $time_end   = 0;
@@ -91,7 +87,7 @@ class OrderController extends BasicController
             ->asArray()
             ->one();
 
-        $model = M('promoter', 'Promoter')::findOne(['UID'=>$UID]);
+        $model = M('promoter', 'Promoter')::findOne(['UID' => $UID]);
 
         $data['commission_amount'] = $model->commission_amount; //已结算
         $data['wait_account']      = qm_round($data['all_commission_amount'] - $data['commission_amount']); //待结算
@@ -113,7 +109,7 @@ class OrderController extends BasicController
 
         $UID = Yii::$app->user->identity->id;
 
-        $where = ['and', ['>=', 'o.status', 0], ['c.beneficiary' => $UID, 'c.is_deleted' => 0]];
+        $where =  ['c.beneficiary' => $UID, 'c.is_deleted' => 0];
 
         $time_start = 0;
         $time_end   = 0;
@@ -154,7 +150,7 @@ class OrderController extends BasicController
                     ->alias('c')
                     ->joinWith([
                         'promoterOrder as o' => function ($q) {
-                            $q->select('order_goods_id,status,order_sn,UID')->with(['user','orderGoods']);
+                            $q->select('order_goods_id,status,order_sn,UID')->with(['user', 'orderGoods']);
                         },
                     ])
                     ->where($where)
@@ -183,14 +179,14 @@ class OrderController extends BasicController
             $UID      = $event->pay_uid;
             $list     = M('order', 'OrderGoods')::find()
                 ->alias('og')
-                ->leftJoin(['g'=>M('goods','Goods')::tablename()],'g.id = og.goods_id')
-                ->leftJoin(['o'=>M('order','Order')::tablename()],'o.order_sn = og.order_sn')
+                ->leftJoin(['g' => M('goods', 'Goods')::tablename()], 'g.id = og.goods_id')
+                ->leftJoin(['o' => M('order', 'Order')::tablename()], 'o.order_sn = og.order_sn')
                 ->where(['og.order_sn' => $order_sn, 'g.is_promoter' => 1])
                 ->select('og.*,o.UID')
                 ->asArray()
                 ->all();
-                
-            $my_info          = M('users', 'User')::findOne($UID);
+
+            $my_info = M('users', 'User')::findOne($UID);
             if ($my_info->parent_id < 0) {
                 $my_info->parent_id = abs($my_info->parent_id);
                 $my_info->bind_time = time();
@@ -205,7 +201,7 @@ class OrderController extends BasicController
                 /**
                  * 获取系统设置的分销等级配置
                  */
-                $level_data = M('promoter', 'PromoterLevel')::find()->where(['AppID' => $AppID, 'merchant_id' => $merchant_id])->select('level,first,second,third')->asArray()->All();
+                $level_data = M('promoter', 'PromoterLevel')::find()->where(['AppID' => $AppID, 'merchant_id' => $merchant_id, 'is_deleted' => 0])->select('level,first,second,third')->asArray()->All();
                 $level_data = array_column($level_data, null, 'level');
 
                 /**
@@ -245,7 +241,7 @@ class OrderController extends BasicController
                     $profits_amount = qm_round(($v['pay_amount'] - $v['goods_number'] * $v['goods_cost_price']), 2);
                     if ($count_rules === 2 && $profits_amount <= 0) {
                         //利润不大于0的订单  直接跳过
-                        continue;
+                        $profits_amount = 0;
                     }
                     array_push($order_row, [$v['UID'], $v['order_sn'], $v['id'], $v['goods_number'], $v['goods_number'], $v['pay_amount'], $profits_amount, $count_rules, $AppID, $merchant_id, $time]);
 
@@ -268,7 +264,7 @@ class OrderController extends BasicController
                                 $c_level = 'third';
                                 break;
                         }
-                        $comission = qm_round($commission_amount * ($level_data[$value['p_level']][$c_level] / 100), 2);
+                        $comission = qm_round($commission_amount * ($level_data[$value['p_level']][$c_level] / 100), 2,'floor');
                         array_push($commission_row, [$value['UID'], $v['id'], $comission, $v['pay_amount'], $value['c_level'], $time]);
                     }
 

@@ -44,10 +44,13 @@ class RankController extends BasicsModules implements Map
         if (!$setting || !$setting['enable'] || empty($setting['ranking_dimension'])) {
             Error('排行榜未开启');
         }
-        $query            = Promoter::find()->select(['p.id', 'p.UID'])->with('user')->alias('p')->where(['p.status' => 2, 'p.is_deleted' => 0]);
+        $promoter = Promoter::findOne(['UID' => \Yii::$app->user->id, 'is_deleted' => 0]);
+        $value = 0;
+        $query            = Promoter::find()->select(['p.id', 'p.UID'])->with('user.oauth')->alias('p')->where(['p.status' => 2, 'p.is_deleted' => 0]);
         $rankingDimension = $get['ranking_dimension'] ?? false;
         switch ($rankingDimension) {
             case 'all_children':
+                $value = $promoter->getAllChildren();
                 if ($level >= 1) {
                     $subQuery1 = User::find()
                         ->alias('a')
@@ -91,11 +94,16 @@ class RankController extends BasicsModules implements Map
                     ->groupBy('beneficiary')
                     ->select('sum(commission) num, beneficiary');
                 if ($get['ranking_time'] == 1) {
+                    $value = $promoter->getTotalBonus(['between', 'pc.created_time', strtotime(date("Y-m-d")), time()]);
                     $subQuery->andWhere(['between', 'created_time', strtotime(date("Y-m-d")), time()]);
                 } elseif ($get['ranking_time'] == 2) {
+                    $value = $promoter->getTotalBonus(['between', 'pc.created_time', strtotime('yesterday'), strtotime('yesterday') + 86399]);
                     $subQuery->andWhere(['between', 'created_time', strtotime('yesterday'), strtotime('yesterday') + 86399]);
                 } elseif ($get['ranking_time'] == 3) {
+                    $value = $promoter->getTotalBonus(['between', 'pc.created_time', strtotime(date('Y-m-01')), time()]);
                     $subQuery->andWhere(['between', 'created_time', strtotime(date('Y-m-01')), time()]);
+                } else {
+                    $value = $promoter->getTotalBonus();
                 }
                 $query->leftJoin(['sq' => $subQuery], 'sq.beneficiary = p.UID');
                 $query->addSelect(["total_bonus" => "IF(sq.`num`,sq.`num`, 0)"])->orderBy(['total_bonus' => SORT_DESC, 'p.id' => SORT_ASC]);
@@ -105,11 +113,16 @@ class RankController extends BasicsModules implements Map
                     ->groupBy('beneficiary')
                     ->select('sum(sales_amount) num, beneficiary');
                 if ($get['ranking_time'] == 1) {
+                    $value = $promoter->getTotalMoney(['between', 'pc.created_time', strtotime(date("Y-m-d")), time()]);
                     $subQuery->andWhere(['between', 'created_time', strtotime(date("Y-m-d")), time()]);
                 } elseif ($get['ranking_time'] == 2) {
+                    $value = $promoter->getTotalMoney(['between', 'pc.created_time', strtotime('yesterday'), strtotime('yesterday') + 86399]);
                     $subQuery->andWhere(['between', 'created_time', strtotime('yesterday'), strtotime('yesterday') + 86399]);
                 } elseif ($get['ranking_time'] == 3) {
+                    $value = $promoter->getTotalMoney(['between', 'pc.created_time', strtotime(date('Y-m-01')), time()]);
                     $subQuery->andWhere(['between', 'created_time', strtotime(date('Y-m-01')), time()]);
+                } else {
+                    $value = $promoter->getTotalMoney();
                 }
                 $query->leftJoin(['sq' => $subQuery], 'sq.beneficiary = p.UID');
                 $query->addSelect(["total_money" => "IF(sq.`num`,sq.`num`, 0)"])->orderBy(['total_money' => SORT_DESC, 'p.id' => SORT_ASC]);
@@ -130,7 +143,9 @@ class RankController extends BasicsModules implements Map
             'my_rank' => [
                 'nickname' => \Yii::$app->user->identity->nickname,
                 'avatar' => \Yii::$app->user->identity->avatar,
-                'rank' => $myRank + 1
+                'rank' => $myRank + 1,
+                'value' => $value,
+                'type' => \Yii::$app->user->identity->oauth->type ?? ''
             ],
             'rank_list' => $rankList
         ];

@@ -192,8 +192,8 @@ class OrderController extends BasicController
             $col = [];
             $row = [];
             foreach ($commssion_list as &$v) {
-                $v['commission']   = qm_round($scale * $v['commission']);
-                $v['sales_amount'] = qm_round($scale * $v['sales_amount']);
+                $v['commission']   = qm_round($scale * $v['commission'],2,'floor');
+                $v['sales_amount'] = qm_round($scale * $v['sales_amount'],2,'floor');
                 array_push($row, array_values($v));
                 if (empty($col)) {
                     $col = array_keys($v);

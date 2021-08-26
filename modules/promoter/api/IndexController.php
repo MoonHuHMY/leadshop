@@ -38,7 +38,7 @@ class IndexController extends BasicController
         $keyword = Yii::$app->request->post('keyword', []);
 
         $AppID = Yii::$app->params['AppID'];
-        $where = ['and', ['u.AppID' => $AppID], ['>', 'p.status', 0]];
+        $where = ['and', ['u.AppID' => $AppID], ['<>', 'p.status', 0], ['<>', 'p.status', -1]];
 
         //关键词搜索
         $search = $keyword['search'] ?? false;
@@ -149,7 +149,7 @@ class IndexController extends BasicController
         }
 
         $query->addSelect([
-            'p.id', 'p.UID', 'p.commission', 'p.status', 'p.apply_time', 'p.apply_content', 'p.join_time', 'p.invite_number',
+            'p.id', 'p.UID', 'p.commission', 'p.status', 'p.apply_time', 'p.apply_content', 'p.join_time', 'p.repel_time', 'p.invite_number',
             'com.sales_amount', 'com.all_commission_amount',
             'l.name level_name',
             'u.avatar', 'u.nickname', 'u.mobile', 'u.realname',
@@ -293,9 +293,9 @@ class IndexController extends BasicController
             ->alias('c')
             ->leftJoin(['or' => PromoterOrder::tableName()], 'c.order_goods_id = or.order_goods_id')
             ->andWhere(['and', ['c.beneficiary' => $UID], ['>=', 'or.status', 0]])
-            ->groupBy('c.beneficiary')
+            ->groupBy('or.UID')
             ->select('sum(c.commission) commission,sum(c.sales_amount) sales_amount,or.UID');
-        $query->leftJoin(['sq' => $subQuery], 'sq.UID = u.id');
+        $query->leftJoin(['sq' => $subQuery], 'u.id = sq.UID');
         $query->addSelect([
             'p.status',
             'l.name level_name',
@@ -330,7 +330,7 @@ class IndexController extends BasicController
             ->alias('u')
             ->leftJoin(['p' => Promoter::tableName()], 'u.id = p.UID')
             ->where($where)
-            ->select('p.UID,u.nickname,u.mobile,u.realname')
+            ->select('u.id,u.nickname,u.mobile,u.realname')
             ->orderBy(['u.created_time' => SORT_DESC])
             ->limit(50)
             ->asArray()
@@ -392,7 +392,7 @@ class IndexController extends BasicController
         if ($model->transfer_id && $model->status === 4) {
             $data['transfer_name'] = $model->transfer->nickname;
         }
-        if ($model->invite_id) {
+        if ($model->invite_id > 0) {
             $data['invite_nickname'] = $model->invite->nickname;
         }
 
@@ -513,6 +513,7 @@ class IndexController extends BasicController
             $model->join_time    = $time;
             $model->created_time = $time;
         } elseif ($model->status == 2) {
+            $t->rollBack();
             Error('该用户已经是分销商了');
         }
 
@@ -537,7 +538,7 @@ class IndexController extends BasicController
             }
             $t->commit();
             $ComPromoter = new ComPromoter();
-            $ComPromoter->setLevel([$UID], 2);
+            $ComPromoter->setLevel([$UID], 3);
             return true;
         } else {
             $t->rollBack();
@@ -571,7 +572,7 @@ class IndexController extends BasicController
 
     private function edit()
     {
-        $AppID = Yii::$app->params['AppID'];
+        $AppID       = Yii::$app->params['AppID'];
         $id          = Yii::$app->request->get('id', 0);
         $start_level = Yii::$app->request->post('level', 1);
         $model       = Promoter::findOne(['UID' => $id]);
@@ -589,7 +590,7 @@ class IndexController extends BasicController
             } else {
                 $type = 2;
             }
-            $level_name                = PromoterLevel::find()->where(['AppID' => $AppID])->select('name,level')->asArray()->all();
+            $level_name                = PromoterLevel::find()->where(['AppID' => $AppID, 'is_deleted' => 0])->select('name,level')->asArray()->all();
             $level_name                = array_column($level_name, null, 'level');
             $log_model                 = M('promoter', 'PromoterLevelChangeLog', true);
             $log_model->UID            = $model->UID;
@@ -634,7 +635,7 @@ class IndexController extends BasicController
         $model->join_time = time();
 
         if ($model->invite_id < 0) {
-            $model->invite_id = abs($invite_id);
+            $model->invite_id = abs($model->invite_id);
         }
 
         $t = Yii::$app->db->beginTransaction();

@@ -85,18 +85,22 @@ class IndexController extends BasicController
             Error('分销商不存在');
         }
 
-        $data                          = $model->toArray();
-        $data['all_children']          = $model->getAllChildren();
-        $p_c                           = PromoterCommission::find()->where(['and', ['>', 'commission', 0], ['beneficiary' => $UID]])->select('sum(commission) all_commission_amount,sum(sales_amount) sales_amount,count(id) promoter_order_number')->asArray()->one();
+        $data                 = $model->toArray();
+        $data['all_children'] = $model->getAllChildren();
+        $self_buy             = StoreSetting('promoter_setting', 'self_buy');
+        if ($self_buy == 2) {
+            $data['all_children']++;
+        }
+        $p_c                           = PromoterCommission::find()->where(['beneficiary' => $UID])->select('sum(commission) all_commission_amount,sum(sales_amount) sales_amount,count(id) promoter_order_number')->asArray()->one();
         $data['all_commission_amount'] = $p_c['all_commission_amount'];
         $data['promoter_order_number'] = $p_c['promoter_order_number'];
         $data['sales_amount']          = $p_c['sales_amount'];
         $data['wait_account']          = qm_round($data['all_commission_amount'] - $data['commission_amount']);
         $data['is_withdrawal']         = qm_round($data['commission_amount'] - $data['commission']);
 
-        $level_data         = PromoterLevel::find()->where(['and', ['>=', 'level', $data['level']], ['AppID' => $AppID], ['or', ['is_auto' => 1], ['level' => 1]]])->select('name,level,condition')->orderBy(['level' => SORT_ASC])->limit(2)->asArray()->all();
+        $level_data         = PromoterLevel::find()->where(['and', ['>=', 'level', $data['level']], ['AppID' => $AppID, 'is_deleted' => 0], ['or', ['is_auto' => 1], ['level' => 1]]])->select('name,level,condition')->orderBy(['level' => SORT_ASC])->limit(2)->asArray()->all();
         $data['level_name'] = $level_data[0]['name'];
-        $next_level         = $level_data[1] ?? [];
+        $next_level         = $level_data[1] ?? null;
         if (!empty($next_level)) {
             $next_level['condition'] = to_array($next_level['condition']);
             $next_level['lack']      = null;
@@ -255,7 +259,7 @@ class IndexController extends BasicController
             ->alias('c')
             ->leftJoin(['or' => PromoterOrder::tableName()], 'c.order_goods_id = or.order_goods_id')
             ->andWhere(['and', ['c.beneficiary' => $UID], ['>=', 'or.status', 0]])
-            ->groupBy('c.beneficiary')
+            ->groupBy('or.UID')
             ->select('sum(c.commission) commission,sum(c.sales_amount) sales_amount,count(c.id) promoter_order_number,or.UID');
         $query->leftJoin(['sq' => $subQuery], 'sq.UID = u.id');
         $query->addSelect([
@@ -330,9 +334,9 @@ class IndexController extends BasicController
                         }
                     }
                 }
+                $t->commit();
                 break;
         }
-        $t->commit();
         return $data;
     }
 
@@ -385,7 +389,7 @@ class IndexController extends BasicController
         $UID       = Yii::$app->user->identity->id;
         $invite_id = Yii::$app->request->get('invite_id', 0);
         $data      = Promoter::findOne(['UID' => $UID]);
-        if (empty($data) || ($data->status !== 1 && $data->status !== 2  && $data->status !== 3)) {
+        if (empty($data) || ($data->status !== 1 && $data->status !== 2 && $data->status !== 3)) {
             if (empty($data)) {
                 $model               = M('promoter', 'Promoter', true);
                 $model->UID          = $UID;

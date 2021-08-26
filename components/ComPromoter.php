@@ -111,8 +111,8 @@ class ComPromoter
             ->asArray()
             ->all();
 
-        $level_data        = PromoterLevel::find()->where(['AppID' => $AppID, 'is_auto' => 1])->select('name,level,first,second,third,update_type,condition')->orderBy(['level' => SORT_DESC])->asArray()->all();
-        $level_name = PromoterLevel::find()->where(['AppID' => $AppID])->select('name,level')->asArray()->all();
+        $level_data        = PromoterLevel::find()->where(['AppID' => $AppID, 'is_auto' => 1,'is_deleted'=>0])->select('name,level,first,second,third,update_type,condition')->orderBy(['level' => SORT_DESC])->asArray()->all();
+        $level_name = PromoterLevel::find()->where(['AppID' => $AppID,'is_deleted'=>0])->select('name,level')->asArray()->all();
         $level_name = array_column($level_name, null,'level');
         $level_update_data = [];
 

@@ -1,0 +1,457 @@
+{
+    "message_setting": {
+        "order_pay": {
+            "sms": false,
+            "wechat_public": false,
+            "wechat_subscribe": false
+        },
+        "pay_success": {
+            "sms": false,
+            "wechat_public": false,
+            "wechat_subscribe": false
+        },
+        "order_send": {
+            "sms": false,
+            "wechat_public": false,
+            "wechat_subscribe": false
+        },
+        "agree_after": {
+            "sms": false,
+            "wechat_public": false,
+            "wechat_subscribe": false
+        },
+        "refuse_after": {
+            "sms": false,
+            "wechat_public": false,
+            "wechat_subscribe": false
+        },
+        "create_after": {
+            "sms": false,
+            "wechat_public": false,
+            "wechat_subscribe": false
+        },
+        "return_success": {
+            "sms": false,
+            "wechat_public": false,
+            "wechat_subscribe": false
+        }
+    },
+    "setting_collection": {
+        "basic_setting": {
+            "run_status": 1,
+            "restore_status": 0,
+            "restore_time": ""
+        },
+        "store_setting": {
+            "name": "小店",
+            "logo": "HESHOP_URL_STRING/static/images/home.png",
+            "abstract": "",
+            "phone": "10086",
+            "address": "",
+            "addressList": ["浙江省", "嘉兴市", "南湖区"],
+            "province": "浙江省",
+            "city": "嘉兴市",
+            "district": "南湖区",
+            "contact_type": ["qrcode"],
+            "contact_des": "添加客服微信，咨询详情",
+            "contact_img": "",
+            "contact": {
+                "phone": {
+                    "bool": true,
+                    "value": "10086",
+                    "day": [],
+                    "time": ""
+                },
+                "online": {
+                    "bool": false,
+                    "day": [],
+                    "time": ""
+                },
+                "friend": {
+                    "bool": false,
+                    "des": "添加客服微信，咨询详情",
+                    "day": [],
+                    "time": "",
+                    "pic_url": ""
+                }
+            }
+        },
+        "trade_setting": {
+            "cancel_status": 1,
+            "cancel_time": "1",
+            "received_time": "10",
+            "evaluate_status": 1,
+            "evaluate_time": "1",
+            "after_time": "20",
+            "exchange_status": 1,
+            "pay_way": {
+                "wechat": {
+                    "title": "微信",
+                    "value": true
+                },
+                "alipay": {
+                    "title": "支付宝",
+                    "value": false
+                }
+            }
+        },
+        "goods_setting": {
+            "recommend_status": 1,
+            "recommend_showpage": {
+                "goodsinfo": {
+                    "title": "商品详情",
+                    "value": true
+                },
+                "pay_success": {
+                    "title": "支付完成",
+                    "value": true
+                },
+                "personal_center": {
+                    "title": "个人中心",
+                    "value": true
+                },
+                "orderinfo": {
+                    "title": "订单详情",
+                    "value": true
+                },
+                "cart": {
+                    "title": "购物车",
+                    "value": true
+                },
+                "coupon_detail": {
+                    "title": "优惠券详情",
+                    "value": true
+                }
+            },
+            "evaluate_show": 1,
+            "order_list_roll": 1,
+            "sales_show": 1,
+            "soldout_show": 1,
+            "recommend_goods": []
+        },
+        "user_setting": {
+            "mobile_auth": {
+                "join_shopping_cart": {
+                    "title": "加入购物车",
+                    "value": true
+                },
+                "paybuy": {
+                    "title": "支付购买",
+                    "value": true
+                },
+                "get_tickets": {
+                    "title": "获取卡券",
+                    "value": false
+                }
+            },
+            "userinfo_auth": {
+                "join_shopping_cart": {
+                    "title": "加入购物车",
+                    "value": true
+                },
+                "paybuy": {
+                    "title": "支付购买",
+                    "value": true
+                },
+                "get_tickets": {
+                    "title": "获取卡券",
+                    "value": false
+                }
+            }
+        },
+        "share_setting": {
+            "cover_img": "",
+            "describe": ""
+        },
+        "location_setting": {
+            "tencent_key": ""
+        }
+    },
+    "goods_group_setting": {
+        "group_show": 1
+    },
+    "sms_setting": {
+        "platform": "aliyun",
+        "mobile_list": [""],
+        "access_key_id": "",
+        "access_key_secret": "",
+        "template_name": "",
+        "order_refund": {
+            "template_id": "SMS_215343571"
+        },
+        "order_refund_success": {
+            "template_id": "SMS_215333695",
+            "code": "code"
+        },
+        "order_pay": {
+            "template_id": "SMS_215338588",
+            "name": "name"
+        },
+        "order_send": {
+            "template_id": "SMS_215333689",
+            "code": "code"
+        },
+        "order_verify": {
+            "template_id": "SMS_215353520",
+            "status": "status"
+        },
+        "captcha": {
+            "template_id": "SMS_215333698",
+            "code": "code"
+        },
+        "order_pay_business": {
+            "template_id": "SMS_215790099",
+            "code": "code"
+        },
+        "score_changes": {
+            "template_id": "SMS_219405455",
+            "name1": "name1",
+            "name2": "name2",
+            "name3": "name3"
+        },
+        "score_due": {
+            "template_id": "SMS_219400378",
+            "code": "code",
+            "date": "date"
+        },
+        "promoter_verify": {
+            "template_id": "SMS_218039717",
+            "result": "result"
+        },
+        "promoter_withdrawal": {
+            "template_id": "SMS_218039720",
+            "result": "result"
+        },
+        "level_change": {
+            "template_id": "SMS_218029825",
+            "status": "status",
+            "name": "name"
+        },
+        "clear_identity": {
+            "template_id": "SMS_218039724",
+            "name": "name"
+        },
+        "status": "0"
+    },
+    "crontab_access_token": "",
+    "apikey_99": {
+        "apikey_99": ""
+    },
+    "kb_express_setting": {
+        "app_id": "",
+        "app_key": "",
+        "agent_id": "",
+        "map_sdk": "QHHBZ-JIJ6J-2O7F5-F47JY-VO5T6-LCBW5"
+    },
+    "commission_setting": {
+        "count_rules": 1,
+        "withdrawal_way": ["bankCard", "alipay", "wechatDib", "wechat"],
+        "min_money": "1",
+        "max_money": "100",
+        "poundage": "0"
+    },
+    "promoter_page_setting": {
+        "apply": {
+            "bg_url": "",
+            "title": ""
+        },
+        "distributor_center": {
+            "title": "分销商中心",
+            "commission": "待提现佣金",
+            "all_commission_amount": "累计佣金",
+            "wait_account": "待结算佣金",
+            "is_withdrawal": "已提现佣金",
+            "promoter_order_number": "累计分销订单",
+            "all_children": "累计下线人数",
+            "goods": "分销商品",
+            "promotion_make_money": "推广赚钱"
+        },
+        "grade_center": {
+            "first": "一级分",
+            "second": "二级分销",
+            "third": "三级分销",
+            "all_children": "",
+            "sales_amount": "",
+            "all_commission_amount": ""
+        },
+        "children": {
+            "first": "一级",
+            "second": "二级",
+            "third": "三级"
+        },
+        "dynamic": {
+            "bg_url": "HESHOP_URL_STRING/static/images/promoter/promoter_zoom_banner.png"
+        }
+    },
+    "storage_setting": {
+        "way": 0,
+        "config": {
+            "local": [],
+            "oss": {
+                "bucket": "",
+                "domain": "",
+                "is_cname": false,
+                "access_key": "",
+                "secret_key": ""
+            },
+            "cos": {
+                "bucket": "",
+                "region": "",
+                "secret_id": "",
+                "secret_key": "",
+                "domain": ""
+            },
+            "qiniu": {
+                "bucket": "",
+                "domain": "",
+                "access_key": "",
+                "secret_key": ""
+            }
+        }
+    },
+    "web_setting": {
+        "ico_url": "HESHOP_URL_STRING/favicon.ico",
+        "record_number_a": "浙公网安备 330XXXXX975号 ",
+        "record_number_b": " 浙B2-20XXXX1-4"
+    },
+    "openad": "base",
+    "openingad": {
+        "content": [],
+        "facade": {
+            "indicator_style": 2,
+            "indicator_align": "left",
+            "indicator_color": "#16B3C5",
+            "chamfer_skip": false
+        },
+        "type": 1,
+        "days": 1,
+        "submit_time": 1629374475000
+    },
+    "mysql_version": "",
+    "promoter_setting": {
+        "status": 0,
+        "level_number": 3,
+        "self_buy": 1,
+        "center_show": 1,
+        "need_check": 1,
+        "need_apply": 0,
+        "apply_content": [],
+        "conditions": {
+            "type": 1,
+            "buy_amount": "0",
+            "buy_number": "0",
+            "goods_list": []
+        },
+        "bind_way": 1,
+        "bind_type": 1,
+        "bind_days": "120",
+        "use_agreement": 1,
+        "agreement_title": "",
+        "agreement_content": "",
+        "protect_time": 0
+    },
+    "promoter_rank": {
+        "enable": 1,
+        "bg_url": "HESHOP_URL_STRING/static/images/promoter/promoter-ranking-list.png",
+        "ranking_num": "20",
+        "ranking_dimension": ["all_children", "total_bonus", "total_money"]
+    },
+    "promoter_recruit_make": {
+        "title": "",
+        "content": ""
+    },
+    "leadshop_identified_by": "GreQzUVz8uDDD-bi",
+    "copyright_information": {
+        "login_img": "",
+        "admin_copyright_content": "",
+        "admin_copyright_icon": "",
+        "admin_copyright_link": "",
+        "mobile_copyright_content": "",
+        "mobile_copyright_icon": ""
+    },
+    "storage_limit": {
+        "pic_limit": 1,
+        "video_limit": 1
+    },
+    "float_window": {
+        "status": 2,
+        "decline": 1,
+        "stowedState": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-close.png",
+        "expandedState": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-open.png",
+        "button": ["toTop", "tell", "personalCenter", "cart", "backPage", "index"],
+        "buttonIcon": {
+            "index": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-index.png",
+            "cart": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-cart.png",
+            "tell": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-tell.png",
+            "personalCenter": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-personal-center.png",
+            "toTop": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-toTop.png",
+            "backPage": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-backPage.png"
+        },
+        "pages": ["index", "goods-list", "goods-detail", "submit", "order-list", "after-order", "after-detail", "order-detail", "page"],
+        "channel": ["applet", "wechat"],
+        "customize": [{
+            "img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/13/59e1bccad2c2c68aa12cb200775a330b.png",
+            "link": {
+                "name": "店铺首页",
+                "path": "/pages/index/index",
+                "param": [],
+                "index": 0,
+                "extend": false
+            },
+            "name": "shou"
+        }, {
+            "img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/12/b8e170b06032851b242f82ff8be266dd.png",
+            "link": {
+                "name": "自定义链接",
+                "path": "/pages/other/web",
+                "param": {
+                    "url": "https://www.baidu.com"
+                },
+                "index": 12,
+                "extend": true
+            },
+            "name": "百度"
+        }, {
+            "img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/12/11954ea2db43a5772685ee61a3e01373.png",
+            "link": {
+                "name": "购物车",
+                "path": "/pages/cart/index",
+                "param": [],
+                "index": 4,
+                "extend": false
+            },
+            "name": "购物车"
+        }, {
+            "img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/12/4c86b5fd45167d95b461caac2ca20858.jpeg",
+            "link": {
+                "name": "个人中心",
+                "path": "/pages/user/index",
+                "param": [],
+                "index": 5,
+                "extend": false
+            },
+            "name": "个人中心"
+        }, {
+            "img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/13/fd064299ae0ca53fa45d60b98e4cec49.png",
+            "link": {
+                "name": "其他小程序",
+                "path": "",
+                "param": {
+                    "applet": {
+                        "appId": "123",
+                        "path": "a2312312",
+                        "label": 1
+                    },
+                    "wechat": {
+                        "appId": "344",
+                        "path": "66677",
+                        "label": 1
+                    }
+                },
+                "index": 11,
+                "extend": true
+            },
+            "name": "1231"
+        }]
+    }
+}

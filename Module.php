@@ -32,7 +32,6 @@ class Module extends BasicModule
         $this->on('check_evaluate', ["\order\api\EvaluateController", 'checkEvaluate']); //评价检测
 
         $this->on('visit', ["\statistical\api\VisitController", 'saveLog']); //访客
-        $this->on('visit', ["\promoter\app\IndexController", 'checkPromoter']); //用户访问判断是否成为分销商
 
         $this->on('user_upload', ["\statistical\api\UploadController", 'saveLog']); //用户上传文件
 

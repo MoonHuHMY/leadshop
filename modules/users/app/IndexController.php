@@ -7,6 +7,7 @@
 namespace users\app;
 
 use coupon\models\Coupon;
+use app\components\ComPromoter;
 use framework\common\BasicController;
 use users\models\User;
 use Yii;
@@ -54,6 +55,13 @@ class IndexController extends BasicController
                 }
                 return $res;
                 break;
+            case 'simple_info':
+                $UID   = Yii::$app->request->get('UID',false);
+                if (!$UID) {
+                    Error('缺少ID');
+                }
+                return User::find()->where(['id'=>$UID])->select('id,nickname,avatar')->one();
+                break;
             default:
                 Error('未定义操作');
                 break;
@@ -64,15 +72,43 @@ class IndexController extends BasicController
     {
         $AppID = Yii::$app->params['AppID'];
         $UID   = Yii::$app->user->identity->id ?? null;
+        $res = true;
         if ($UID) {
             $this->module->event->visit_info = ['UID' => $UID, 'AppID' => $AppID];
             $this->module->trigger('visit');
 
             $this->module->event->user_statistical = ['UID' => $UID, 'last_visit_time' => time()];
             $this->module->trigger('user_statistical');
+
+            $setting = StoreSetting('promoter_setting');
+            //无需审核,无需申请,无条件时可自动成为分销商
+            if ($setting && $setting['need_check'] === 0 && $setting['need_apply'] === 0 && $setting['conditions']['type'] === 1) {
+                $data = M('promoter', 'Promoter')::findOne(['UID' => $UID]);
+                if (empty($data) || ($data->status !== 1 && $data->status !== 2)) {
+                    $time = time();
+                    if (empty($data)) {
+                        $model               = M('promoter', 'Promoter', true);
+                        $model->UID          = $UID;
+                        $model->created_time = $time;
+                        $data                = $model;
+                    }
+                    $data->status     = 2;
+                    $data->invite_id  = 0;
+                    $data->apply_time = $time;
+                    $data->join_time  = $time;
+                    if ($data->save()) {
+                        $ComPromoter = new ComPromoter();
+                        $ComPromoter->setLevel([$UID], 3);
+                        $res = 'promoter';
+                    } else {
+                        Yii::error('自动成分销商失败');
+                    }
+                }
+
+            }
         }
 
-        return true;
+        return $res;
     }
 
     /**

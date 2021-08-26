@@ -33,7 +33,7 @@ class IndexController extends BasicController
     {
         $merchant_id = 1;
         $AppID       = Yii::$app->params['AppID'];
-        $behavior     = Yii::$app->request->post('behavior', false);
+        $behavior    = Yii::$app->request->post('behavior', false);
         switch ($behavior) {
             case 'copyright_information':
                 $keyword = 'copyright_information';
@@ -75,26 +75,26 @@ class IndexController extends BasicController
             $json_string = file_get_contents(__DIR__ . '/../app/express.json');
             return to_array($json_string);
         } elseif ($keyword == 'waybilljson') {
-          $newList = [];
-          $waybill = Waybill::find()->where(['AppID' => Yii::$app->params['AppID'], 'is_deleted' => 0])
-            ->groupBy(['code'])->select('code')->column();
-          $json_string = file_get_contents(__DIR__ . '/../app/express.json');
-          $array = to_array($json_string);
-          foreach ($array as $json) {
-            foreach ($waybill as $item) {
-              if ($json['code'] == $item) {
-                array_push($newList, $json);
-              }
+            $newList = [];
+            $waybill = Waybill::find()->where(['AppID' => Yii::$app->params['AppID'], 'is_deleted' => 0])
+                ->groupBy(['code'])->select('code')->column();
+            $json_string = file_get_contents(__DIR__ . '/../app/express.json');
+            $array       = to_array($json_string);
+            foreach ($array as $json) {
+                foreach ($waybill as $item) {
+                    if ($json['code'] == $item) {
+                        array_push($newList, $json);
+                    }
+                }
             }
-          }
-          return $newList;
+            return $newList;
         }
-        $data = StoreSetting($keyword,$content_key);
+        $data = StoreSetting($keyword, $content_key);
         if (!$content_key) {
-            $new_data = [];
+            $new_data            = [];
             $new_data['keyword'] = $keyword;
             $new_data['content'] = $data;
-            $data = $new_data;
+            $data                = $new_data;
         }
 
         return $data;
@@ -125,21 +125,21 @@ class IndexController extends BasicController
 
         if ($post['keyword'] === 'commission_setting') {
             if ($post['content']['count_rules'] === 2) {
-                $check = M('goods','Goods')::findOne(['is_deleted'=>0,'is_promoter'=>1,'max_profits'=>null]);
+                $check = M('goods', 'Goods')::findOne(['is_deleted' => 0, 'is_promoter' => 1, 'max_profits' => null]);
                 if ($check) {
-                    Error('有分销商品还未设置成本价,不能使用利润佣金规则');
+                    return ['status' => 1];
                 }
             }
         }
 
         if ($post['keyword'] === 'promoter_setting') {
             if ($post['content']['bind_type'] === 2) {
-                if(isset($model->content)){
+                if (isset($model->content)) {
                     $content = to_array($model->content);
                     if ($content['bind_type'] !== 2) {
                         $post['content']['protect_time'] = time();
                     }
-                }else {
+                } else {
                     $post['content']['protect_time'] = time();
                 }
             }
@@ -148,7 +148,7 @@ class IndexController extends BasicController
         $post['content'] = url2str($post['content']);
         $model->content  = to_json($post['content']);
         if ($model->save()) {
-            return true;
+            return ['status' => 0];
         } else {
             Error('保存失败');
         }

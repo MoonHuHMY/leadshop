@@ -45,7 +45,7 @@ class PosterController extends BasicsModules implements Map
             if ($model) {
                 $promoter = $model->promoter;
                 if ($promoter && $promoter->status == 2) {
-                    $scene = 'spu=' . $model->id;//spu为share_promoter_uid缩写
+                    $scene = 'spu=' . $model->id; //spu为share_promoter_uid缩写
                 }
             }
         }
@@ -86,7 +86,8 @@ class PosterController extends BasicsModules implements Map
 
     public function zoom($type, $scene)
     {
-
+        $UID   = Yii::$app->request->get('UID', false);
+        $UID   = $UID ? $UID : $this->user_info->id;
         $scene = $scene && $scene != 'index' ? '&' . $scene : '';
 
         $dynamic = StoreSetting('promoter_page_setting', 'dynamic');
@@ -96,12 +97,15 @@ class PosterController extends BasicsModules implements Map
             $dynamic_url = realpath('../system/static/promoter_zoom_banner.png');
         }
 
+        $box         = imagettfbbox(32, 0, realpath('../system/static/PingFang.ttf'), $this->user_info->nickname);
+        $text_length = $box[2] - $box[0];
+
         //图片转换
         $config = array(
             'text'       => array(
                 array(
                     'text'      => $this->user_info->nickname,
-                    'left'      => 375 - (mb_strlen($this->user_info->nickname) * 21),
+                    'left'      => 375 - ($text_length / 2),
                     'top'       => 540,
                     'fontPath'  => realpath('../system/static/PingFang.ttf'), //字体文件
                     'fontSize'  => 32, //字号
@@ -150,7 +154,7 @@ class PosterController extends BasicsModules implements Map
                 ),
                 //二维码
                 array(
-                    'url'     => $type == 1 ? $this->getWechatQrCode("promoter/pages/dynamic", "UID=" . $this->user_info->id . $scene) : $this->getWeappQrCode("promoter/pages/dynamic", "UID=" . $this->user_info->id . $scene),
+                    'url'     => $type == 1 ? $this->getWechatQrCode("promoter/pages/dynamic", "UID=" . $UID . $scene) : $this->getWeappQrCode("promoter/pages/dynamic", "UID=" . $UID . $scene),
                     'left'    => 285,
                     'top'     => 712,
                     'right'   => 0,
@@ -175,14 +179,15 @@ class PosterController extends BasicsModules implements Map
 
     public function invitation($type, $scene)
     {
-        $scene = $scene && $scene != 'index' ? '&' . $scene : '';
-
+        $scene       = $scene && $scene != 'index' ? '&' . $scene : '';
+        $box         = imagettfbbox(32, 0, realpath('../system/static/PingFang.ttf'), $this->user_info->nickname);
+        $text_length = $box[2] - $box[0];
         //图片转换
         $config = array(
             'text'       => array(
                 array(
                     'text'      => $this->user_info->nickname,
-                    'left'      => 375 - (mb_strlen($this->user_info->nickname) * 21),
+                    'left'      => 375 - ($text_length / 2),
                     'top'       => 545,
                     'fontPath'  => realpath('../system/static/PingFang.ttf'), //字体文件
                     'fontSize'  => 32, //字号
@@ -244,12 +249,14 @@ class PosterController extends BasicsModules implements Map
     public function store($type, $scene)
     {
         $store_setting = StoreSetting('setting_collection', 'store_setting');
+        $box           = imagettfbbox(32, 0, realpath('../system/static/PingFang.ttf'), $store_setting['name']);
+        $text_length   = $box[2] - $box[0];
         //图片转换
         $config = array(
             'text'       => array(
                 array(
                     'text'      => $store_setting['name'],
-                    'left'      => 375 - (mb_strlen($store_setting['name']) * 21),
+                    'left'      => 375 - ($text_length / 2),
                     'top'       => 275,
                     'fontPath'  => realpath('../system/static/PingFang.ttf'), //字体文件
                     'fontSize'  => 32, //字号

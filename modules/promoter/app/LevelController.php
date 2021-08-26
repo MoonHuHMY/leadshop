@@ -3,7 +3,7 @@
 
 namespace promoter\app;
 
-
+use app\components\ComPromoter;
 use framework\common\BasicController;
 use promoter\models\Promoter;
 use promoter\models\PromoterLevel;
@@ -25,8 +25,11 @@ class LevelController extends BasicController
 
     public function actionIndex()
     {
+        $UID = \Yii::$app->user->id;
+        $ComPromoter = new ComPromoter();
+        $ComPromoter->setLevel([$UID], 3);
         $promoter = Promoter::find()
-            ->where(['UID' => \Yii::$app->user->id])
+            ->where(['UID' => $UID])
             ->with(['levelInfo'])
             ->limit(1)
             ->one();
@@ -45,12 +48,15 @@ class LevelController extends BasicController
             $newItem['condition'] = to_array($item['condition']);
             if ($newItem['condition']['all_children']['checked']) {
                 $newItem['all_children_percent'] = qm_round(((int)$allChildren / (int)$newItem['condition']['all_children']['num']) * 100, 2);
+                $newItem['all_children_percent'] = $newItem['all_children_percent'] > 100 ? 100 : $newItem['all_children_percent'] ;
             }
             if ($newItem['condition']['total_bonus']['checked']) {
                 $newItem['total_bonus_percent'] = qm_round(((int)$totalBonus / (int)$newItem['condition']['total_bonus']['num']) * 100, 2);
+                $newItem['total_bonus_percent'] = $newItem['total_bonus_percent'] > 100 ? 100 : $newItem['total_bonus_percent'] ;
             }
             if ($newItem['condition']['total_money']['checked']) {
                 $newItem['total_money_percent'] = qm_round(((int)$totalMoney / (int)$newItem['condition']['total_money']['num']) * 100, 2);
+                $newItem['total_money_percent'] = $newItem['total_money_percent'] > 100 ? 100 : $newItem['total_money_percent'] ;
             }
             $newItem['all_children'] = $allChildren;
             $newItem['total_bonus'] = $totalBonus;

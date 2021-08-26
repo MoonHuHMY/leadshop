@@ -74,7 +74,7 @@ class MaterialController extends BasicController
         //获取分页信息
         $pageSize = $headers->get('X-Pagination-Per-Page') ?? 20;
         $query = PromoterMaterial::find()
-            ->with(['goods'])
+            ->with(['goods.goodsdata'])
             ->where(['AppID' => \Yii::$app->params['AppID'], 'is_deleted' => 0]);
         $get = \Yii::$app->request->get();
         $name = $get['name'] ?? false;
@@ -106,8 +106,9 @@ class MaterialController extends BasicController
         foreach ($newList as &$item) {
             $item['pic_list'] = to_array($item['pic_list']);
             $item['video_list'] = to_array($item['video_list']);
-            if (!empty($item['goods']) && !empty($item['goods']['slideshow'])) {
-                $item['goods']['slideshow'] = to_array($item['goods']['slideshow']);
+            if (!empty($item['goods'])) {
+                $item['goods']['slideshow'] = to_array($item['goods']['slideshow']) ?? [];
+                $item['goods']['goodsdata'] = $item['goods']['goodsdata'][0] ?? '';
             }
         }
         $data->setModels($newList);

@@ -74,14 +74,15 @@ class GoodsController extends BasicController
 
         $list = $data->getModels();
         foreach ($list as &$value) {
-            $value['slideshow']  = to_array($value['slideshow']);
-            $value['commission'] = qm_round($value[$commission_key] * $scale);
-        }
-
-        //将所有返回内容中的本地地址代替字符串替换为域名
-        $list = str2url($list);
-        $data->setModels($list);
-        return $data;
+            $value['slideshow'] = to_array($value['slideshow']);
+            yii::error([$commission_key, $value[$commission_key], $scale]);
+        $value['commission'] = qm_round($value[$commission_key] * $scale, 2, 'floor');
     }
+
+    //将所有返回内容中的本地地址代替字符串替换为域名
+    $list = str2url($list);
+    $data->setModels($list);
+    return $data;
+}
 
 }

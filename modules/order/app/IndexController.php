@@ -341,6 +341,7 @@ class IndexController extends BasicController
                     $row = [];
                     $col = [];
                     foreach ($order_data['goods_data'] as $v) {
+                        unset($v['is_promoter']);
                         $v['order_sn']     = $order_sn;
                         $v['created_time'] = time();
                         array_push($row, array_values($v));
@@ -475,12 +476,6 @@ class IndexController extends BasicController
     {
         $order_sn = $order_info['order_sn'] ?? null;
         $model    = M('order', 'Order')::find()->where(['order_sn' => $order_sn])->one();
-
-        Yii::info('判断插件是否安装' . $this->plugins("task", "status"));
-        Yii::info('读取积分支付信息' . $model->total_score);
-        Yii::info('读取积分支付总价' . $model->total_amount);
-        Yii::info('读取积分支付订单' . $order_sn);
-        Yii::info('读取积分支付用户' . $model->UID);
 
         if ($model && $model->status < 201) {
             $model->status   = 201;
@@ -1074,6 +1069,7 @@ class IndexController extends BasicController
                     $v['package']          = $value['package'];
                     $v['ft_type']          = $value['ft_type'];
                     $v['ft_price']         = $value['ft_price'];
+                    $v['is_promoter']      = $value['is_promoter'];
                     if ($calculate == 'calculate') {
                         $v['failure_reason'] = $failure_reason;
                         $v['failure_number'] = $failure_number;
@@ -1452,7 +1448,7 @@ class IndexController extends BasicController
         }
 
         $promoter_setting = StoreSetting('promoter_setting');
-        if ($promoter_setting['status']) {
+        if ($promoter_setting['status'] && $promoter_setting['self_buy'] === 3) {
             $UID    = Yii::$app->user->identity->id;
             $p_info = M('promoter', 'Promoter')::findOne(['UID' => $UID]);
             if ($p_info && $p_info->status == 2) {
@@ -1461,17 +1457,18 @@ class IndexController extends BasicController
                 $p_ratio     = $p_l_info->first / 100;
                 $count_rules = StoreSetting('commission_setting', 'count_rules');
                 foreach ($data['goods_data'] as &$value) {
-                    if ($count_rules === 1) {
-                        $commission_amount = $value['pay_amount'];
-                    } else {
-                        $commission_amount = $value['pay_amount'] - $value['goods_number'] * $value['goods_cost_price'];
+                    if ($value['is_promoter'] === 1) {
+                        if ($count_rules === 1) {
+                            $commission_amount = $value['pay_amount'];
+                        } else {
+                            $commission_amount = $value['pay_amount'] - $value['goods_number'] * $value['goods_cost_price'];
+                        }
+                        if ($commission_amount > 0) {
+                            $value['promoter_reduced'] = qm_round($commission_amount * $p_ratio);
+                            $value['pay_amount']       = qm_round($value['pay_amount'] - $value['promoter_reduced']);
+                            $data['promoter_reduced'] += $value['promoter_reduced'];
+                        }
                     }
-                    if ($commission_amount > 0) {
-                        $value['promoter_reduced'] = qm_round($commission_amount * $p_ratio);
-                        $value['pay_amount']       = qm_round($value['pay_amount'] - $value['promoter_reduced']);
-                        $data['promoter_reduced'] += $value['promoter_reduced'];
-                    }
-                    unset($value['is_promoter']);
                 }
 
                 $data['pay_amount'] = $data['pay_amount'] - $data['promoter_reduced'];

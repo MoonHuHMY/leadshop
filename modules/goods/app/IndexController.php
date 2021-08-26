@@ -479,7 +479,7 @@ class IndexController extends BasicController
         if ($promoter_status && $promoter_model && $promoter_model->status == 2) {
             $scale = $promoter_model->levelInfo->first / 100;
         }
-        $result['commission'] = qm_round($result[$commission_key] * $scale);
+        $result['commission'] = qm_round($result[$commission_key] * $scale,2,'floor');
         Goods::updateAllCounters(['visits' => 1], ['id' => $id]);
 
         return $result;

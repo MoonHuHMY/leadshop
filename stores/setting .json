@@ -1,0 +1,845 @@
+{
+    "message_setting": {
+        "order_pay": {
+            "sms": true,
+            "wechat_public": true,
+            "wechat_subscribe": false
+        },
+        "pay_success": {
+            "sms": true,
+            "wechat_public": true,
+            "wechat_subscribe": false
+        },
+        "order_send": {
+            "sms": true,
+            "wechat_public": true,
+            "wechat_subscribe": true
+        },
+        "agree_after": {
+            "sms": true,
+            "wechat_public": true,
+            "wechat_subscribe": true
+        },
+        "refuse_after": {
+            "sms": true,
+            "wechat_public": true,
+            "wechat_subscribe": true
+        },
+        "create_after": {
+            "sms": true,
+            "wechat_public": true,
+            "wechat_subscribe": false
+        },
+        "return_success": {
+            "sms": true,
+            "wechat_public": true,
+            "wechat_subscribe": false
+        }
+    },
+    "setting_collection": {
+        "basic_setting": {
+            "run_status": 1,
+            "restore_status": 1,
+            "restore_time": "1615615440000"
+        },
+        "store_setting": {
+            "name": "小店",
+            "logo": "HESHOP_URL_STRING/static/images/home.png",
+            "abstract": "123123",
+            "phone": "1123",
+            "address": "创新园",
+            "addressList": ["浙江省", "嘉兴市", "南湖区"],
+            "province": "浙江省",
+            "city": "嘉兴市",
+            "district": "南湖区",
+            "contact_type": ["iphone", "qrcode"],
+            "contact_des": "添加客服微信，咨询详情",
+            "contact_img": "",
+            "contact": {
+                "phone": {
+                    "bool": true,
+                    "value": "12311",
+                    "day": [],
+                    "time": "123"
+                },
+                "online": {
+                    "bool": true,
+                    "day": [],
+                    "time": "122"
+                },
+                "friend": {
+                    "bool": true,
+                    "des": "添加客服微信，咨询详情",
+                    "day": [],
+                    "time": "121221",
+                    "pic_url": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/06/11/dbef30e26032847cf9a3a810d0df1829.png"
+                }
+            }
+        },
+        "trade_setting": {
+            "cancel_status": 1,
+            "cancel_time": "1.5",
+            "received_time": "1",
+            "evaluate_status": 0,
+            "evaluate_time": "1",
+            "after_time": "1",
+            "exchange_status": 1,
+            "pay_way": {
+                "wechat": {
+                    "title": "微信",
+                    "value": true
+                },
+                "alipay": {
+                    "title": "支付宝",
+                    "value": false
+                }
+            }
+        },
+        "goods_setting": {
+            "recommend_status": 1,
+            "recommend_showpage": {
+                "goodsinfo": {
+                    "title": "商品详情",
+                    "value": true
+                },
+                "pay_success": {
+                    "title": "支付完成",
+                    "value": true
+                },
+                "personal_center": {
+                    "title": "个人中心",
+                    "value": true
+                },
+                "orderinfo": {
+                    "title": "订单详情",
+                    "value": true
+                },
+                "cart": {
+                    "title": "购物车",
+                    "value": true
+                },
+                "coupon_detail": {
+                    "title": "优惠券详情",
+                    "value": true
+                }
+            },
+            "evaluate_show": 2,
+            "order_list_roll": 1,
+            "sales_show": 0,
+            "soldout_show": 1,
+            "recommend_goods": [{
+                "id": 461,
+                "name": "单规格椅子",
+                "price": "0.01",
+                "line_price": "0.00",
+                "group": "-49-85-",
+                "status": 0,
+                "param_type": 1,
+                "unit": "把",
+                "slideshow": ["https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/06/11/932ef698fb0caad1a055f43af3a85cb4.jpeg"],
+                "is_video": 0,
+                "video": "{\"type\":1}",
+                "video_cover": "",
+                "is_real": 1,
+                "is_sale": 1,
+                "tags": "",
+                "stocks": 550,
+                "reduce_stocks": 2,
+                "ft_type": 1,
+                "ft_price": "0.01",
+                "ft_id": null,
+                "pfr_id": null,
+                "limit_buy_status": 0,
+                "limit_buy_type": "day",
+                "limit_buy_value": null,
+                "min_number": 1,
+                "sort": 1,
+                "services": "[]",
+                "visits": 1,
+                "virtual_sales": 0,
+                "sales": 0,
+                "merchant_id": 1,
+                "AppID": "98c08c25f8136d590c",
+                "created_time": 1624933097,
+                "updated_time": 1624933146,
+                "deleted_time": null,
+                "is_deleted": 0,
+                "sales_amount": "0.00",
+                "is_recycle": 0,
+                "is_promoter": 0,
+                "max_price": null,
+                "max_profits": null,
+                "goods_sn": "",
+                "visitors": 0
+            }]
+        },
+        "user_setting": {
+            "mobile_auth": {
+                "join_shopping_cart": {
+                    "title": "加入购物车",
+                    "value": true
+                },
+                "paybuy": {
+                    "title": "支付购买",
+                    "value": true
+                },
+                "get_tickets": {
+                    "title": "获取卡券",
+                    "value": false
+                }
+            },
+            "userinfo_auth": {
+                "join_shopping_cart": {
+                    "title": "加入购物车",
+                    "value": true
+                },
+                "paybuy": {
+                    "title": "支付购买",
+                    "value": true
+                },
+                "get_tickets": {
+                    "title": "获取卡券",
+                    "value": false
+                }
+            }
+        },
+        "share_setting": {
+            "cover_img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/06/21/4ed49f858ececb2c510927398fd3b2fc.gif",
+            "describe": ""
+        },
+        "location_setting": {
+            "tencent_key": "QHHBZ-JIJ6J-2O7F5-F47JY-VO5T6-LCBW5"
+        }
+    },
+    "goods_group_setting": {
+        "group_show": 1
+    },
+    "express_setting": {
+        "type": 1,
+        "code": "5e79bf98c70e4bbb885795171eb04c26"
+    },
+    "sms_setting": {
+        "platform": "aliyun",
+        "mobile_list": ["18268210329"],
+        "access_key_id": "LTAI4GKgU34Gmj5Ds8Av8Dib",
+        "access_key_secret": "0EmBupQICOAeqDkKIzz6poPsuuLH9J",
+        "template_name": "企码星球",
+        "order_refund": {
+            "template_id": "SMS_215343571"
+        },
+        "order_refund_success": {
+            "template_id": "SMS_215333695",
+            "code": "code"
+        },
+        "order_pay": {
+            "template_id": "SMS_215338588",
+            "name": "name"
+        },
+        "order_send": {
+            "template_id": "SMS_215333689",
+            "code": "code"
+        },
+        "order_verify": {
+            "template_id": "SMS_215353520",
+            "status": "status"
+        },
+        "captcha": {
+            "template_id": "SMS_215333698",
+            "code": "code"
+        },
+        "order_pay_business": {
+            "template_id": "SMS_215790099",
+            "code": "code"
+        },
+        "score_changes": {
+            "template_id": "SMS_219405455",
+            "name1": "name1",
+            "name2": "name2",
+            "name3": "name3"
+        },
+        "score_due": {
+            "template_id": "SMS_219400378",
+            "code": "code",
+            "date": "date"
+        },
+        "promoter_verify": {
+            "template_id": "SMS_218039717",
+            "result": "result"
+        },
+        "promoter_withdrawal": {
+            "template_id": "SMS_218039720",
+            "result": "result"
+        },
+        "level_change": {
+            "template_id": "SMS_218029825",
+            "status": "status",
+            "name": "name"
+        },
+        "clear_identity": {
+            "template_id": "SMS_218039724",
+            "name": "name"
+        },
+        "status": "1"
+    },
+    "crontab_access_token": "-_WC7JFZ30K7-ry8",
+    "apikey_99": {
+        "apikey_99": "3A0D4963FF5EB1869ABB14913140F68B"
+    },
+    "kb_express_setting": {
+        "app_id": "109261",
+        "app_key": "4f4a9afb27de4e16712e1b18bda665775cba1aa4",
+        "agent_id": "7869375385824207",
+        "map_sdk": "QHHBZ-JIJ6J-2O7F5-F47JY-VO5T6-LCBW5"
+    },
+    "commission_setting": {
+        "count_rules": 1,
+        "withdrawal_way": ["bankCard", "alipay", "wechatDib", "wechat"],
+        "min_money": "1",
+        "max_money": "2",
+        "poundage": "3"
+    },
+    "promoter_page_setting": {
+        "apply": {
+            "bg_url": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/12/4c86b5fd45167d95b461caac2ca20858.jpeg",
+            "title": "大撒大撒"
+        },
+        "distributor_center": {
+            "title": "分销商中心1",
+            "commission": "待提现佣金1",
+            "all_commission_amount": "累计佣金21",
+            "wait_account": "待结算佣金",
+            "is_withdrawal": "已提现佣金1",
+            "promoter_order_number": "累计分销订单",
+            "all_children": "累计下线人数",
+            "goods": "分销商品32",
+            "promotion_make_money": "推广赚钱12"
+        },
+        "grade_center": {
+            "first": "一级分",
+            "second": "二级分销",
+            "third": "三级分销",
+            "all_children": "",
+            "sales_amount": "",
+            "all_commission_amount": ""
+        },
+        "children": {
+            "first": "一级1",
+            "second": "二级2",
+            "third": "三级3"
+        },
+        "dynamic": {
+            "bg_url": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/12/4c86b5fd45167d95b461caac2ca20858.jpeg"
+        }
+    },
+    "storage_setting": {
+        "way": 1,
+        "config": {
+            "local": [],
+            "oss": {
+                "bucket": "leadshop",
+                "domain": "https://oss-cn-hangzhou.aliyuncs.com",
+                "is_cname": false,
+                "access_key": "LTAI4G6UatCAa5jnxGnf4ur2",
+                "secret_key": "bJ6sLa3c6Ipxb1gkeDGWfr1IRGE485"
+            },
+            "cos": {
+                "bucket": "",
+                "region": "",
+                "secret_id": "",
+                "secret_key": "",
+                "domain": ""
+            },
+            "qiniu": {
+                "bucket": "",
+                "domain": "",
+                "access_key": "",
+                "secret_key": ""
+            }
+        }
+    },
+    "web_setting": {
+        "ico_url": "HESHOP_URL_STRING/favicon.ico",
+        "record_number_a": "浙公网安备 330XXXXX975号 ",
+        "record_number_b": " 浙B2-20XXXX1-4"
+    },
+    "openad": "base",
+    "openingad": {
+        "content": [{
+            "url": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/06/18/6ed02f234da466f7cd157ec3925369a5.png",
+            "link": []
+        }, {
+            "url": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/12/5a0a0c514ffbe96a7d0aade0544f13aa.png",
+            "link": []
+        }, {
+            "url": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/12/5a0a0c514ffbe96a7d0aade0544f13aa.png",
+            "link": []
+        }, {
+            "url": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/12/c8569c6e590352ac8787a82564b17603.png",
+            "link": []
+        }, {
+            "url": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/12/70ee19cd585c51b7fc9251d5f040cd85.png",
+            "link": []
+        }],
+        "facade": {
+            "indicator_style": 2,
+            "indicator_align": "left",
+            "indicator_color": "#16B3C5",
+            "chamfer_skip": false
+        },
+        "type": 2,
+        "days": 71,
+        "submit_time": 1629374475000
+    },
+    "mysql_version": "1.2.10",
+    "promoter_setting": {
+        "status": 1,
+        "level_number": 3,
+        "self_buy": 2,
+        "center_show": 1,
+        "need_check": 1,
+        "need_apply": 0,
+        "apply_content": [{
+            "name": "姓名"
+        }, {
+            "name": "112"
+        }, {
+            "name": "22"
+        }, {
+            "name": "323"
+        }, {
+            "name": "12"
+        }],
+        "conditions": {
+            "type": 1,
+            "buy_amount": "21",
+            "buy_number": "10",
+            "goods_list": [{
+                "id": 466,
+                "name": "稻草人（MEXICAN）五分短裤男2021夏季ins潮流宽松大裤衩男装运动休闲沙",
+                "price": "59.00",
+                "line_price": "59.00",
+                "group": "-56-",
+                "status": 0,
+                "param_type": 2,
+                "unit": "件",
+                "slideshow": ["http://img30.360buyimg.com/popWaterMark/jfs/t1/163921/32/14498/226661/605497fbEbc38c254/0852ac1613e9276c.jpg", "http://img30.360buyimg.com/popWaterMark/jfs/t1/115854/32/11877/471233/5f051afeE86f2f7c4/a8fe62ccc692d9c8.jpg", "http://img30.360buyimg.com/popWaterMark/jfs/t1/131576/9/3884/370579/5f051affEce1156ee/113bf4adee947790.jpg", "http://img30.360buyimg.com/popWaterMark/jfs/t1/146742/33/2379/345977/5f051b01E9be82615/77ee47c451e70724.jpg", "http://img30.360buyimg.com/popWaterMark/jfs/t1/125581/8/6584/408593/5f051b03Ed45c1415/70349c093d87444d.jpg", "http://img30.360buyimg.com/popWaterMark/jfs/t1/134402/33/3934/247136/5f051b04Eafd79bbe/88045c6476479893.jpg"],
+                "is_video": 0,
+                "video": "",
+                "video_cover": "",
+                "is_real": 1,
+                "is_sale": 1,
+                "tags": "",
+                "stocks": 0,
+                "reduce_stocks": 2,
+                "ft_type": 1,
+                "ft_price": "0.00",
+                "ft_id": null,
+                "pfr_id": null,
+                "limit_buy_status": 0,
+                "limit_buy_type": null,
+                "limit_buy_value": null,
+                "min_number": 1,
+                "sort": 1,
+                "services": "",
+                "visits": 0,
+                "virtual_sales": 0,
+                "sales": 0,
+                "merchant_id": 1,
+                "AppID": "98c08c25f8136d590c",
+                "created_time": 1625656361,
+                "updated_time": 1625656361,
+                "deleted_time": null,
+                "is_deleted": 0,
+                "sales_amount": "0.00",
+                "is_recycle": 0,
+                "is_promoter": 0,
+                "max_price": null,
+                "max_profits": null,
+                "promoter": null,
+                "goods_sn": "",
+                "visitors": 0
+            }, {
+                "id": 465,
+                "name": "精彩",
+                "price": "66.00",
+                "line_price": "0.00",
+                "group": "-49-85-",
+                "status": 0,
+                "param_type": 1,
+                "unit": "件",
+                "slideshow": ["HESHOP_URL_STRING/upload/image/2021/01/09/d884c10aa6d012f5e201433b392fcd6a.jpeg"],
+                "is_video": 0,
+                "video": "{\"type\":1}",
+                "video_cover": "",
+                "is_real": 1,
+                "is_sale": 1,
+                "tags": "",
+                "stocks": 666,
+                "reduce_stocks": 2,
+                "ft_type": 1,
+                "ft_price": "0.00",
+                "ft_id": null,
+                "pfr_id": null,
+                "limit_buy_status": 0,
+                "limit_buy_type": "day",
+                "limit_buy_value": null,
+                "min_number": 1,
+                "sort": 1,
+                "services": "[]",
+                "visits": 1,
+                "virtual_sales": 0,
+                "sales": 0,
+                "merchant_id": 1,
+                "AppID": "98c08c25f8136d590c",
+                "created_time": 1625216181,
+                "updated_time": 1625561969,
+                "deleted_time": null,
+                "is_deleted": 0,
+                "sales_amount": "0.00",
+                "is_recycle": 0,
+                "is_promoter": 0,
+                "max_price": null,
+                "max_profits": null,
+                "promoter": null,
+                "goods_sn": "xcc",
+                "visitors": 1
+            }, {
+                "id": 464,
+                "name": "创意苹果削皮刀 水果削皮器瓜刨 厨房用品折叠削皮刀",
+                "price": "0.39",
+                "line_price": "0.39",
+                "group": "-49-85-",
+                "status": 0,
+                "param_type": 2,
+                "unit": "个",
+                "slideshow": ["https://cbu01.alicdn.com/img/ibank/2016/416/188/2852881614_1109049353.jpg", "https://cbu01.alicdn.com/img/ibank/2016/626/878/2852878626_1109049353.jpg", "https://cbu01.alicdn.com/img/ibank/2016/611/588/3054885116_1109049353.jpg", "https://cbu01.alicdn.com/img/ibank/2016/343/488/2852884343_1109049353.jpg", "https://cbu01.alicdn.com/img/ibank/O1CN01STwwzj22UqFSWkZCY_!!3402337124-0-cib.jpg"],
+                "is_video": 0,
+                "video": "",
+                "video_cover": "",
+                "is_real": 1,
+                "is_sale": 1,
+                "tags": "",
+                "stocks": 0,
+                "reduce_stocks": 2,
+                "ft_type": 1,
+                "ft_price": "0.00",
+                "ft_id": null,
+                "pfr_id": null,
+                "limit_buy_status": 0,
+                "limit_buy_type": null,
+                "limit_buy_value": null,
+                "min_number": 1,
+                "sort": 1,
+                "services": "[]",
+                "visits": 14,
+                "virtual_sales": 0,
+                "sales": 0,
+                "merchant_id": 1,
+                "AppID": "98c08c25f8136d590c",
+                "created_time": 1625044145,
+                "updated_time": 1625044165,
+                "deleted_time": null,
+                "is_deleted": 0,
+                "sales_amount": "0.00",
+                "is_recycle": 0,
+                "is_promoter": 0,
+                "max_price": null,
+                "max_profits": null,
+                "promoter": null,
+                "goods_sn": "",
+                "visitors": 3
+            }, {
+                "id": 463,
+                "name": "多规格橙子",
+                "price": "0.01",
+                "line_price": "0.00",
+                "group": "-49-85-",
+                "status": 0,
+                "param_type": 2,
+                "unit": "件",
+                "slideshow": ["HESHOP_URL_STRING/upload/image/2021/01/09/9d6d7ed486ad4c150ec7899979f8a668.jpeg"],
+                "is_video": 0,
+                "video": "{\"type\":1}",
+                "video_cover": "",
+                "is_real": 1,
+                "is_sale": 1,
+                "tags": "",
+                "stocks": 4000,
+                "reduce_stocks": 2,
+                "ft_type": 1,
+                "ft_price": "0.01",
+                "ft_id": null,
+                "pfr_id": null,
+                "limit_buy_status": 0,
+                "limit_buy_type": "day",
+                "limit_buy_value": null,
+                "min_number": 1,
+                "sort": 1,
+                "services": "[]",
+                "visits": 3,
+                "virtual_sales": 0,
+                "sales": 0,
+                "merchant_id": 1,
+                "AppID": "98c08c25f8136d590c",
+                "created_time": 1625032237,
+                "updated_time": 1625032317,
+                "deleted_time": null,
+                "is_deleted": 0,
+                "sales_amount": "0.00",
+                "is_recycle": 0,
+                "is_promoter": 0,
+                "max_price": null,
+                "max_profits": null,
+                "promoter": null,
+                "goods_sn": "",
+                "visitors": 2
+            }, {
+                "id": 462,
+                "name": "苹果",
+                "price": "0.01",
+                "line_price": "0.00",
+                "group": "-49-85-",
+                "status": 0,
+                "param_type": 1,
+                "unit": "个",
+                "slideshow": ["HESHOP_URL_STRING/upload/image/2021/01/09/e5c99aedc6b5a22d7711fa6dd4cc75be.jpeg"],
+                "is_video": 0,
+                "video": "{\"type\":1}",
+                "video_cover": "",
+                "is_real": 1,
+                "is_sale": 1,
+                "tags": "",
+                "stocks": 663,
+                "reduce_stocks": 2,
+                "ft_type": 1,
+                "ft_price": "0.01",
+                "ft_id": null,
+                "pfr_id": null,
+                "limit_buy_status": 0,
+                "limit_buy_type": "day",
+                "limit_buy_value": null,
+                "min_number": 1,
+                "sort": 1,
+                "services": "[]",
+                "visits": 154,
+                "virtual_sales": 0,
+                "sales": 3,
+                "merchant_id": 1,
+                "AppID": "98c08c25f8136d590c",
+                "created_time": 1624934880,
+                "updated_time": 1624934911,
+                "deleted_time": null,
+                "is_deleted": 0,
+                "sales_amount": "0.01",
+                "is_recycle": 0,
+                "is_promoter": 0,
+                "max_price": null,
+                "max_profits": null,
+                "promoter": null,
+                "goods_sn": "",
+                "visitors": 6
+            }, {
+                "id": 460,
+                "name": "多规格女装",
+                "price": "0.01",
+                "line_price": "100.00",
+                "group": "-49-74-",
+                "status": 0,
+                "param_type": 2,
+                "unit": "件",
+                "slideshow": ["https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/06/17/02777c83e4278beca763c08115f74814.png", "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/06/17/88213a4e01bd1e4fe8b7f06f03f58b98.png"],
+                "is_video": 0,
+                "video": "{\"type\":1}",
+                "video_cover": "",
+                "is_real": 1,
+                "is_sale": 1,
+                "tags": "",
+                "stocks": 395,
+                "reduce_stocks": 2,
+                "ft_type": 1,
+                "ft_price": "0.00",
+                "ft_id": null,
+                "pfr_id": null,
+                "limit_buy_status": 0,
+                "limit_buy_type": "day",
+                "limit_buy_value": null,
+                "min_number": 1,
+                "sort": 1,
+                "services": "[]",
+                "visits": 43,
+                "virtual_sales": 100,
+                "sales": 9,
+                "merchant_id": 1,
+                "AppID": "98c08c25f8136d590c",
+                "created_time": 1624932863,
+                "updated_time": 1624934077,
+                "deleted_time": null,
+                "is_deleted": 0,
+                "sales_amount": "0.27",
+                "is_recycle": 0,
+                "is_promoter": 0,
+                "max_price": null,
+                "max_profits": null,
+                "promoter": null,
+                "goods_sn": "",
+                "visitors": 4
+            }, {
+                "id": 457,
+                "name": "定制篮球服套装篮球比赛服球衣童装篮球服logo定做男比赛训练队服",
+                "price": "0.00",
+                "line_price": "27.00",
+                "group": "-49-85-",
+                "status": 0,
+                "param_type": 2,
+                "unit": "套",
+                "slideshow": ["https://cbu01.alicdn.com/img/ibank/2019/385/902/12598209583_818629063.jpg", "https://cbu01.alicdn.com/img/ibank/2019/395/838/10697838593_818629063.jpg", "https://cbu01.alicdn.com/img/ibank/2019/586/161/10727161685_818629063.jpg", "https://cbu01.alicdn.com/img/ibank/2019/003/553/10753355300_818629063.jpg", "https://cbu01.alicdn.com/img/ibank/2019/520/967/11540769025_818629063.jpg", "https://cbu01.alicdn.com/img/ibank/2019/155/508/10753805551_818629063.jpg", "https://cbu01.alicdn.com/img/ibank/2019/239/303/12711303932_818629063.jpg", "https://cbu01.alicdn.com/img/ibank/2019/223/540/10698045322_818629063.jpg", "https://cbu01.alicdn.com/img/ibank/2019/196/244/10753442691_818629063.jpg"],
+                "is_video": 0,
+                "video": "",
+                "video_cover": "",
+                "is_real": 1,
+                "is_sale": 1,
+                "tags": "",
+                "stocks": 1169047,
+                "reduce_stocks": 2,
+                "ft_type": 1,
+                "ft_price": "0.00",
+                "ft_id": null,
+                "pfr_id": null,
+                "limit_buy_status": 0,
+                "limit_buy_type": null,
+                "limit_buy_value": null,
+                "min_number": 1,
+                "sort": 1,
+                "services": "[]",
+                "visits": 12,
+                "virtual_sales": 0,
+                "sales": 0,
+                "merchant_id": 1,
+                "AppID": "98c08c25f8136d590c",
+                "created_time": 1624863421,
+                "updated_time": 1624863485,
+                "deleted_time": null,
+                "is_deleted": 0,
+                "sales_amount": "0.00",
+                "is_recycle": 0,
+                "is_promoter": 0,
+                "max_price": null,
+                "max_profits": null,
+                "promoter": null,
+                "goods_sn": "",
+                "visitors": 1
+            }]
+        },
+        "bind_way": 1,
+        "bind_type": 1,
+        "bind_days": "120",
+        "use_agreement": 1,
+        "agreement_title": "分销分销分销分销分销",
+        "agreement_content": "分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销分销",
+        "protect_time": 1625730611
+    },
+    "promoter_rank": {
+        "enable": 1,
+        "bg_url": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/13/59e1bccad2c2c68aa12cb200775a330b.png",
+        "ranking_num": "52",
+        "ranking_dimension": ["all_children", "total_bonus", "total_money"]
+    },
+    "promoter_recruit_make": {
+        "title": "4444",
+        "content": "\n      <img src=\"https://qmxq.oss-cn-hangzhou.aliyuncs.com/promoter/recruit-1.png\" width=\"100%\" style=\"display: block\">\n      <div style=\"width: 100%;background-color: #3A18AB;overflow: hidden;\">\n        <div style=\"padding: 0 16px\">\n            <div style=\"background-color: #ffffff;border-radius: 8px;padding: 20px 20px;font-size: 13px;font-weight: 500;color: #222222;\">【店铺名称】诚挚邀请你加入我们的分销员团队，无任何成本，不用您处理订单和售后，即可成为我们的分销员，你只需将高品质商品分享推荐给他人，赚取佣金。欢迎您和我们一起分享喜悦！</div>\n        </div>\n        <div style=\"position: relative;\">\n          <img src=\"https://qmxq.oss-cn-hangzhou.aliyuncs.com/promoter/recruit-2.png\" width=\"100%\" alt=\"\">\n          <div style=\"color: #fff;font-size: 16px;font-weight: 400;line-height: 24px;position: absolute;z-index: 10;top:34px;left: 16px\">如何成为分销商</div>\n          <div style=\"background-color: #fff;border-radius: 8px;margin: 0 16px;padding: 20px 20px;font-size: 13px;font-weight: 500;color: #222222;\">\n              √ 阅读此招募令内容，点击底部成为分销商按钮<br/>\n              √ 根据指引，完成申请流程，提交申请信息\n          </div>\n        </div>\n        <div style=\"position: relative;\">\n            <img src=\"https://qmxq.oss-cn-hangzhou.aliyuncs.com/promoter/recruit-3.png\" width=\"100%\" alt=\"\">\n            <div style=\"color: #fff;font-size: 16px;font-weight: 400;line-height: 24px;position: absolute;z-index: 10;top:34px;left: 16px\">如何赚取佣金</div>\n            <div style=\"background-color: #fff;border-radius: 8px;margin: 0 16px;padding: 20px 20px;font-size: 13px;font-weight: 500;color: #222222;\">\n                A. 点击商品详情页的【分享】按钮，将商品链接或商  &nbsp;&nbsp;&nbsp;&nbsp;品海报分享给好友<br/>\n                B. 其他人通过分享的链接或海报，进入到商品详情页  &nbsp;&nbsp;&nbsp;&nbsp;并购买商品<br/>\n                C. 订单过售后时间后，系统自动结算佣金\n            </div>\n          </div>\n          <div style=\"position: relative;\">\n            <img src=\"https://qmxq.oss-cn-hangzhou.aliyuncs.com/promoter/recruit-4.png\" width=\"100%\" alt=\"\">\n            <div style=\"color: #fff;font-size: 16px;font-weight: 400;line-height: 24px;position: absolute;z-index: 10;top:34px;left: 16px\">如何提现佣金</div>\n            <div style=\"background-color: #fff;border-radius: 8px;margin: 0 16px;padding: 20px 20px;font-size: 13px;font-weight: 500;color: #222222;\">\n                A. 进入到分销员中心，查看待提现佣金<br/>\n                B. 点击待提现佣金，进入到提现页面，根据指引，完  &nbsp;&nbsp;&nbsp;&nbsp;成提现申请<br/>\n                C. 商家收到提现申请后，将佣金打款至提现账户\n            </div>\n          </div>\n          <div style=\"position: relative;\">\n            <img src=\"https://qmxq.oss-cn-hangzhou.aliyuncs.com/promoter/recruit-5.png\" width=\"100%\" alt=\"\">\n            <div style=\"color: #fff;font-size: 16px;font-weight: 400;line-height: 24px;position: absolute;z-index: 10;top:34px;left: 16px\">联系我们</div>\n            <div style=\"background-color: #fff;border-radius: 8px;margin: 0 16px;padding: 8px 20px;\">\n                <div style=\"height: 50px;border-bottom: 1px solid #E5E5E5;line-height: 50px;\">\n                   <span style=\"font-size: 13px;font-weight: 500;color: #222222;display: inline-block;width: 60px;margin-right: 8px\">联系人</span>\n                   <span style=\"font-size: 13px;font-weight: 500;color: #999999;\">请填写联系人姓名</span>\n                </div>\n                <div style=\"height: 50px;border-bottom: 1px solid #E5E5E5;line-height: 50px;\">\n                   <span style=\"font-size: 13px;font-weight: 500;color: #222222;display: inline-block;width: 60px;margin-right: 8px\">手机号</span>\n                   <span style=\"font-size: 13px;font-weight: 500;color: #999999;\">请填写手机号</span>\n                </div>\n                <div style=\"height: 50px;line-height: 50px;\">\n                   <span style=\"font-size: 13px;font-weight: 500;color: #222222;display: inline-block;width: 60px;margin-right: 8px\">邮箱</span>\n                   <span style=\"font-size: 13px;font-weight: 500;color: #999999;\">请填写邮箱</span>\n                </div>\n            </div>\n          </div>\n          <div ref=\"button\" style=\"background-color: #E60B30;text-align: center;width: calc(100% - 32px);height: 40px;line-height: 40px;border-radius: 20px;border: none;cursor: pointer;color: #fff;margin: 24px 16px;\">申请成为分销商</div>\n      </div>\n    "
+    },
+    "leadshop_identified_by": "GreQzUVz8uDDD-bi",
+    "copyright_information": {
+        "login_img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/07/30/dd8dd8b87b37e6a014d2897ef762d213.png",
+        "admin_copyright_content": "123123333333",
+        "admin_copyright_icon": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/06/21/4ed49f858ececb2c510927398fd3b2fc.gif",
+        "admin_copyright_link": "123123123121231",
+        "mobile_copyright_content": "圣诞节",
+        "mobile_copyright_icon": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/06/18/6ed02f234da466f7cd157ec3925369a5.png"
+    },
+    "storage_limit": {
+        "pic_limit": 1,
+        "video_limit": 1
+    },
+    "float_window": {
+        "status": 2,
+        "decline": 1,
+        "stowedState": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-close.png",
+        "expandedState": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-open.png",
+        "button": ["toTop", "tell", "personalCenter", "cart", "backPage", "index"],
+        "buttonIcon": {
+            "index": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-index.png",
+            "cart": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-cart.png",
+            "tell": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-tell.png",
+            "personalCenter": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-personal-center.png",
+            "toTop": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-toTop.png",
+            "backPage": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-backPage.png"
+        },
+        "pages": ["index", "goods-list", "goods-detail", "submit", "order-list", "after-order", "after-detail", "order-detail", "page"],
+        "channel": ["applet", "wechat"],
+        "customize": [{
+            "img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/13/59e1bccad2c2c68aa12cb200775a330b.png",
+            "link": {
+                "name": "店铺首页",
+                "path": "/pages/index/index",
+                "param": [],
+                "index": 0,
+                "extend": false
+            },
+            "name": "shou"
+        }, {
+            "img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/12/b8e170b06032851b242f82ff8be266dd.png",
+            "link": {
+                "name": "自定义链接",
+                "path": "/pages/other/web",
+                "param": {
+                    "url": "https://www.baidu.com"
+                },
+                "index": 12,
+                "extend": true
+            },
+            "name": "百度"
+        }, {
+            "img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/12/11954ea2db43a5772685ee61a3e01373.png",
+            "link": {
+                "name": "购物车",
+                "path": "/pages/cart/index",
+                "param": [],
+                "index": 4,
+                "extend": false
+            },
+            "name": "购物车"
+        }, {
+            "img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/12/4c86b5fd45167d95b461caac2ca20858.jpeg",
+            "link": {
+                "name": "个人中心",
+                "path": "/pages/user/index",
+                "param": [],
+                "index": 5,
+                "extend": false
+            },
+            "name": "个人中心"
+        }, {
+            "img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/13/fd064299ae0ca53fa45d60b98e4cec49.png",
+            "link": {
+                "name": "其他小程序",
+                "path": "",
+                "param": {
+                    "applet": {
+                        "appId": "123",
+                        "path": "a2312312",
+                        "label": 1
+                    },
+                    "wechat": {
+                        "appId": "344",
+                        "path": "66677",
+                        "label": 1
+                    }
+                },
+                "index": 11,
+                "extend": true
+            },
+            "name": "1231"
+        }]
+    }
+}

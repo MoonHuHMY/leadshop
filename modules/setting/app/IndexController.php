@@ -49,7 +49,12 @@ class IndexController extends BasicController
      */
     public function actionIndex()
     {
-        return StoreSetting();
+        $data = StoreSetting();
+        $new_data = [];
+        foreach ($data as $value) {
+            $new_data[$value['keyword']] = str2url($value['content']);
+        }
+        return $new_data;
     }
 
     /**

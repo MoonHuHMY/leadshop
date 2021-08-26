@@ -58,6 +58,7 @@ class IndexController extends BasicController
         if ($keyword) {
             $query->andWhere([
                 'or',
+                ['f.UID' => $keyword],
                 ['like', 'u.realname', $keyword],
                 ['like', 'f.mobile', $keyword],
                 ['like', 'u.nickname', $keyword],
@@ -82,7 +83,7 @@ class IndexController extends BasicController
             $query->andWhere(['p.level' => $level]);
         }
         $status = $get['status'] ?? false;
-        if ($status) {
+        if ($status || $status == 0) {
             if ($status != -1) {
                 $query->andWhere(['f.status' => $status]);
             }

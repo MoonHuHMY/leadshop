@@ -6,7 +6,6 @@
 namespace app\components\crontab;
 
 use promoter\models\Promoter;
-use promoter\models\PromoterLevel;
 use promoter\models\PromoterOrder;
 use Yii;
 
@@ -47,7 +46,7 @@ class PromoterOrderCrontab extends BaseCrontab
             $commission = $v['commission'];
             foreach ($commission as $key => $value) {
                 if (isset($change_list[$value['beneficiary']])) {
-                    $change_list[$value['beneficiary']] = ['commission' => qm_round($change_list[$value['beneficiary']]['commission'] + $value['commission'])];
+                    $change_list[$value['beneficiary']] = ['commission' => qm_round($change_list[$value['beneficiary']]['commission'] + $value['commission'], 2, 'floor')];
                 } else {
                     $change_list[$value['beneficiary']] = ['commission' => $value['commission']];
                 }

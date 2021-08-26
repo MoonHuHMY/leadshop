@@ -57,7 +57,7 @@ class PromoterLevel extends CommonModels
         return [
             [['level', 'is_auto', 'update_type', 'merchant_id', 'created_time', 'updated_time', 'deleted_time', 'is_deleted'], 'integer'],
             [['name', 'condition', 'AppID', 'merchant_id', 'first', 'level'], 'required'],
-            [['first', 'second', 'third'], 'number'],
+            [['first', 'second', 'third'], 'number', 'min' => 0, 'max' => 100],
             [['name'], 'string', 'max' => 8],
             [['condition'], 'string', 'max' => 512],
             [['AppID'], 'string', 'max' => 50],
@@ -101,6 +101,7 @@ class PromoterLevel extends CommonModels
                 $front = PromoterLevel::find()->where([
                     'AND',
                     ['AppID' => \Yii::$app->params['AppID']],
+                    ['is_deleted' => 0],
                     ['<', 'level', $this->level]
                 ])->one();
                 if ($front && $front->first >= $this->$levelVariable) {
@@ -110,6 +111,7 @@ class PromoterLevel extends CommonModels
                 $backend = PromoterLevel::find()->where([
                     'AND',
                     ['AppID' => \Yii::$app->params['AppID']],
+                    ['is_deleted' => 0],
                     ['>', 'level', $this->level]
                 ])->one();
                 if ($backend && $backend->$levelVariable <= $this->first) {

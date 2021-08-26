@@ -116,13 +116,36 @@ class IndexController extends BasicController
         if ($status) {
             $query->andWhere(['status' => $status]);
         }
+        $firstDay = \Yii::$app->request->get('first_day') ?? false;
+        if ($firstDay) {
+            $firstDayDate = date('Y-m-01', $firstDay);
+            $lastDay = strtotime(date('Y-m-d 23:59:59', strtotime("$firstDayDate +1 month -1 day")));
+            $query->andWhere(['between', 'created_time', $firstDay, $lastDay]);
+        } else {
+            $lastRecord = Finance::find()
+                ->select('created_time')
+                ->where(['AppID' => \Yii::$app->params['AppID'], 'model' => 'promoter', 'UID' => \Yii::$app->user->id, 'is_deleted' => 0])
+                ->orderBy(['created_time' => SORT_DESC])
+                ->limit(1)
+                ->one();
+            if ($lastRecord) {
+                $firstDayDate = date('Y-m-01', $lastRecord->created_time);
+                $lastDay = strtotime(date('Y-m-d 23:59:59', strtotime("$firstDayDate +1 month -1 day")));
+                $query->andWhere(['between', 'created_time', strtotime($firstDayDate), $lastDay]);
+            } else {
+                return [];
+            }
+        }
         $data = new ActiveDataProvider(
             [
-                'query'      => $query,
+                'query'      => $query->orderBy(['created_time' => SORT_DESC]),
                 'pagination' => ['pageSize' => intval($pageSize), 'validatePage' => false],
             ]
         );
         $list = $data->getModels();
+        if (!$list) {
+            return (Object)[];
+        }
         $newList = [];
         foreach ($list as $item) {
             /* @var Finance $item */
@@ -175,23 +198,10 @@ class IndexController extends BasicController
             $newList[] = $newItem;
         }
 
-        $cashList = $newList;
-        $newList = [];
-        foreach ($cashList as $item) {
-            $time = date('Y-m', ($item['time']['created_time']));
-            if (isset($newList[$time])) {
-                $newList[$time]['list'][] = $item;
-            } else {
-                $newItem = [
-                    'date' => date('Y年m月', ($item['time']['created_time'])),
-                    'list' => [
-                        $item
-                    ]
-                ];
-                $newList[$time] = $newItem;
-            }
+        $cashList['date'] = date('Y-m', $newList[0]['time']['created_time']);
+        foreach ($newList as $item) {
+            $cashList['list'][] = $item;
         }
-        $data->setModels($newList);
-        return $data;
+        return $cashList;
     }
 }

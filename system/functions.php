@@ -181,6 +181,7 @@ if (!function_exists('createPoster')) {
     }
 
 }
+
 if (!function_exists('radius_img')) {
     /**
      * 处理图片圆角问题
@@ -815,8 +816,12 @@ if (!function_exists('qm_round')) {
     /**
      * 保留小数
      */
-    function qm_round($value, $number = 2)
+    function qm_round($value, $number = 2, $type = 'round')
     {
+        if ($type == 'floor') {
+            $multiple = pow(10, $number);
+            $value    = floor($value * $multiple) / $multiple;
+        }
         return number_format($value, $number, '.', '');
     }
 }

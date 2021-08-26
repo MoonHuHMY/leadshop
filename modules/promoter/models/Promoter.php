@@ -158,17 +158,22 @@ class Promoter extends CommonModels
 
     /**
      * 累计消费金额 商品付款金额（不计算运费），用户付款后便开始计入
-    销售额，但有退款的需剔除
+     * 销售额，但有退款的需剔除
+     * @param $where
      * @return int
      */
-    public function getTotalMoney()
+    public function getTotalMoney($where = [])
     {
-        $res = PromoterCommission::find()
+        $query = PromoterCommission::find()
             ->alias('pc')
             ->leftJoin(['po' => PromoterOrder::tableName()], 'pc.order_goods_id = po.order_goods_id')
             ->andWhere(['>=', 'po.status', 0])
             ->andWhere(['beneficiary' => \Yii::$app->user->id])
-            ->groupBy('pc.beneficiary')
+            ->groupBy('pc.beneficiary');
+        if ($where) {
+            $query->andWhere($where);
+        }
+        $res = $query
             ->select('sum(pc.sales_amount) sales_amount')
             ->one();
         if (!$res) {
@@ -179,10 +184,22 @@ class Promoter extends CommonModels
 
     /**
      * 获取累计佣金 =待结算佣金+待提现佣金+已提现佣金
+     * @param array $where
      * @return int
      */
-    public function getTotalBonus()
+    public function getTotalBonus($where = [])
     {
-        return $this->commission_amount;
+        $query = PromoterCommission::find()
+            ->alias('pc')
+            ->leftJoin(['po' => PromoterOrder::tableName()], 'pc.order_goods_id = po.order_goods_id')
+            ->where(['and', ['>=', 'po.status', 0], ['pc.beneficiary' => $this->UID]])
+            ->select('sum(pc.commission) all_commission_amount');
+        if ($where) {
+            $query->andWhere($where);
+        }
+        $data = $query
+            ->asArray()
+            ->one();
+        return $data['all_commission_amount'] ?: 0;
     }
 }

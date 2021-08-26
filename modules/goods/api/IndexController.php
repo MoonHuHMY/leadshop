@@ -534,6 +534,7 @@ class IndexController extends BasicController
         $stocks      = 0;
         $max_price   = 0;
         $max_profits = 0;
+        $count_rules = StoreSetting('commission_setting', 'count_rules');
         foreach ($post['goods_data'] as &$g_d) {
             if ($g_d['price'] > 9999999 || $g_d['cost_price'] > 9999999) {
                 Error('金额不能超过9999999');
@@ -544,9 +545,9 @@ class IndexController extends BasicController
             if ($g_d['weight'] > 9999999) {
                 Error('重量不能超过9999999');
             }
-            if (!$g_d['cost_price'] && $g_d['cost_price'] !== 0) {
+            if (trim($g_d['cost_price']) === '') {
                 if ($model->is_promoter === 1) {
-                    if (StoreSetting('commission_setting', 'count_rules') === 2) {
+                    if ($count_rules === 2) {
                         Error('利润佣金规则下分销商品必须设置成本价');
                     }
                 }
@@ -680,7 +681,6 @@ class IndexController extends BasicController
 
     }
 
-
     /**
      * 一些可能需要单独做的编辑
      */
@@ -712,7 +712,6 @@ class IndexController extends BasicController
             Error('修改失败');
         }
     }
-
 
     /**
      * 批量操作
