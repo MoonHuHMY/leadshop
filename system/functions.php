@@ -498,7 +498,8 @@ if (!function_exists('StoreSetting')) {
     function StoreSetting($keyword = '', $content_key = '')
     {
         $class = new framework\common\StoreSetting();
-        return $class->get($keyword, $content_key);
+        $setting = $class->get($keyword, $content_key);
+        return str2url($setting);
     }
 }
 

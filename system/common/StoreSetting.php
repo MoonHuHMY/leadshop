@@ -16,6 +16,11 @@ class StoreSetting
             'merchant_id' => $merchant_id,
             'AppID'       => $AppID,
         ];
+        $url  = \Yii::$app->basePath . '/stores/setting.json';
+        $json = null;
+        if (file_exists($url)) {
+            $json = to_array(file_get_contents($url));
+        }
 
         if ($keyword) {
             $where['keyword'] = $keyword;
@@ -23,24 +28,40 @@ class StoreSetting
 
             if ($data) {
                 $data['content'] = to_array($data['content']);
+                if ($json && isset($json[$keyword]) && is_array($data['content'])) {
+                    $data['content'] = array_merge($json[$keyword], $data['content']);
+                }
                 if ($content_key) {
                     if (isset($data['content'][$content_key])) {
-                        return str2url($data['content'][$content_key]);
+                        return $data['content'][$content_key];
                     } else {
                         return null;
                     }
 
                 }
-                return str2url($data['content']);
+                return $data['content'];
             } else {
+                if (isset($json[$keyword])) {
+                    return $json[$keyword];
+                }
                 return null;
             }
         } else {
             $data = Setting::find()->where($where)->select('keyword,content')->asArray()->all();
-            foreach ($data as &$value) {
-                $value['content'] = to_array($value['content']);
+            if ($json) {
+                $data = array_column($data, null,'keyword');
+                foreach ($json as $key => $value) {
+                    if (isset($data[$key])) {
+                        $data[$key]['content'] = to_array($data[$key]['content']);
+                        if (is_array($data[$key]['content'])) {
+                            $data[$key]['content'] = array_merge($value,$data[$key]['content']);
+                        }
+                    } else {
+                        $data[$key] = ['keyword'=>$key,'content'=>$value];
+                    }
+                }
             }
-            return str2url($data);
+            return $data;
         }
 
     }

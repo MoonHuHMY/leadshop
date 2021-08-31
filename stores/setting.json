@@ -374,84 +374,21 @@
         "video_limit": 1
     },
     "float_window": {
-        "status": 2,
+        "status": 1,
         "decline": 1,
-        "stowedState": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-close.png",
-        "expandedState": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-open.png",
+        "stowedState": "HESHOP_URL_STRING/static/images/float-window/float-close.png",
+        "expandedState": "HESHOP_URL_STRING/static/images/float-window/float-open.png",
         "button": ["toTop", "tell", "personalCenter", "cart", "backPage", "index"],
         "buttonIcon": {
-            "index": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-index.png",
-            "cart": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-cart.png",
-            "tell": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-tell.png",
-            "personalCenter": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-personal-center.png",
-            "toTop": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-toTop.png",
-            "backPage": "https://qmxq.oss-cn-hangzhou.aliyuncs.com/float-backPage.png"
+            "index": "HESHOP_URL_STRING/static/images/float-window/float-index.png",
+            "cart": "HESHOP_URL_STRING/static/images/float-window/float-cart.png",
+            "tell": "HESHOP_URL_STRING/static/images/float-window/float-tell.png",
+            "personalCenter": "HESHOP_URL_STRING/static/images/float-window/float-personal-center.png",
+            "toTop": "HESHOP_URL_STRING/static/images/float-window/float-toTop.png",
+            "backPage": "HESHOP_URL_STRING/static/images/float-window/float-backPage.png"
         },
         "pages": ["index", "goods-list", "goods-detail", "submit", "order-list", "after-order", "after-detail", "order-detail", "page"],
         "channel": ["applet", "wechat"],
-        "customize": [{
-            "img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/13/59e1bccad2c2c68aa12cb200775a330b.png",
-            "link": {
-                "name": "店铺首页",
-                "path": "/pages/index/index",
-                "param": [],
-                "index": 0,
-                "extend": false
-            },
-            "name": "shou"
-        }, {
-            "img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/12/b8e170b06032851b242f82ff8be266dd.png",
-            "link": {
-                "name": "自定义链接",
-                "path": "/pages/other/web",
-                "param": {
-                    "url": "https://www.baidu.com"
-                },
-                "index": 12,
-                "extend": true
-            },
-            "name": "百度"
-        }, {
-            "img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/12/11954ea2db43a5772685ee61a3e01373.png",
-            "link": {
-                "name": "购物车",
-                "path": "/pages/cart/index",
-                "param": [],
-                "index": 4,
-                "extend": false
-            },
-            "name": "购物车"
-        }, {
-            "img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/12/4c86b5fd45167d95b461caac2ca20858.jpeg",
-            "link": {
-                "name": "个人中心",
-                "path": "/pages/user/index",
-                "param": [],
-                "index": 5,
-                "extend": false
-            },
-            "name": "个人中心"
-        }, {
-            "img": "https://leadshop.oss-cn-hangzhou.aliyuncs.com/upload/image/2021/08/13/fd064299ae0ca53fa45d60b98e4cec49.png",
-            "link": {
-                "name": "其他小程序",
-                "path": "",
-                "param": {
-                    "applet": {
-                        "appId": "123",
-                        "path": "a2312312",
-                        "label": 1
-                    },
-                    "wechat": {
-                        "appId": "344",
-                        "path": "66677",
-                        "label": 1
-                    }
-                },
-                "index": 11,
-                "extend": true
-            },
-            "name": "1231"
-        }]
+        "customize": []
     }
 }
