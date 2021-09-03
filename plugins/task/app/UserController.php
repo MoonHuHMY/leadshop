@@ -1,9 +1,8 @@
 <?php
 /**
  * 插件模式
- * @link http://www.heshop.com/
- * @copyright Copyright (c) 2020 HeShop Software LLC
- * @license http://www.heshop.com/license/
+ * @link https://www.leadshop.vip/
+ * @copyright Copyright ©2020-2021 浙江禾成云计算有限公司
  */
 namespace plugins\task\app;
 
@@ -38,7 +37,7 @@ class UserController extends BasicsModules
             $UserClass->UID = $UID;
             //执行积分数据写入
             $UserClass->save();
-            return $UserClass::find()->asArray()->one();
+            return $UserClass::find()->where(['UID'=>$UID])->asArray()->one();
         }
     }
 

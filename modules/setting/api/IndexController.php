@@ -1,9 +1,8 @@
 <?php
 /**
  * 设置管理
- * @link http://www.heshop.com/
- * @copyright Copyright (c) 2020 HeShop Software LLC
- * @license http://www.heshop.com/license/
+ * @link https://www.leadshop.vip/
+ * @copyright Copyright ©2020-2021 浙江禾成云计算有限公司
  */
 namespace setting\api;
 
@@ -34,13 +33,17 @@ class IndexController extends BasicController
     {
         $merchant_id = 1;
         $AppID       = Yii::$app->params['AppID'];
-        $where       = [
-            'merchant_id' => $merchant_id,
-            'AppID'       => $AppID,
-            'keyword'=>'web_setting'
-        ];
-        $data = M()::find()->where($where)->select('keyword,content')->asArray()->one();
-        return str2url(to_array($data['content']));
+        $behavior    = Yii::$app->request->post('behavior', false);
+        switch ($behavior) {
+            case 'copyright_information':
+                $keyword = 'copyright_information';
+                break;
+
+            default:
+                $keyword = 'web_setting';
+                break;
+        }
+        return StoreSetting($keyword);
     }
 
     public function actionDelete()
@@ -54,17 +57,7 @@ class IndexController extends BasicController
      */
     public function actionIndex()
     {
-        $merchant_id = 1;
-        $AppID       = Yii::$app->params['AppID'];
-        $where       = [
-            'merchant_id' => $merchant_id,
-            'AppID'       => $AppID,
-        ];
-        $data = M()::find()->where($where)->select('keyword,content')->asArray()->all();
-        foreach ($data as &$value) {
-            $value['content'] = to_array($value['content']);
-        }
-        return str2url($data);
+        return StoreSetting();
     }
 
     /**
@@ -82,44 +75,29 @@ class IndexController extends BasicController
             $json_string = file_get_contents(__DIR__ . '/../app/express.json');
             return to_array($json_string);
         } elseif ($keyword == 'waybilljson') {
-          $newList = [];
-          $waybill = Waybill::find()->where(['AppID' => Yii::$app->params['AppID'], 'is_deleted' => 0])
-            ->groupBy(['code'])->select('code')->column();
-          $json_string = file_get_contents(__DIR__ . '/../app/express.json');
-          $array = to_array($json_string);
-          foreach ($array as $json) {
-            foreach ($waybill as $item) {
-              if ($json['code'] == $item) {
-                array_push($newList, $json);
-              }
-            }
-          }
-          return $newList;
-        }
-        $merchant_id = 1;
-        $AppID       = Yii::$app->params['AppID'];
-        $where       = [
-            'keyword'     => $keyword,
-            'merchant_id' => $merchant_id,
-            'AppID'       => $AppID,
-        ];
-
-        $data = M()::find()->where($where)->select('keyword,content')->asArray()->one();
-
-        if ($data) {
-            $data['content'] = to_array($data['content']);
-            if ($content_key) {
-                if (isset($data['content'][$content_key])) {
-                    return str2url($data['content'][$content_key]);
-                } else {
-                    Error('内容不存在');
+            $newList = [];
+            $waybill = Waybill::find()->where(['AppID' => Yii::$app->params['AppID'], 'is_deleted' => 0])
+                ->groupBy(['code'])->select('code')->column();
+            $json_string = file_get_contents(__DIR__ . '/../app/express.json');
+            $array       = to_array($json_string);
+            foreach ($array as $json) {
+                foreach ($waybill as $item) {
+                    if ($json['code'] == $item) {
+                        array_push($newList, $json);
+                    }
                 }
-
             }
-            return str2url($data);
-        } else {
-            return null;
+            return $newList;
         }
+        $data = StoreSetting($keyword, $content_key);
+        if (!$content_key) {
+            $new_data            = [];
+            $new_data['keyword'] = $keyword;
+            $new_data['content'] = $data;
+            $data                = $new_data;
+        }
+
+        return $data;
     }
 
     /**
@@ -145,10 +123,32 @@ class IndexController extends BasicController
             $model->AppID       = $AppID;
         }
 
+        if ($post['keyword'] === 'commission_setting') {
+            if ($post['content']['count_rules'] === 2) {
+                $check = M('goods', 'Goods')::findOne(['is_deleted' => 0, 'is_promoter' => 1, 'max_profits' => null]);
+                if ($check) {
+                    return ['status' => 1];
+                }
+            }
+        }
+
+        if ($post['keyword'] === 'promoter_setting') {
+            if ($post['content']['bind_type'] === 2) {
+                if (isset($model->content)) {
+                    $content = to_array($model->content);
+                    if ($content['bind_type'] !== 2) {
+                        $post['content']['protect_time'] = time();
+                    }
+                } else {
+                    $post['content']['protect_time'] = time();
+                }
+            }
+        }
+
         $post['content'] = url2str($post['content']);
         $model->content  = to_json($post['content']);
         if ($model->save()) {
-            return true;
+            return ['status' => 0];
         } else {
             Error('保存失败');
         }

@@ -1,9 +1,8 @@
 <?php
 /**
  * 设置管理
- * @link http://www.heshop.com/
- * @copyright Copyright (c) 2020 HeShop Software LLC
- * @license http://www.heshop.com/license/
+ * @link https://www.leadshop.vip/
+ * @copyright Copyright ©2020-2021 浙江禾成云计算有限公司
  */
 namespace fitment\api;
 
@@ -42,7 +41,7 @@ class PagesController extends BasicController
                 return $this->firstPage();
                 break;
             default:
-                return $this->list();
+                return $this->getList();
                 break;
         }
     }
@@ -61,7 +60,7 @@ class PagesController extends BasicController
      * 获取设置列表
      * @return [type] [description]
      */
-    function list() {
+    public function getList() {
         //获取头部信息
         $headers = Yii::$app->getRequest()->getHeaders();
         //获取分页信息

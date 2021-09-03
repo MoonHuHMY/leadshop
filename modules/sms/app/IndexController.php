@@ -1,9 +1,8 @@
 <?php
 /**
  * 设置管理
- * @link http://www.heshop.com/
- * @copyright Copyright (c) 2020 HeShop Software LLC
- * @license http://www.heshop.com/license/
+ * @link https://www.leadshop.vip/
+ * @copyright Copyright ©2020-2021 浙江禾成云计算有限公司
  */
 namespace sms\app;
 
@@ -13,6 +12,7 @@ use Yii;
 
 class IndexController extends BasicController
 {
+
     public function actions()
     {
         $actions = parent::actions();
@@ -88,9 +88,9 @@ class IndexController extends BasicController
         Yii::info('触发短信事件');
         try {
             $smsConfig = [];
-            $model     = M('setting', 'Setting')::find()->where(['keyword' => 'sms_setting', 'merchant_id' => 1, 'AppID' => Yii::$app->params['AppID']])->select('content')->asArray()->one();
+            $model     = StoreSetting('sms_setting');
             if ($model) {
-                $smsConfig = json_decode($model['content'], true);
+                $smsConfig = $model;
             }
             $setting = \sms\api\IndexController::getSetting();
             if (!$smsConfig || $smsConfig['status'] == 0) {

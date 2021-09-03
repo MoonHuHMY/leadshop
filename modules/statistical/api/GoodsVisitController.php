@@ -1,9 +1,8 @@
 <?php
 /**
  * 订单统计
- * @link http://www.heshop.com/
- * @copyright Copyright (c) 2020 HeShop Software LLC
- * @license http://www.heshop.com/license/
+ * @link https://www.leadshop.vip/
+ * @copyright Copyright ©2020-2021 浙江禾成云计算有限公司
  */
 namespace statistical\api;
 
@@ -23,5 +22,6 @@ class GoodsVisitController extends BasicController
         $model->setScenario('save');
         $model->setAttributes($data);
         $model->save();
+        M('goods','Goods')::updateAllCounters(['visits' => 1], ['id' => $data['goods_id']]);
     }
 }

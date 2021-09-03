@@ -1,10 +1,10 @@
 <?php
 /**
  * 搜索
- * @link http://www.heshop.com/
- * @copyright Copyright (c) 2020 HeShop Software LLC
- * @license http://www.heshop.com/license/
+ * @link https://www.leadshop.vip/
+ * @copyright Copyright ©2020-2021 浙江禾成云计算有限公司
  */
+
 namespace leadmall\api;
 
 use basics\api\BasicsController as BasicsModules;
@@ -45,6 +45,14 @@ class SearchController extends BasicsModules implements Map
         'label'         => [
             'module'     => 'users',
             'controller' => 'label',
+        ],
+        'promoter'         => [
+            'module'     => 'promoter',
+            'controller' => 'index',
+        ],
+        'promoterorder'         => [
+            'module'     => 'promoter',
+            'controller' => 'order',
         ],
     ];
 

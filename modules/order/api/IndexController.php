@@ -1,9 +1,8 @@
 <?php
 /**
  * 订单控制器
- * @link http://www.heshop.com/
- * @copyright Copyright (c) 2020 HeShop Software LLC
- * @license http://www.heshop.com/license/
+ * @link https://www.leadshop.vip/
+ * @copyright Copyright ©2020-2021 浙江禾成云计算有限公司
  */
 namespace order\api;
 
@@ -46,7 +45,9 @@ class IndexController extends BasicController
                 'buyer',
                 'goods',
                 'user',
-                'freight',
+                'freight' => function ($q) {
+                    $q->with('goods');
+                },
             ])
             ->asArray()
             ->one();
@@ -69,6 +70,19 @@ class IndexController extends BasicController
                 }
             }
 
+        }
+        if (count($result['freight']) === 1 && empty($result['freight'][0]['goods'])) {
+            $order_goods = M('order', 'OrderGoods')::find()->where(['order_sn' => $result['order_sn']])->select('id,goods_name,goods_number,goods_image')->asArray()->all();
+            $new_goods   = [];
+            foreach ($order_goods as $o_g) {
+                $new_o_g = [
+                    'order_goods_id'   => $o_g['id'],
+                    'bag_goods_number' => $o_g['goods_number'],
+                    'goods'            => $o_g,
+                ];
+                array_push($new_goods, $new_o_g);
+            }
+            $result['freight'][0]['goods'] = $new_goods;
         }
         $result                 = str2url($result);
         $result['goods_amount'] = $result['goods_amount'] + $result['coupon_reduced'];
@@ -360,15 +374,104 @@ class IndexController extends BasicController
      */
     public function actionView()
     {
-        $id       = Yii::$app->request->get('id', false);
-        $order_sn = Yii::$app->request->get('order_sn', false);
-        $where    = ['is_recycle' => 0];
-        if ($id) {
-            $where = ['and', $where, ['id' => $id]];
+        //获取操作
+        $behavior = Yii::$app->request->get('behavior', '');
+
+        switch ($behavior) {
+            case 'order_goods':
+                return $this->orderGoodsInfo();
+                break;
+            case 'order_bag':
+                return $this->orderBag();
+                break;
+            default:
+                return $this->orderInfo();
+                break;
         }
-        if ($order_sn) {
-            $where = ['and', $where, ['order_sn' => $order_sn]];
+    }
+
+    private function orderGoodsInfo()
+    {
+        $id    = Yii::$app->request->get('id', false);
+        $where = ['is_recycle' => 0, 'id' => $id];
+
+        $result = M()::find()
+            ->where($where)
+            ->with([
+                'buyer',
+                'goods' => function ($q) {
+                    $q->with('bag');
+                },
+            ])
+            ->select('id,order_sn,status')
+            ->asArray()
+            ->one();
+
+        if (empty($result)) {
+            Error('订单不存在');
         }
+
+        $bag_name_id = M('order', 'OrderFreight')::find()->where(['order_sn' => $result['order_sn']])->orderBy(['id' => SORT_ASC])->select('id')->all();
+        $bag_name_id = array_column($bag_name_id, 'id');
+        foreach ($result['goods'] as &$goods) {
+            $goods['send_number'] = 0;
+            if (!empty($goods['bag'])) {
+                foreach ($goods['bag'] as &$v) {
+                    $v['bag_name_num'] = array_search($v['freight_id'], $bag_name_id) + 1;
+                    $goods['send_number'] += $v['bag_goods_number'];
+                }
+            }
+            $goods['wait_number'] = $goods['goods_number'] - $goods['send_number'];
+
+        }
+
+        $result = str2url($result);
+        return $result;
+    }
+
+    private function orderBag()
+    {
+        $id    = Yii::$app->request->get('id', false);
+        $where = ['is_recycle' => 0, 'id' => $id];
+
+        $result = M()::find()
+            ->where($where)
+            ->with([
+                'buyer',
+                'freight' => function ($q) {
+                    $q->with('goods');
+                },
+            ])
+            ->select('id,order_sn,status')
+            ->asArray()
+            ->one();
+
+        if (empty($result)) {
+            Error('订单不存在');
+        }
+
+        if (count($result['freight']) === 1 && empty($result['freight'][0]['goods'])) {
+            $order_goods = M('order', 'OrderGoods')::find()->where(['order_sn' => $result['order_sn']])->select('id,goods_name,goods_number,goods_image')->asArray()->all();
+            $new_goods   = [];
+            foreach ($order_goods as $o_g) {
+                $new_o_g = [
+                    'order_goods_id'   => $o_g['id'],
+                    'bag_goods_number' => $o_g['goods_number'],
+                    'goods'            => $o_g,
+                ];
+                array_push($new_goods, $new_o_g);
+            }
+            $result['freight'][0]['goods'] = $new_goods;
+        }
+
+        $result = str2url($result);
+        return $result;
+    }
+
+    private function orderInfo()
+    {
+        $id    = Yii::$app->request->get('id', false);
+        $where = ['is_recycle' => 0, 'id' => $id];
 
         $result = M()::find()
             ->where($where)
@@ -376,7 +479,9 @@ class IndexController extends BasicController
                 'buyer',
                 'goods',
                 'user',
-                'freight',
+                'freight' => function ($q) {
+                    $q->with('goods');
+                },
             ])
             ->asArray()
             ->one();
@@ -400,8 +505,21 @@ class IndexController extends BasicController
             }
 
         }
+        if (count($result['freight']) === 1 && empty($result['freight'][0]['goods'])) {
+            $order_goods = M('order', 'OrderGoods')::find()->where(['order_sn' => $result['order_sn']])->select('id,goods_name,goods_number,goods_image')->asArray()->all();
+            $new_goods   = [];
+            foreach ($order_goods as $o_g) {
+                $new_o_g = [
+                    'order_goods_id'   => $o_g['id'],
+                    'bag_goods_number' => $o_g['goods_number'],
+                    'goods'            => $o_g,
+                ];
+                array_push($new_goods, $new_o_g);
+            }
+            $result['freight'][0]['goods'] = $new_goods;
+        }
         $result                 = str2url($result);
-        $result['goods_amount'] = $result['goods_amount'] + $result['coupon_reduced'];
+        $result['goods_amount'] = qm_round($result['goods_amount'] + $result['coupon_reduced']);
         return $result;
     }
 
@@ -573,10 +691,14 @@ class IndexController extends BasicController
      */
     public function send()
     {
-        $id          = Yii::$app->request->get('id', false);
-        $post        = Yii::$app->request->post();
-        $transaction = Yii::$app->db->beginTransaction(); //启动数据库事务
-        $model       = M()::findOne($id);
+        $id   = Yii::$app->request->get('id', false);
+        $post = Yii::$app->request->post();
+
+        if (empty($post['goods_list'])) {
+            Error('请选择商品');
+        }
+
+        $model = M()::findOne($id);
         if (empty($model)) {
             Error('订单不存在');
         }
@@ -585,67 +707,111 @@ class IndexController extends BasicController
         if ($model->status !== 201) {
             Error('非法操作');
         }
+        $transaction = Yii::$app->db->beginTransaction(); //启动数据库事务
 
-        $setting_data = M('setting', 'Setting')::find()->where(['keyword' => 'setting_collection', 'merchant_id' => $model->merchant_id, 'AppID' => $model->AppID])->select('content')->asArray()->one();
-        if ($setting_data) {
-            $setting_data['content'] = to_array($setting_data['content']);
-            if (isset($setting_data['content']['trade_setting'])) {
-                $trade_setting = $setting_data['content']['trade_setting'];
-                if ($trade_setting['received_time']) {
-                    $model->received_time = (float) $trade_setting['received_time'] * 24 * 60 * 60 + time();
+        $post['order_sn'] = $model->order_sn;
+        $freight_model    = M('order', 'OrderFreight', true);
+        $freight_model->setAttributes($post);
+        if ($freight_model->validate()) {
+            if ($freight_model->save()) {
+
+                $order_goods         = M('order', 'OrderGoods')::find()->where(['order_sn' => $model->order_sn])->select('id,goods_number')->asArray()->all();
+                $order_freight_goods = M('order', 'OrderFreightGoods')::find()->where(['order_goods_id' => array_column($order_goods, 'id')])->select('order_goods_id,bag_goods_number')->asArray()->all();
+
+                $all_goods_number      = 0; //商品总数
+                $all_bag_goods_number  = 0; //包裹中总数
+                $all_post_goods_number = 0; //此次发货数
+                foreach ($order_goods as &$o_g) {
+                    $all_goods_number += $o_g['goods_number'];
+                    $o_g['send_number'] = 0;
                 }
-            }
-        }
-        $model->send_time = time();
-        $model->status    = 202;
-        $res              = $model->save();
-        if ($res) {
-            $post['order_sn'] = $model->order_sn;
-            $freight_model    = M('order', 'OrderFreight', true);
-            $freight_model->setAttributes($post);
-            if ($freight_model->validate()) {
-                if ($freight_model->save()) {
-                    $transaction->commit(); //事务执行
+                $order_goods = array_column($order_goods, null, 'id');
 
-                    $this->module->event->sms = [
-                        'type'   => 'order_send',
-                        'mobile' => [$model->user->mobile],
-                        'params' => [
-                            'code' => substr($model->order_sn, -4),
-                        ],
-                    ];
-                    $this->module->trigger('send_sms');
+                foreach ($order_freight_goods as $o_f_g) {
+                    $all_bag_goods_number += $o_f_g['bag_goods_number'];
+                    $order_goods[$o_f_g['order_goods_id']]['send_number'] += $o_f_g['bag_goods_number'];
+                }
 
-                    if ($freight_model->type == 1 || $freight_model->type == 3) {
-                        $message = new OrderSendMessage([
-                            'expressName' => $freight_model->logistics_company,
-                            'expressNo'   => $freight_model->freight_sn,
-                            'address'     => $model->buyer->address,
-                            'orderNo'     => $model->order_sn,
-                        ]);
-                    } else {
-                        $message = new OrderSendMessage([
-                            'expressName' => '无物流',
-                            'expressNo'   => '--',
-                            'address'     => $model->buyer->address,
-                            'orderNo'     => $model->order_sn,
-                        ]);
+                $row        = [];
+                $col        = ['freight_id', 'order_goods_id', 'bag_goods_number', 'created_time'];
+                $time       = time();
+                $freight_id = $freight_model->id;
+                foreach ($post['goods_list'] as $g) {
+                    if (!$g['number']) {
+                        $transaction->rollBack(); //事务回滚
+                        Error('请输入商品数量');
                     }
-                    \Yii::$app->subscribe
-                        ->setUser($model->UID)
-                        ->setPage('pages/order/detail?id=' . $model->id)
-                        ->send($message);
+                    $all_post_goods_number += $g['number'];
+                    $g_id = $g['order_goods_id'];
+                    if (($order_goods[$g_id]['send_number'] + $g['number']) > $order_goods[$g_id]['goods_number']) {
+                        $transaction->rollBack(); //事务回滚
+                        Error('发货数量超额');
+                    }
+                    array_push($row, [$freight_id, $g_id, $g['number'], $time]);
+                }
+
+                $prefix     = Yii::$app->db->tablePrefix;
+                $table_name = $prefix . 'order_freight_goods';
+                $o_f_g_res  = Yii::$app->db->createCommand()->batchInsert($table_name, $col, $row)->execute();
+                if ($o_f_g_res == count($row)) {
+
+                    //全部发完则订单成为已发货状态
+                    if ($all_goods_number <= ($all_bag_goods_number + $all_post_goods_number)) {
+                        $trade_setting = StoreSetting('setting_collection', 'trade_setting');
+                        if ($trade_setting) {
+                            if ($trade_setting['received_time']) {
+                                $model->received_time = (float) $trade_setting['received_time'] * 24 * 60 * 60 + time();
+                            }
+                        }
+                        $model->send_time = $time;
+                        $model->status    = 202;
+                        $res              = $model->save();
+                        if ($res) {
+                            $this->module->event->sms = [
+                                'type'   => 'order_send',
+                                'mobile' => [$model->user->mobile],
+                                'params' => [
+                                    'code' => substr($model->order_sn, -4),
+                                ],
+                            ];
+                            $this->module->trigger('send_sms');
+
+                            if ($freight_model->type == 1 || $freight_model->type == 3) {
+                                $message = new OrderSendMessage([
+                                    'expressName' => $freight_model->logistics_company,
+                                    'expressNo'   => $freight_model->freight_sn,
+                                    'address'     => $model->buyer->address,
+                                    'orderNo'     => $model->order_sn,
+                                ]);
+                            } else {
+                                $message = new OrderSendMessage([
+                                    'expressName' => '无物流',
+                                    'expressNo'   => '--',
+                                    'address'     => $model->buyer->address,
+                                    'orderNo'     => $model->order_sn,
+                                ]);
+                            }
+                            \Yii::$app->subscribe
+                                ->setUser($model->UID)
+                                ->setPage('pages/order/detail?id=' . $model->id)
+                                ->send($message);
+                        } else {
+                            $transaction->rollBack(); //事务回滚
+                            Error('发货失败');
+                        }
+
+                    }
+                    $transaction->commit(); //事务执行
                     return ['status' => $model->status];
                 } else {
                     $transaction->rollBack(); //事务回滚
-                    Error('操作失败');
+                    Error('发货失败');
                 }
-            } else {
-                $transaction->rollBack(); //事务回滚
-                return $freight_model;
             }
-
+        } else {
+            return $freight_model;
         }
+
     }
 
     /**
@@ -654,17 +820,17 @@ class IndexController extends BasicController
      */
     public function editfreight()
     {
-        $order_sn = Yii::$app->request->post('order_sn', false);
-        $post     = Yii::$app->request->post();
-        $model    = M('order', 'OrderFreight')::find()->where(['order_sn' => $order_sn])->one();
+        $id    = Yii::$app->request->post('id', false);
+        $post  = Yii::$app->request->post();
+        $model = M('order', 'OrderFreight')::findOne($id);
         if (empty($model)) {
             Error('物流不存在');
         }
 
-        $order_model = M()::find()->where(['order_sn' => $order_sn])->one();
+        $order_model = M()::find()->where(['order_sn' => $model->order_sn])->one();
 
         //只有在已发货状态下可以修改物流
-        if ($order_model->status !== 202) {
+        if ($order_model->status !== 201 && $order_model->status !== 202) {
             Error('非法操作');
         }
 
@@ -696,17 +862,13 @@ class IndexController extends BasicController
         if ($model->status !== 202) {
             Error('非法操作');
         }
-        $setting_data = M('setting', 'Setting')::find()->where(['keyword' => 'setting_collection', 'merchant_id' => $model->merchant_id, 'AppID' => $model->AppID])->select('content')->asArray()->one();
-        if ($setting_data) {
-            $setting_data['content'] = to_array($setting_data['content']);
-            if (isset($setting_data['content']['trade_setting'])) {
-                $trade_setting = $setting_data['content']['trade_setting'];
-                if ($trade_setting['after_time']) {
-                    $model->finish_time = (float) $trade_setting['after_time'] * 24 * 60 * 60 + time();
-                }
-                if ($trade_setting['evaluate_time']) {
-                    $model->evaluate_time = (float) $trade_setting['evaluate_time'] * 24 * 60 * 60 + time();
-                }
+        $trade_setting = StoreSetting('setting_collection', 'trade_setting');
+        if ($trade_setting) {
+            if ($trade_setting['after_time'] >= 0) {
+                $model->finish_time = (float) $trade_setting['after_time'] * 24 * 60 * 60 + time();
+            }
+            if ($trade_setting['evaluate_time'] >= 0) {
+                $model->evaluate_time = (float) $trade_setting['evaluate_time'] * 24 * 60 * 60 + time();
             }
         }
         $model->received_time = time();
@@ -738,15 +900,15 @@ class IndexController extends BasicController
         $transaction = Yii::$app->db->beginTransaction(); //启动数据库事务
         if (isset($post['goods_amount']) && $post['goods_amount'] >= 0) {
 
-            $goods_amount = $model->goods_reduced + $model->goods_amount + $model->coupon_reduced;
+            $goods_amount = $model->goods_reduced + $model->goods_amount + $model->coupon_reduced + $model->promoter_reduced;
 
             $order_goods_list = M('order', 'OrderGoods')::find()->where(['order_sn' => $model->order_sn])->select('id,total_amount')->asArray()->all();
 
             foreach ($order_goods_list as $v) {
-                $pay_amount = $goods_amount <= 0 ? 0 : round($v['total_amount'] * ($post['goods_amount'] / $goods_amount), 2);
+                $pay_amount = $goods_amount <= 0 ? 0 : qm_round($v['total_amount'] * ($post['goods_amount'] / $goods_amount), 2);
                 M('order', 'OrderGoods')::updateAll(['pay_amount' => $pay_amount], ['id' => $v['id']]);
             }
-            $model->goods_reduced = $goods_amount - $post['goods_amount'] - $model->coupon_reduced;
+            $model->goods_reduced = $goods_amount - $post['goods_amount'] - $model->coupon_reduced - $model->promoter_reduced;
             $model->goods_amount  = $post['goods_amount'];
         } else {
             Error('商品价格不符合要求');
@@ -801,29 +963,25 @@ class IndexController extends BasicController
         $time          = time();
         $finish_time   = null;
         $evaluate_time = null;
-        $setting_data  = M('setting', 'Setting')::find()->where(['keyword' => 'setting_collection', 'AppID' => $AppID])->select('content')->asArray()->one();
-        if ($setting_data) {
-            $setting_data['content'] = to_array($setting_data['content']);
-            if (isset($setting_data['content']['trade_setting'])) {
-                $trade_setting = $setting_data['content']['trade_setting'];
-                if ($trade_setting['after_time']) {
-                    $finish_time = (float) $trade_setting['after_time'] * 24 * 60 * 60 + $time;
-                }
-                if ($trade_setting['evaluate_time']) {
-                    $evaluate_time = (float) $trade_setting['evaluate_time'] * 24 * 60 * 60 + $time;
-                }
-                if ($trade_setting['cancel_status']) {
-                    $cancel_list = M('order', 'Order')::find()->where(['and', ['AppID' => $AppID, 'status' => 100], ['<=', 'cancel_time', $time]])->select('order_sn')->asArray()->all();
-                    if (!empty($cancel_list)) {
-                        $cancel_list = array_column($cancel_list, 'order_sn');
-                        M('order', 'Order')::updateAll(['status' => 102], ['order_sn' => $cancel_list]);
-                        $order_goods = M('order', 'OrderGoods')::find()->where(['order_sn' => $cancel_list])->select('goods_id,goods_param,goods_number')->asArray()->all();
-                        foreach ($order_goods as $value) {
-                            M('goods', 'GoodsData')::updateAllCounters(['stocks' => $value['goods_number']], ['goods_id' => $value['goods_id'], 'param_value' => $value['goods_param']]);
-                            M('goods', 'Goods')::updateAllCounters(['stocks' => $value['goods_number']], ['id' => $value['goods_id']]);
-                        }
-                        M('coupon', 'UserCoupon')::updateAll(['use_data' => null, 'use_time' => null, 'status' => 0, 'order_sn' => null], ['order_sn' => $cancel_list]);
+        $trade_setting = StoreSetting('setting_collection', 'trade_setting');
+        if ($trade_setting) {
+            if ($trade_setting['after_time'] >= 0) {
+                $finish_time = (float) $trade_setting['after_time'] * 24 * 60 * 60 + $time;
+            }
+            if ($trade_setting['evaluate_time'] >= 0) {
+                $evaluate_time = (float) $trade_setting['evaluate_time'] * 24 * 60 * 60 + $time;
+            }
+            if ($trade_setting['cancel_status']) {
+                $cancel_list = M('order', 'Order')::find()->where(['and', ['AppID' => $AppID, 'status' => 100], ['<=', 'cancel_time', $time]])->select('order_sn')->asArray()->all();
+                if (!empty($cancel_list)) {
+                    $cancel_list = array_column($cancel_list, 'order_sn');
+                    M('order', 'Order')::updateAll(['status' => 102], ['order_sn' => $cancel_list]);
+                    $order_goods = M('order', 'OrderGoods')::find()->where(['order_sn' => $cancel_list])->select('goods_id,goods_param,goods_number')->asArray()->all();
+                    foreach ($order_goods as $value) {
+                        M('goods', 'GoodsData')::updateAllCounters(['stocks' => $value['goods_number']], ['goods_id' => $value['goods_id'], 'param_value' => $value['goods_param']]);
+                        M('goods', 'Goods')::updateAllCounters(['stocks' => $value['goods_number']], ['id' => $value['goods_id']]);
                     }
+                    M('coupon', 'UserCoupon')::updateAll(['use_data' => null, 'use_time' => null, 'status' => 0, 'order_sn' => null], ['order_sn' => $cancel_list]);
                 }
             }
         }

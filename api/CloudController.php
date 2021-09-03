@@ -1,4 +1,8 @@
 <?php
+/**
+ * @link https://www.leadshop.vip/
+ * @copyright Copyright ©2020-2021 浙江禾成云计算有限公司
+ */
 
 namespace leadmall\api;
 
@@ -24,14 +28,23 @@ class CloudController extends BasicsModules implements Map
 
     public function actionIndex()
     {
-        $headers = \Yii::$app->getRequest()->getHeaders();
-        //获取分页信息
-        $pageSize = $headers->get('X-Pagination-Per-Page') ?? 5;
-        $page     = \Yii::$app->request->get('page', 1);
-        return \Yii::$app->cloud->update->getVersionData([
-            'page'  => $page,
-            'limit' => $pageSize,
-        ]);
+        //获取操作
+        $behavior = Yii::$app->request->get('behavior', '');
+        if ($behavior == 'auth') {
+            return \Yii::$app->cloud->auth->getAuthData();
+        } else {
+            $headers = \Yii::$app->getRequest()->getHeaders();
+            //获取分页信息
+            $pageSize = $headers->get('X-Pagination-Per-Page') ?? 5;
+            $page     = \Yii::$app->request->get('page', 1);
+            return [
+                'version' => \Yii::$app->cloud->update->getVersionData([
+                    'page'  => $page,
+                    'limit' => $pageSize,
+                ]),
+                'auth' =>  \Yii::$app->cloud->auth->getAuthData(),
+            ];
+        }
     }
 
     public function actionCreate($value = '')

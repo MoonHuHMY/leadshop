@@ -37,6 +37,7 @@
     "leadmall/app/subscribe/index",
     "leadmall/api/demo/index",
     "leadmall/api/demo/create",
+    "leadmall/app/plugin/index",
     "leadmall/api/plugin/index",
     "leadmall/api/plugin/view",
     "leadmall/api/plugin/create",
@@ -46,6 +47,9 @@
     "leadmall/app/coupon/view",
     "leadmall/api/reset/create",
     "leadmall/app/reset/create",
-    "leadmall/app/live/index"
+    "leadmall/app/live/index",
+    "leadmall/app/cloud/index",
+    "leadmall/app/promoterzone/index",
+    "leadmall/app/users/index"
   ]
 }

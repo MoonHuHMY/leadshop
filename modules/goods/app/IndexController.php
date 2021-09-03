@@ -1,14 +1,14 @@
 <?php
 /**
- * @link http://www.heshop.com/
- * @copyright Copyright (c) 2020 HeShop Software LLC
- * @license http://www.heshop.com/license/
+ * @link https://www.leadshop.vip/
+ * @copyright Copyright ©2020-2021 浙江禾成云计算有限公司
  */
 
 namespace goods\app;
 
 use app\forms\video\Video;
 use framework\common\BasicController;
+use goods\models\Goods;
 use Yii;
 use yii\data\ActiveDataProvider;
 
@@ -17,7 +17,6 @@ use yii\data\ActiveDataProvider;
  */
 class IndexController extends BasicController
 {
-    public $goodsModel = 'goods\models\Goods';
 
     /**
      * 重写父类
@@ -105,8 +104,8 @@ class IndexController extends BasicController
         //用于判断插件是否安装
         if ($is_task && $task_status) {
             if ($auto) {
-                $data = $this->goodsModel::find()
-                    ->from(['g' => $this->goodsModel::tableName()])
+                $data = Goods::find()
+                    ->from(['g' => Goods::tableName()])
                     ->joinWith('task as t')
                     ->where([
                         "t.goods_is_sale" => 1,
@@ -126,8 +125,8 @@ class IndexController extends BasicController
                 $where = ['AppID' => $AppID];
                 $where = ['and', $where, ['g.id' => $goods_id]];
                 $where = ['and', $where, ['t.goods_is_sale' => 1, "t.is_recycle" => 0, "t.is_deleted" => 0]];
-                $data  = M()::find()
-                    ->from(['g' => M()::tableName()])
+                $data  = Goods::find()
+                    ->from(['g' => Goods::tableName()])
                     ->where($where)
                     ->orderBy(['g.created_time' => SORT_DESC])
                     ->joinWith('task as t')
@@ -137,7 +136,7 @@ class IndexController extends BasicController
 
         } else {
             $where = ['id' => $goods_id, 'AppID' => $AppID, 'is_sale' => 1, 'is_recycle' => 0, 'is_deleted' => 0];
-            $data  = M()::find()
+            $data  = Goods::find()
                 ->where($where)
                 ->orderBy(['created_time' => SORT_DESC])
                 ->asArray()
@@ -172,19 +171,15 @@ class IndexController extends BasicController
         //商品分组
         $is_task = Yii::$app->request->get('is_task', false);
 
-        $setting_data = M('setting', 'Setting')::find()->where(['keyword' => 'setting_collection', 'merchant_id' => 1, 'AppID' => $AppID])->select('content')->asArray()->one();
+        $goods_setting = StoreSetting('setting_collection', 'goods_setting');
 
         $goods_id = false;
-        if ($setting_data && !$is_task) {
-            $setting_data['content'] = to_array($setting_data['content']);
-            if (isset($setting_data['content']['goods_setting'])) {
-                $goods_setting = $setting_data['content']['goods_setting'];
-                if ($goods_setting['recommend_status'] === 2) {
-                    $goods    = $goods_setting['recommend_goods'];
-                    $goods_id = array_column($goods, 'id');
-                    $where    = ['and', $where, ['g.id' => $goods_id]];
+        if ($goods_setting && !$is_task) {
+            if ($goods_setting['recommend_status'] === 2) {
+                $goods    = $goods_setting['recommend_goods'];
+                $goods_id = array_column($goods, 'id');
+                $where    = ['and', $where, ['g.id' => $goods_id]];
 
-                }
             }
         }
 
@@ -193,29 +188,19 @@ class IndexController extends BasicController
             $where = ['and', $where, ['t.goods_is_sale' => 1]];
             $where = ['and', $where, ['t.is_recycle' => 0]];
 
-            $data = M()::find()
+            $data = Goods::find()
                 ->joinWith('task')
-                ->from(['g' => M()::tableName()])
+                ->from(['g' => Goods::tableName()])
                 ->where($where)
                 ->orderBy(['sales' => SORT_DESC])
                 ->offset(0)
                 ->limit(6)
                 ->asArray()
                 ->all();
-            // $sql = M()::find()
-            //     ->joinWith('task')
-            //     ->from(['g' => M()::tableName()])
-            //     ->where($where)
-            //     ->orderBy(['sales' => SORT_DESC])
-            //     ->offset(0)
-            //     ->limit(20);
-
-            // P2($sql);
-            // exit();
         } else {
             $where = ['and', $where, ['is_recycle' => 0, 'is_sale' => 1]];
-            $data  = M()::find()
-                ->from(['g' => M()::tableName()])
+            $data  = Goods::find()
+                ->from(['g' => Goods::tableName()])
                 ->where($where)
                 ->orderBy(['sales' => SORT_DESC])
                 ->offset(0)
@@ -266,6 +251,12 @@ class IndexController extends BasicController
         $group = $keyword['group'] ?? false;
         if ($group > 0) {
             $where = ['and', $where, ['like', 'group', '-' . $group . '-']];
+        }
+
+        //商品id筛选
+        $goods_id = $keyword['goods_id'] ?? false;
+        if (!empty($goods_id)) {
+            $where = ['and', $where, ['id' => $goods_id]];
         }
 
         //价格区间
@@ -334,9 +325,9 @@ class IndexController extends BasicController
             $where = ['and', $where, ['t.is_recycle' => 0]];
             $data  = new ActiveDataProvider(
                 [
-                    'query'      => M()::find()
+                    'query'      => Goods::find()
                         ->joinWith('task')
-                        ->from(['g' => M()::tableName()])
+                        ->from(['g' => Goods::tableName()])
                         ->where($where)
                         ->orderBy($orderBy)
                         ->asArray(),
@@ -347,7 +338,7 @@ class IndexController extends BasicController
             $where = ['and', $where, ['is_recycle' => 0, 'is_sale' => 1]];
             $data  = new ActiveDataProvider(
                 [
-                    'query'      => M()::find()
+                    'query'      => Goods::find()
                         ->where($where)
                         ->orderBy($orderBy)
                         ->asArray(),
@@ -395,9 +386,9 @@ class IndexController extends BasicController
             } elseif ($result['goods_is_sale'] === 0) {
                 return ['empty_status' => 2];
             }
-            $result = M()::find()->where(['id' => $id])->with($with)->asArray()->one();
+            $result = Goods::find()->where(['id' => $id])->with($with)->asArray()->one();
         } else {
-            $result = M()::find()->where(['id' => $id])->with($with)->asArray()->one();
+            $result = Goods::find()->where(['id' => $id])->with($with)->asArray()->one();
             if (empty($result) || $result['is_deleted'] === 1) {
                 return ['empty_status' => 1];
             } elseif ($result['is_sale'] === 0) {
@@ -455,18 +446,6 @@ class IndexController extends BasicController
                             $district = array_column($district, null, 'name');
                             if (array_key_exists($address['district'], $district)) {
                                 $freight += $freight_rules['first']['price']; //首件首重费用
-                                // if ($result['freight']['type'] == 1) {
-                                //     //按件计算
-                                //     $f_number = 1;
-                                // } else {
-                                //     //按重计算
-                                //     $f_number = 1;
-                                // }
-
-                                // $continue = $f_number - $freight_rules['first']['number']; //判断是否超出首件数量或首重重量
-                                // if ($continue > 0 && $freight_rules['continue']['number'] > 0) {
-                                //     $freight += ceil($continue / $freight_rules['continue']['number']) * $freight_rules['continue']['price'];
-                                // }
                             }
                         }
                     }
@@ -498,7 +477,22 @@ class IndexController extends BasicController
             $result['task'] = $task;
         }
 
-        M()::updateAllCounters(['visits' => 1], ['id' => $id]);
+        $result['commission'] = 0;
+        $promoter_status      = StoreSetting('promoter_setting', 'status');
+        if ($promoter_status) {
+            $promoter_model = M('promoter', 'Promoter')::findOne(['UID' => $UID]);
+            if ($promoter_model && $promoter_model->status == 2) {
+                $count_rules          = StoreSetting('commission_setting', 'count_rules');
+                $commission_key       = $count_rules == 1 ? 'max_price' : 'max_profits';
+                $scale                = $promoter_model->levelInfo->first / 100;
+                $result['commission'] = qm_round($result[$commission_key] * $scale, 2, 'floor');
+            } else {
+                $result['is_promoter'] = 0;
+            }
+        } else {
+            $result['is_promoter'] = 0;
+        }
+        Goods::updateAllCounters(['visits' => 1], ['id' => $id]);
 
         return $result;
     }
@@ -506,9 +500,12 @@ class IndexController extends BasicController
     public static function addSales($event)
     {
 
-        $list = M('order', 'OrderGoods')::find()->where(['order_sn' => $event->pay_order_sn])->select('order_sn,goods_id,goods_number,pay_amount')->asArray()->all();
+        $list = M('order', 'OrderGoods')::find()->where(['order_sn' => $event->pay_order_sn])->with('goods')->select('order_sn,goods_id,goods_number,pay_amount')->asArray()->all();
         foreach ($list as $value) {
-            M()::updateAllCounters(['sales_amount' => $value['pay_amount'], 'sales' => $value['goods_number']], ['id' => $value['goods_id']]);
+            Goods::updateAllCounters(['sales_amount' => $value['pay_amount'], 'sales' => $value['goods_number']], ['id' => $value['goods_id']]);
+            if ($value['goods']['is_promoter'] === 1) {
+                M('promoter', 'PromoterGoods')::updateAllCounters(['sales' => $value['goods_number']], ['goods_id' => $value['goods_id']]);
+            }
         }
 
     }
@@ -522,7 +519,7 @@ class IndexController extends BasicController
     {
         foreach ($event->order_goods as $value) {
             M('goods', 'GoodsData')::updateAllCounters(['stocks' => (0 - $value['goods_number'])], ['goods_id' => $value['goods_id'], 'param_value' => $value['goods_param']]);
-            M()::updateAllCounters(['stocks' => (0 - $value['goods_number'])], ['id' => $value['goods_id']]);
+            Goods::updateAllCounters(['stocks' => (0 - $value['goods_number'])], ['id' => $value['goods_id']]);
         }
     }
 
@@ -535,7 +532,7 @@ class IndexController extends BasicController
     {
         foreach ($event->cancel_order_goods as $value) {
             M('goods', 'GoodsData')::updateAllCounters(['stocks' => $value['goods_number']], ['goods_id' => $value['goods_id'], 'param_value' => $value['goods_param']]);
-            M()::updateAllCounters(['stocks' => $value['goods_number']], ['id' => $value['goods_id']]);
+            Goods::updateAllCounters(['stocks' => $value['goods_number']], ['id' => $value['goods_id']]);
         }
     }
 }

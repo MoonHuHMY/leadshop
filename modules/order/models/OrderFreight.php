@@ -1,9 +1,8 @@
 <?php
 /**
  * 订单物流模型
- * @link http://www.heshop.com/
- * @copyright Copyright (c) 2020 HeShop Software LLC
- * @license http://www.heshop.com/license/
+ * @link https://www.leadshop.vip/
+ * @copyright Copyright ©2020-2021 浙江禾成云计算有限公司
  */
 
 namespace order\models;
@@ -71,6 +70,15 @@ class OrderFreight extends CommonModels
             'code'       => '物流公司',
             'freight_sn' => '物流编号',
         ];
+    }
+
+    /**
+     * 包裹商品
+     * @return [type] [description]
+     */
+    public function getGoods()
+    {
+        return $this->hasMany('order\models\OrderFreightGoods', ['freight_id' => 'id'])->select('id,freight_id,order_goods_id,bag_goods_number')->with('goods');
     }
 
 }

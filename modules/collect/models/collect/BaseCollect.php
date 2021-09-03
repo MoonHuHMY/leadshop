@@ -257,7 +257,7 @@ abstract class BaseCollect extends BaseObject
         $this->check();
         $transaction = \Yii::$app->db->beginTransaction(); //启动数据库事务
         $model       = M('goods', 'Goods', true);
-        $model->setScenario('create');
+        $model->setScenario('collect');
         $model->name = $goods->name;
         $model->price = $goods->price;
         $model->line_price = $goods->linePrice;
@@ -294,7 +294,11 @@ abstract class BaseCollect extends BaseObject
                     $item['goods_id'] = $goods_id;
                 }
                 unset($item);
-                $batch_res  = \Yii::$app->db->createCommand()->batchInsert($table_name, ['param_value', 'price', 'stocks', 'cost_price', 'weight', 'goods_sn', 'created_time', 'goods_id'], $goods->attr['goodsData'])->execute();
+                if ($goods->attr['goodsData']) {
+                    $batch_res  = \Yii::$app->db->createCommand()->batchInsert($table_name, ['param_value', 'price', 'stocks', 'cost_price', 'weight', 'goods_sn', 'created_time', 'goods_id'], $goods->attr['goodsData'])->execute();
+                } else {
+                    $batch_res = true;
+                }
                 if ($param_res && $body_res && $batch_res) {
                     $this->saveCollectGoodsId($goods_id, 1);
                     $transaction->commit(); //事务执行
