@@ -36,7 +36,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 <a href="https://www.leadshop.vip/thread/35" target="_blank"> **查看常见问题/安装教程** </a>
 
 ## 下期更新计划
-* <a href="https://www.leadshop.vip/category/9?search_ids=9" target="_blank"> **【预告】分销功能上线前的一波小更新：悬浮窗功能，引导用户点击进入指定页面** </a>
+* <a href="https://www.leadshop.vip/category/9?search_ids=9" target="_blank"> **【已上线】万众瞩目的分销功能，翘首以盼中诞生了！！！** </a>
 
 * <a href="https://mp.weixin.qq.com/s/WxA_kQIdx0H95ctkVMxlhg" target="_blank"> **【已上线】LEADSHOP第一款围绕积分开发的插件 ——【任务中心插件】详细介绍及视频演示** </a>
 
