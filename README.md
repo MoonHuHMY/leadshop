@@ -36,12 +36,14 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 <a href="https://www.leadshop.vip/thread/35" target="_blank"> **查看常见问题/安装教程** </a>
 
 ## 下期更新计划
+* <a href="https://www.leadshop.vip/category/9?search_ids=9
+" target="_blank"> **【已上线】评价助手功能已上线，提交商品转化率，缩短买家决策时间的利器！！！** </a>
 * <a href="https://mp.weixin.qq.com/s/Xo4cHPpSWjEnpoo0XgtYyg
 " target="_blank"> **【已上线】万众瞩目的分销功能，玩转私域流量的核武器正式上线啦！！！** </a>
 
 * <a href="https://mp.weixin.qq.com/s/WxA_kQIdx0H95ctkVMxlhg" target="_blank"> **【已上线】LEADSHOP第一款围绕积分开发的插件 ——【任务中心插件】详细介绍及视频演示** </a>
 
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210906/2.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210927/2.png)
 
 ## 更新历史
 * <a href="http://help.leadshop.vip/2278957" target="_blank"> **点击查看往期更新历史** </a>
@@ -166,7 +168,7 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 
 ## Leadshop功能简介
 ![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/readme/1.png)
-![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210906/2.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210927/2.png)
 ![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/readme/3.png)
 ![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/readme/4.png)
 ![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/readme/5.png)
