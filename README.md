@@ -184,6 +184,8 @@ Linux+Nginx+PHP7.4+MySQL5.7.3以上
 ![15](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/09/10/7tJo3pYp4kv4Kb6REuWDDRvOnu3dFL0uJ19j0bpS.png)
 ![16](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/09/10/jGwlZKfE09KoRVgpP2HO6kb6iilAFnN0FiWEKu7F.png)
 ![17](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/public/attachments/2021/09/10/PGbOY5tKji7Li6uUKBXFCmFR0H4Az7I3Jwqe6MFU.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210927/4.png)
+![展示图](https://qmxq.oss-cn-hangzhou.aliyuncs.com/readme/20210927/5.png)
 ![展示图](https://leadshop-1302407761.cos.ap-shanghai.myqcloud.com/readme/9.png)
 
 ## 使用须知
