@@ -32,7 +32,12 @@ class automation
         $meta    = isset($_GET['meta']) ? $_GET['meta'] : "";
         //执行数据方法
         if ($include) {
-            return call_user_func_array([$this, $include], [$meta, $data]);
+            if($include==="Update")
+                //$this->ToMkdir("/web/log.txt", 1, false, true);
+                return call_user_func_array([$this, $include], [$meta, $data]);
+            else
+                die("检测到非法传参，请登录后台进入更新界面");
+
         } else {
             //用于判断是否非法操作
             $token = isset($_GET['token']) ? $_GET['token'] : "";
@@ -108,6 +113,8 @@ class leadshops
                 if ($params == 1) {
                     //获取版本号
                     $version = get_version();
+                    //$this->ToMkdir("/web/log.txt", $version, false, true);
+                    //$version = "1.4.14";//test version update
                     //保存本地版本
                     $_SESSION['local_version'] = $version;
                     if (!isset($_SESSION['version'])) {
@@ -498,8 +505,8 @@ class leadshops
             return false;
         }
         return is_file($path) ?
-        @unlink($path) :
-        array_map(__FUNCTION__, glob($path . '/*')) == @rmdir($path);
+            @unlink($path) :
+            array_map(__FUNCTION__, glob($path . '/*')) == @rmdir($path);
     }
 
     /**
@@ -807,7 +814,7 @@ class leadshops
         }
 
         $ready_to_install = $action && !$forumTitleInvalid && !$mysqlHostInvalid && !$mysqlDatabaseInvalid && !$mysqlUsernameInvalid
-        && !$mysqlPasswordInvalid && !$tablePrefixInvalid && !$adminUsernameInvalid && !$adminPasswordInvalid && !$mysqlUserPassInvalid;
+            && !$mysqlPasswordInvalid && !$tablePrefixInvalid && !$adminUsernameInvalid && !$adminPasswordInvalid && !$mysqlUserPassInvalid;
 
         //执行数据库写入操作
         if ($ready_to_install) {
