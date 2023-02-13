@@ -32,7 +32,7 @@ class automation
         $meta    = isset($_GET['meta']) ? $_GET['meta'] : "";
         //执行数据方法
         if ($include) {
-            if($include==="Update")
+            if($include==="Update" || $include == 'install')
                 //$this->ToMkdir("/web/log.txt", 1, false, true);
                 return call_user_func_array([$this, $include], [$meta, $data]);
             else
@@ -470,6 +470,7 @@ class leadshops
 
         if ($response === false) {
             $error_no = curl_errno($ch);
+            var_dump(curl_error($ch));exit;
             throw new Exception("下载 $url 错误，code($error_no)，错误信息：" . curl_error($ch));
         }
         curl_close($ch);
